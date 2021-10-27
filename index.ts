@@ -16,39 +16,54 @@ const main = async () => {
         let pageBlocksTree = await logseq.Editor.getCurrentPageBlocksTree();
         let targetBlock = pageBlocksTree[0];
 
-        try {
-          // Insert header block
-          targetBlock = await logseq.Editor.insertBlock(
-            currentPage.name,
-            '[[Tasks Inbox]]',
-            {
-              isPageBlock: true,
-            }
-          );
+        // Insert header block
+        targetBlock = await logseq.Editor.insertBlock(
+          currentPage.name,
+          '[[Tasks Inbox]]',
+          {
+            isPageBlock: true,
+          }
+        );
 
-          // Get tasks from Todoist
-          let response = await axios.get(
-            'https://api.todoist.com/rest/v1/tasks',
-            {
-              params: { project_id: process.env.PROJECT_ID },
-              headers: {
-                Authorization: `Bearer ${process.env.API_TOKEN}`,
-              },
-            }
-          );
+        // Get tasks from Todoist
+        let response = await axios.get(
+          'https://api.todoist.com/rest/v1/tasks',
+          {
+            params: { project_id: process.env.PROJECT_ID },
+            headers: {
+              Authorization: `Bearer ${process.env.API_TOKEN}`,
+            },
+          }
+        );
+        console.log(response.data);
+        // Map only content from tasks to array
+        let tasksContentArr = response.data.map((t) => ({
+          content: `TODO ${t.content}`,
+        }));
 
-          // Map only content from tasks to array
-          let tasksArr = response.data.map((t) => ({
-            content: `TODO ${t.content}`,
-          }));
+        // Map id from tasks to mark as complete in Todoist
+        let tasksIdArr = response.data.map((i) => i.id);
 
-          // Insert tasks below header block
-          await logseq.Editor.insertBatchBlock(targetBlock.uuid, tasksArr, {
+        // Insert tasks below header block
+        await logseq.Editor.insertBatchBlock(
+          targetBlock.uuid,
+          tasksContentArr,
+          {
             sibling: false,
             before: true,
+          }
+        );
+
+        // Mark tasks as complete in Todoist
+        for (let i of tasksIdArr) {
+          console.log(`Clearing ${i} `);
+          await axios({
+            url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${process.env.API_TOKEN}`,
+            },
           });
-        } catch (e) {
-          console.log(e);
         }
       } else {
         // Display error message if trying to add reflection on non-Journal page
