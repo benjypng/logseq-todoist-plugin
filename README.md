@@ -11,7 +11,7 @@ I hope to be able to expand on this project when I have the time.
 1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Copy this test token down somewhere.
 2. Download the release [here](https://github.com/hkgnp/logseq-todoist-plugin-ts/releases/tag/v0.1).
 3. Extract the zip file to a folder of your choice. You will need to locate this folder later when you are adding the plugin in Logseq.
-4. Go to the folder and create a file called `.env` using your favourite text editor. Ensure that there is no file extension.
+4. Go to the root folde (where you can find package.json), run 'npm install', and create a file called `.env` using your favourite text editor. Ensure that there is no file extension and the .env file is in the same folder as your package.json. 
 5. In the `.env` file, add in the following and save the file. If you are unable to locate the Project ID, please wait while I update the instructions again.
    ```
    API_TOKEN=<Insert token number you got from Step 1>
