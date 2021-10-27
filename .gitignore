@@ -22,4 +22,3 @@ parcel-bundle-reports/
 sourcemap-info.json
 .env
 .env.bak
-dist
