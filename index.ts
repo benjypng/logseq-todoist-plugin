@@ -1,6 +1,9 @@
-import logseq from '@logseq/libs';
+import '@logseq/libs';
 import axios from 'axios';
-require('dotenv').config();
+import * as dotenv from 'dotenv';
+import './endpoints.config';
+
+dotenv.config();
 
 const main = async () => {
   console.log('Plugin loaded');
