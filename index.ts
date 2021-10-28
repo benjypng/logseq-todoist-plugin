@@ -26,14 +26,25 @@ const main = async () => {
         );
 
         let response;
+        let response2;
         try {
-          // Get tasks from Todoist
+          // Get tasks from Todoist for Projects without Prefix
           response = await axios.get('https://api.todoist.com/rest/v1/tasks', {
-            params: { project_id: env.projectId },
+            params: { project_id: env.projectIdWithoutPrefix },
             headers: {
               Authorization: `Bearer ${env.apiToken}`,
             },
           });
+
+          // Get tasks from Todoist for Projects with Prefix
+          response2 = await axios.get('https://api.todoist.com/rest/v1/tasks', {
+            params: { project_id: env.projectIdWithPrefix },
+            headers: {
+              Authorization: `Bearer ${env.apiToken}`,
+            },
+          });
+
+          console.log(response.data, response2.data);
         } catch (e) {
           logseq.App.showMsg(
             'There is an error retrieving your tasks from Todoist. Please try again later.'
@@ -41,14 +52,30 @@ const main = async () => {
           return;
         }
 
-        if (response.data !== []) {
+        if (response.data !== [] || response2.data !== []) {
           // Map only content from tasks to array
-          let tasksContentArr = response.data.map((t) => ({
+          // Map tasks without Prefix
+          let withoutPrefixArr = response.data.map((t) => ({
             content: `TODO ${t.content}`,
           }));
 
-          // Map id from tasks to mark as complete in Todoist
-          let tasksIdArr = response.data.map((i) => i.id);
+          // Map tasks with Prefix
+          let withPrefixArr = response2.data.map((t) => ({
+            content: `${t.content}`,
+          }));
+
+          let tasksContentArr = [...withoutPrefixArr, ...withPrefixArr];
+
+          // Map id from tasks without Prefix to mark as complete in Todoist
+          let tasksIdWithoutPrefixArr = response.data.map((i) => i.id);
+
+          // Map id from tasks with Prefix to mark as complete in Todoist
+          let tasksIdWithPrefixArr = response2.data.map((i) => i.id);
+
+          let tasksIdArr = [
+            ...tasksIdWithoutPrefixArr,
+            ...tasksIdWithPrefixArr,
+          ];
 
           try {
             // Insert tasks below header block
@@ -97,6 +124,7 @@ const main = async () => {
       }
     },
   });
+
   // Register UI
   logseq.App.registerUIItem('toolbar', {
     key: 'logseq-todoist-plugin',
