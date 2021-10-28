@@ -24,6 +24,8 @@ Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for add
 
 # Instructions
 
+### When installing a new release, please ensure that Step 7 is done before you reload the plugin in Logseq.
+
 1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 7.
 2. Login to your Todoist (on the web) and navigate to the Project(s) page that you would like to retrieve into Logseq. Note down the number found in the URL, as this is the Project ID that you will need in Step 7.
    ![image](/screenshots/todoist-url.png)
