@@ -1,6 +1,6 @@
 # Overview
 
-This simple plugin pulls the active tasks from a selected Project of your choice (as indicated in your .env file). I created this plugin as my workflow includes using Todoist as a Quick Capture tool, and Logseq as my main todo manager.
+This simple plugin pulls the active tasks from a selected Project of your choice (as indicated in your .env file). I created this plugin as my workflow includes using Todoist as a Quick Capture tool, and Logseq as my main todo manager. As a result, once the tasks are captured in Logseq, they are removed from Todoist.
 
 Refer to the [Todoist API](https://developer.todoist.com/rest/v1/#overview) page for the full list of REST APIs if you want to add your own functionalities.
 
