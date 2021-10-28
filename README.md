@@ -13,15 +13,15 @@ I hope to be able to expand on this project when I have the time.
    ![image](/screenshots/todoist-url.png)
 3. Download the release [here](https://github.com/hkgnp/logseq-todoist-plugin-ts/releases/).
 4. Extract the zip file to a folder of your choice. You will need to locate this folder later when you are adding the plugin in Logseq. If you are publishing to Github, ensure that this folder is not going to be published as it will contain your Token credentials.
-5. Using the Terminal, go to the root folder (where you can find package.json), and run `npm install`, followed by `npm run build`. This will install the necessary packages for the plugin.
-6. In the same root folder (where you can find package.json), create a file called `.env` using your favourite text editor. Ensure that there is no file extension and the `.env` file is in the same folder as your package.json.
-7. In the `.env` file, add in the following and save the file.
+5. In the same root folder (where you can find package.json), create a file called `.env` using your favourite text editor. Ensure that there is no file extension and the `.env` file is in the same folder as your package.json.
+6. In the `.env` file, add in the following and save the file.
    ```
    API_TOKEN=<Insert token number you got from Step 1>
    PROJECT_ID=<Insert Project ID (in Step 2) of the project you would like to pull the tasks from>
    ```
    Your env file should look like the below:
    ![image](/screenshots/sample-env.png)
+7. **RUN THIS STEP ONLY AFTER YOU CREATED THE `.env` file in Step 6** Using the Terminal, go to the root folder (where you can find package.json), and run `npm install && npm run build`. This will install the necessary packages for the plugin.
 8. Go to Logseq and ensure that you have Developer mode enabled, before going to the Plugins page.
 9. Click "Load unpacked plugin", and navigate to the folder in (2) and click open.
 10. An icon will appear in the usual plugins bar. Navigate to a journal page, and click the button. There may be a delay as the API needs to call your tasks from Todoist. This plugin will not be able to be used on non-journal pages.
