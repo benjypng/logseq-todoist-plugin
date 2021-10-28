@@ -1,3 +1,4 @@
 index.ts export-ignore
 index.html export-ignore
 .gitignore export-ignore
+/screenshots export-ignore
