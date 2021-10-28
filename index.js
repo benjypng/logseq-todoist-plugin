@@ -1,4 +1,4 @@
-import '@logseq/libs';
+import logseq from '@logseq/libs';
 import axios from 'axios';
 require('dotenv').config();
 
