@@ -1,9 +1,6 @@
 import '@logseq/libs';
 import axios from 'axios';
-import * as dotenv from 'dotenv';
-import './endpoints.config';
-
-dotenv.config();
+import env from './endpoints.config';
 
 const main = async () => {
   console.log('Plugin loaded');
@@ -32,9 +29,9 @@ const main = async () => {
         try {
           // Get tasks from Todoist
           response = await axios.get('https://api.todoist.com/rest/v1/tasks', {
-            params: { project_id: process.env.PROJECT_ID },
+            params: { project_id: env.projectId },
             headers: {
-              Authorization: `Bearer ${process.env.API_TOKEN}`,
+              Authorization: `Bearer ${env.apiToken}`,
             },
           });
         } catch (e) {
@@ -78,7 +75,7 @@ const main = async () => {
                 url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
                 method: 'POST',
                 headers: {
-                  Authorization: `Bearer ${process.env.API_TOKEN}`,
+                  Authorization: `Bearer ${env.apiToken}`,
                 },
               });
             }
