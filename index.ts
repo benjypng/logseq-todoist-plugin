@@ -1,6 +1,7 @@
 import '@logseq/libs';
 import axios from 'axios';
 import env from './endpoints.config';
+import handleTasks from './handle-tasks';
 
 const main = async () => {
   console.log('Plugin loaded');
@@ -25,56 +26,28 @@ const main = async () => {
           }
         );
 
-        let response;
-        let response2;
-        try {
-          // Get tasks from Todoist for Projects without Prefix
-          response = await axios.get('https://api.todoist.com/rest/v1/tasks', {
-            params: { project_id: env.projectIdWithoutPrefix },
-            headers: {
-              Authorization: `Bearer ${env.apiToken}`,
-            },
-          });
+        let tasksWithPrefix = await handleTasks.handleTasksWithPrefix();
+        let tasksWithoutPrefix = await handleTasks.handleTasksWithoutPrefix();
 
-          // Get tasks from Todoist for Projects with Prefix
-          response2 = await axios.get('https://api.todoist.com/rest/v1/tasks', {
-            params: { project_id: env.projectIdWithPrefix },
-            headers: {
-              Authorization: `Bearer ${env.apiToken}`,
-            },
-          });
+        console.log(tasksWithPrefix.withPrefixArr);
+        console.log(tasksWithoutPrefix.withoutPrefixArr);
 
-          console.log(response.data, response2.data);
-        } catch (e) {
+        if (
+          !tasksWithPrefix.tasksIdWithPrefixArr &&
+          !tasksWithoutPrefix.tasksIdWithoutPrefixArr
+        ) {
           logseq.App.showMsg(
-            'There is an error retrieving your tasks from Todoist. Please try again later.'
+            'There are no tasks in your indicated project(s).'
           );
           return;
-        }
-
-        if (response.data !== [] || response2.data !== []) {
-          // Map only content from tasks to array
-          // Map tasks without Prefix
-          let withoutPrefixArr = response.data.map((t) => ({
-            content: `TODO ${t.content}`,
-          }));
-
-          // Map tasks with Prefix
-          let withPrefixArr = response2.data.map((t) => ({
-            content: `${t.content}`,
-          }));
-
-          let tasksContentArr = [...withoutPrefixArr, ...withPrefixArr];
-
-          // Map id from tasks without Prefix to mark as complete in Todoist
-          let tasksIdWithoutPrefixArr = response.data.map((i) => i.id);
-
-          // Map id from tasks with Prefix to mark as complete in Todoist
-          let tasksIdWithPrefixArr = response2.data.map((i) => i.id);
-
+        } else {
+          let tasksContentArr = [
+            ...tasksWithPrefix.withPrefixArr,
+            ...tasksWithoutPrefix.withoutPrefixArr,
+          ];
           let tasksIdArr = [
-            ...tasksIdWithoutPrefixArr,
-            ...tasksIdWithPrefixArr,
+            ...tasksWithPrefix.tasksIdWithPrefixArr,
+            ...tasksWithoutPrefix.tasksIdWithoutPrefixArr,
           ];
 
           try {
@@ -97,7 +70,7 @@ const main = async () => {
           try {
             // Mark tasks as complete in Todoist
             for (let i of tasksIdArr) {
-              console.log(`Clearing ${i} `);
+              console.log(`Clearing ${i}`);
               await axios({
                 url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
                 method: 'POST',
@@ -112,11 +85,6 @@ const main = async () => {
             );
             return;
           }
-        } else {
-          logseq.App.showMsg(
-            'There are no tasks in your designated Project on Todoist. Please ensure there is at least one task before you click on the plugin button again.'
-          );
-          return;
         }
       } else {
         // Display error message if trying to add reflection on non-Journal page
