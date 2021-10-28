@@ -2,9 +2,25 @@
 
 This simple plugin pulls the active tasks from a selected Project of your choice (as indicated in your .env file). I created this plugin as my workflow includes using Todoist as a Quick Capture tool, and Logseq as my main todo manager. As a result, once the tasks are captured in Logseq, they are removed from Todoist.
 
-Refer to the [Todoist API](https://developer.todoist.com/rest/v1/#overview) page for the full list of REST APIs if you want to add your own functionalities.
+I've included a functionality where you can either:
 
-I hope to be able to expand on this project when I have the time.
+1. Have `TODO` added to the task when you import them into Logseq.
+
+or
+
+2. Include them in Todoist itself before you import them. This gives you the flexibility of adding other attributes such as NOW, WAITING, etc. on Todoist, before it gets imported.
+
+or
+
+3. Both.
+
+This is controlled by what you include in your `.env` file:
+
+- For (1), just use the variable `PROJECT_ID_WITHOUT_PREFIX`.
+- For (2), just use the variable `PROJECT_ID_WITH_PREFIX`.
+- For (3), use both variables above.
+
+Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for adding in their REST APIs on top of their SYNC APIs!
 
 # Instructions
 
@@ -14,17 +30,19 @@ I hope to be able to expand on this project when I have the time.
 3. Download the release [here](https://github.com/hkgnp/logseq-todoist-plugin-ts/releases/).
 4. Extract the zip file to a folder of your choice. You will need to locate this folder later when you are adding the plugin in Logseq. If you are publishing to Github, ensure that this folder is not going to be published as it will contain your Token credentials.
 5. In the same root folder (where you can find package.json), create a file called `.env` using your favourite text editor. Ensure that there is no file extension and the `.env` file is in the same folder as your package.json.
-6. In the `.env` file, add in the following and save the file. At the moment, all variables are required. I am currently working on making either with prefix or without prefix optional.
+6. In the `.env` file, add in the following and save the file.
 
    ```
    API_TOKEN=<Insert token number you got from Step 1>
+
+   // For the section below, you can either include both, or fill in only one (see image below for example)
 
    PROJECT_ID_WITHOUT_PREFIX=<Insert Project ID (in Step 2) of the project you would like to pull the tasks from. These tasks will be given a prefix TODO when importing to Logseq>
 
    PROJECT_ID_WITH_PREFIX=<Insert Project ID (in Step 2) of the project you would like to pull the tasks from. These tasks will not be given any prefix so you will need to incorporate them inside Todoist itself>
    ```
 
-   Your env file should look like the below:
+   Your env file should look like one of the below:
    ![image](/screenshots/sample-env.png)
 
 7. **RUN THIS STEP ONLY AFTER YOU CREATED THE `.env` file in Step 6** Using the Terminal, go to the root folder (where you can find package.json), and run `npm install && npm run build`. This will install the necessary packages for the plugin.
