@@ -32,4 +32,4 @@ Please let me know what functionalities you would like to add in Logseq's Discor
 
 - Proper settings page instead of needing to create a `.env` file.
 - Including slash commands.
-- Tasks added via this plugin will be marked as completed in Todoist.
+- Tasks added via this plugin will be marked as completed in Todoist. (Added on 28/10/21)
