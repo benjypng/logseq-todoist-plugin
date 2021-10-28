@@ -25,57 +25,69 @@ const main = async () => {
           }
         );
 
-        // Get tasks from Todoist
-        let response = await axios.get(
-          'https://api.todoist.com/rest/v1/tasks',
-          {
+        let response;
+        try {
+          // Get tasks from Todoist
+          response = await axios.get('https://api.todoist.com/rest/v1/tasks', {
             params: { project_id: process.env.PROJECT_ID },
             headers: {
               Authorization: `Bearer ${process.env.API_TOKEN}`,
             },
-          }
-        );
-        console.log(response.data);
-        // Map only content from tasks to array
-        let tasksContentArr = response.data.map((t) => ({
-          content: `TODO ${t.content}`,
-        }));
-
-        // Map id from tasks to mark as complete in Todoist
-        let tasksIdArr = response.data.map((i) => i.id);
-
-        try {
-          // Insert tasks below header block
-          await logseq.Editor.insertBatchBlock(
-            targetBlock.uuid,
-            tasksContentArr,
-            {
-              sibling: false,
-              before: true,
-            }
-          );
+          });
         } catch (e) {
           logseq.App.showMsg(
-            'There is an error inserting your tasks. No tasks have been removed from Todoist.'
+            'There is an error retrieving your tasks from Todoist. Please try again later.'
           );
           return;
         }
 
-        try {
-          // Mark tasks as complete in Todoist
-          for (let i of tasksIdArr) {
-            console.log(`Clearing ${i} `);
-            await axios({
-              url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${process.env.API_TOKEN}`,
-              },
-            });
+        if (response.data !== []) {
+          // Map only content from tasks to array
+          let tasksContentArr = response.data.map((t) => ({
+            content: `TODO ${t.content}`,
+          }));
+
+          // Map id from tasks to mark as complete in Todoist
+          let tasksIdArr = response.data.map((i) => i.id);
+
+          try {
+            // Insert tasks below header block
+            await logseq.Editor.insertBatchBlock(
+              targetBlock.uuid,
+              tasksContentArr,
+              {
+                sibling: false,
+                before: true,
+              }
+            );
+          } catch (e) {
+            logseq.App.showMsg(
+              'There is an error inserting your tasks. No tasks have been removed from Todoist.'
+            );
+            return;
           }
-        } catch (e) {
+
+          try {
+            // Mark tasks as complete in Todoist
+            for (let i of tasksIdArr) {
+              console.log(`Clearing ${i} `);
+              await axios({
+                url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${process.env.API_TOKEN}`,
+                },
+              });
+            }
+          } catch (e) {
+            logseq.App.showMsg(
+              'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
+            );
+            return;
+          }
+        } else {
           logseq.App.showMsg(
-            'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
+            'There are no tasks in your designated Project on Todoist. Please ensure there is at least one task before you click on the plugin button again.'
           );
           return;
         }
