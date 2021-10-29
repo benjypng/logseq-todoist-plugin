@@ -1,3 +1,4 @@
+import '@logseq/libs';
 import axios from 'axios';
 import env from './endpoints.config';
 
