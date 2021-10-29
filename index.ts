@@ -13,12 +13,8 @@ const main = async () => {
 
       // Check currentPage so error message shows on homepage and check journal so error message shows on pages
       if (currentPage && currentPage['journal?'] == true) {
-        // Get tree
-        let pageBlocksTree = await logseq.Editor.getCurrentPageBlocksTree();
-        let targetBlock = pageBlocksTree[0];
-
         // Insert header block
-        targetBlock = await logseq.Editor.insertBlock(
+        let targetBlock = await logseq.Editor.insertBlock(
           currentPage.name,
           '[[Tasks Inbox]]',
           {
@@ -28,9 +24,6 @@ const main = async () => {
 
         let tasksWithPrefix = await handleTasks.handleTasksWithPrefix();
         let tasksWithoutPrefix = await handleTasks.handleTasksWithoutPrefix();
-
-        console.log(tasksWithPrefix.withPrefixArr);
-        console.log(tasksWithoutPrefix.withoutPrefixArr);
 
         if (
           !tasksWithPrefix.tasksIdWithPrefixArr &&
@@ -56,7 +49,7 @@ const main = async () => {
               targetBlock.uuid,
               tasksContentArr,
               {
-                sibling: false,
+                sibling: !parent,
                 before: true,
               }
             );

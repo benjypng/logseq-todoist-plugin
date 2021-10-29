@@ -3,25 +3,59 @@ import env from './endpoints.config';
 
 let handleTasksWithoutPrefix = async () => {
   if (env.projectIdWithoutPrefix) {
-    let response = await axios.get('https://api.todoist.com/rest/v1/tasks', {
-      params: { project_id: env.projectIdWithoutPrefix },
-      headers: {
-        Authorization: `Bearer ${env.apiToken}`,
-      },
-    });
+    try {
+      let response = await axios.get('https://api.todoist.com/rest/v1/tasks', {
+        params: { project_id: env.projectIdWithoutPrefix },
+        headers: {
+          Authorization: `Bearer ${env.apiToken}`,
+        },
+      });
 
-    // Map tasks without Prefix
-    let withoutPrefixArr = response.data.map((t) => ({
-      content: `TODO ${t.content}`,
-    }));
+      // Create array of main tasks
+      let withoutPrefixArr = response.data
+        .filter((t) => {
+          return !t.parent_id;
+        })
+        .map((t) => ({
+          todoist_id: t.id,
+          content: `TODO ${t.content}`,
+          children: [],
+        }));
 
-    // Map id from tasks without Prefix to mark as complete in Todoist
-    let tasksIdWithoutPrefixArr = response.data.map((i) => i.id);
+      // Create array of sub tasks
+      let subTasks = response.data
+        .filter((t) => {
+          return t.parent_id;
+        })
+        .map((t) => ({
+          todoist_id: t.id,
+          content: t.content,
+          parent_id: t.parent_id,
+        }));
 
-    return {
-      withoutPrefixArr: withoutPrefixArr,
-      tasksIdWithoutPrefixArr: tasksIdWithoutPrefixArr,
-    };
+      // Subsume sub tasks under main tasks
+      for (let m of withoutPrefixArr) {
+        for (let s of subTasks) {
+          if (s.parent_id == m.todoist_id) {
+            m.children.push({ content: `TODO ${s.content}` });
+          }
+          continue;
+        }
+      }
+
+      // Map id from tasks without Prefix to mark as complete in Todoist
+      let tasksIdWithoutPrefixArr = response.data.map((i) => i.id);
+
+      return {
+        withoutPrefixArr: withoutPrefixArr,
+        tasksIdWithoutPrefixArr: tasksIdWithoutPrefixArr,
+      };
+    } catch (e) {
+      logseq.App.showMsg(
+        'There could be a typo in your Project ID or the Todoist API is down. Please check and try again.'
+      );
+      return;
+    }
   } else {
     return { withoutPrefixArr: [], tasksIdWithoutPrefixArr: [] };
   }
@@ -29,25 +63,59 @@ let handleTasksWithoutPrefix = async () => {
 
 let handleTasksWithPrefix = async () => {
   if (env.projectIdWithPrefix) {
-    let response2 = await axios.get('https://api.todoist.com/rest/v1/tasks', {
-      params: { project_id: env.projectIdWithPrefix },
-      headers: {
-        Authorization: `Bearer ${env.apiToken}`,
-      },
-    });
+    try {
+      let response2 = await axios.get('https://api.todoist.com/rest/v1/tasks', {
+        params: { project_id: env.projectIdWithPrefix },
+        headers: {
+          Authorization: `Bearer ${env.apiToken}`,
+        },
+      });
 
-    // Map tasks with Prefix
-    let withPrefixArr = response2.data.map((t) => ({
-      content: `${t.content}`,
-    }));
+      // Create array of main tasks
+      let withPrefixArr = response2.data
+        .filter((t) => {
+          return !t.parent_id;
+        })
+        .map((t) => ({
+          todoist_id: t.id,
+          content: `${t.content}`,
+          children: [],
+        }));
 
-    // Map id from tasks with Prefix to mark as complete in Todoist
-    let tasksIdWithPrefixArr = response2.data.map((i) => i.id);
+      // Create array of sub tasks
+      let subTasks = response2.data
+        .filter((t) => {
+          return t.parent_id;
+        })
+        .map((t) => ({
+          todoist_id: t.id,
+          content: t.content,
+          parent_id: t.parent_id,
+        }));
 
-    return {
-      withPrefixArr: withPrefixArr,
-      tasksIdWithPrefixArr: tasksIdWithPrefixArr,
-    };
+      // Subsume sub tasks under main tasks
+      for (let m of withPrefixArr) {
+        for (let s of subTasks) {
+          if (s.parent_id == m.todoist_id) {
+            m.children.push({ content: `${s.content}` });
+          }
+          continue;
+        }
+      }
+
+      // Map id from tasks with Prefix to mark as complete in Todoist
+      let tasksIdWithPrefixArr = response2.data.map((i) => i.id);
+
+      return {
+        withPrefixArr: withPrefixArr,
+        tasksIdWithPrefixArr: tasksIdWithPrefixArr,
+      };
+    } catch (e) {
+      logseq.App.showMsg(
+        'There could be a typo in your Project ID or the Todoist API is down. Please check and try again.'
+      );
+      return;
+    }
   } else {
     return {
       withPrefixArr: [],
