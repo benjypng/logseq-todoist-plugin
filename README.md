@@ -1,5 +1,7 @@
 # Overview
 
+![video](/screenshots/screen-record.mov)
+
 This simple plugin pulls the active tasks (and their sub-tasks as separate, sub-blocks) from a selected Project of your choice (as indicated in your .env file). I created this plugin as my workflow includes using Todoist as a Quick Capture tool, and Logseq as my main todo manager. As a result, once the tasks are captured in Logseq, they are removed from Todoist.
 
 I've included a functionality where you can either:
