@@ -12,25 +12,28 @@ const main = async () => {
       let currentPage = await logseq.Editor.getCurrentPage();
 
       // Check currentPage so error message shows on homepage and check journal so error message shows on pages
-      if (currentPage && currentPage['journal?'] == true) {
-        // Insert header block
-        let targetBlock = await logseq.Editor.insertBlock(
-          currentPage.name,
-          '[[Tasks Inbox]]',
-          {
-            isPageBlock: true,
-          }
-        );
-
+      if (currentPage) {
         let tasksWithPrefix = await handleTasks.handleTasksWithPrefix();
         let tasksWithoutPrefix = await handleTasks.handleTasksWithoutPrefix();
 
-        if (!tasksWithPrefix && !tasksWithoutPrefix) {
+        if (
+          tasksWithPrefix?.withPrefixArr.length === 0 &&
+          tasksWithoutPrefix?.withoutPrefixArr.length === 0
+        ) {
           logseq.App.showMsg(
             'There are no tasks in your indicated project(s).'
           );
           return;
         } else if (tasksWithPrefix && tasksWithoutPrefix) {
+          // Insert header block
+          let targetBlock = await logseq.Editor.insertBlock(
+            currentPage.name,
+            '[[Tasks Inbox]]',
+            {
+              isPageBlock: true,
+            }
+          );
+
           let tasksContentArr = [
             ...tasksWithPrefix.withPrefixArr,
             ...tasksWithoutPrefix.withoutPrefixArr,
@@ -80,7 +83,9 @@ const main = async () => {
         }
       } else {
         // Display error message if trying to add reflection on non-Journal page
-        logseq.App.showMsg('This function is only available on a Journal page');
+        logseq.App.showMsg(
+          'This function is not available on the home page. Please try it on a Journal page or a regular page.'
+        );
       }
     },
   });
