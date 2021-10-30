@@ -2,6 +2,16 @@ import '@logseq/libs';
 import axios from 'axios';
 import env from './endpoints.config';
 
+type Task = {
+  parent_id: number;
+  id: number;
+  content: string;
+};
+
+type Id = {
+  id: number;
+};
+
 let handleTasksWithoutPrefix = async () => {
   if (env.projectIdWithoutPrefix) {
     try {
@@ -14,10 +24,10 @@ let handleTasksWithoutPrefix = async () => {
 
       // Create array of main tasks
       let withoutPrefixArr = response.data
-        .filter((t) => {
+        .filter((t: Task) => {
           return !t.parent_id;
         })
-        .map((t) => ({
+        .map((t: Task) => ({
           todoist_id: t.id,
           content: `TODO ${t.content}`,
           children: [],
@@ -25,10 +35,10 @@ let handleTasksWithoutPrefix = async () => {
 
       // Create array of sub tasks
       let subTasks = response.data
-        .filter((t) => {
+        .filter((t: Task) => {
           return t.parent_id;
         })
-        .map((t) => ({
+        .map((t: Task) => ({
           todoist_id: t.id,
           content: t.content,
           parent_id: t.parent_id,
@@ -45,7 +55,7 @@ let handleTasksWithoutPrefix = async () => {
       }
 
       // Map id from tasks without Prefix to mark as complete in Todoist
-      let tasksIdWithoutPrefixArr = response.data.map((i) => i.id);
+      let tasksIdWithoutPrefixArr = response.data.map((i: Id) => i.id);
 
       return {
         withoutPrefixArr: withoutPrefixArr,
@@ -74,10 +84,10 @@ let handleTasksWithPrefix = async () => {
 
       // Create array of main tasks
       let withPrefixArr = response2.data
-        .filter((t) => {
+        .filter((t: Task) => {
           return !t.parent_id;
         })
-        .map((t) => ({
+        .map((t: Task) => ({
           todoist_id: t.id,
           content: `${t.content}`,
           children: [],
@@ -85,10 +95,10 @@ let handleTasksWithPrefix = async () => {
 
       // Create array of sub tasks
       let subTasks = response2.data
-        .filter((t) => {
+        .filter((t: Task) => {
           return t.parent_id;
         })
-        .map((t) => ({
+        .map((t: Task) => ({
           todoist_id: t.id,
           content: t.content,
           parent_id: t.parent_id,
@@ -105,7 +115,7 @@ let handleTasksWithPrefix = async () => {
       }
 
       // Map id from tasks with Prefix to mark as complete in Todoist
-      let tasksIdWithPrefixArr = response2.data.map((i) => i.id);
+      let tasksIdWithPrefixArr = response2.data.map((i: Id) => i.id);
 
       return {
         withPrefixArr: withPrefixArr,

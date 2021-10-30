@@ -25,15 +25,12 @@ const main = async () => {
         let tasksWithPrefix = await handleTasks.handleTasksWithPrefix();
         let tasksWithoutPrefix = await handleTasks.handleTasksWithoutPrefix();
 
-        if (
-          !tasksWithPrefix.tasksIdWithPrefixArr &&
-          !tasksWithoutPrefix.tasksIdWithoutPrefixArr
-        ) {
+        if (!tasksWithPrefix && !tasksWithoutPrefix) {
           logseq.App.showMsg(
             'There are no tasks in your indicated project(s).'
           );
           return;
-        } else {
+        } else if (tasksWithPrefix && tasksWithoutPrefix) {
           let tasksContentArr = [
             ...tasksWithPrefix.withPrefixArr,
             ...tasksWithoutPrefix.withoutPrefixArr,
@@ -44,15 +41,17 @@ const main = async () => {
           ];
 
           try {
-            // Insert tasks below header block
-            await logseq.Editor.insertBatchBlock(
-              targetBlock.uuid,
-              tasksContentArr,
-              {
-                sibling: !parent,
-                before: true,
-              }
-            );
+            if (targetBlock) {
+              // Insert tasks below header block
+              await logseq.Editor.insertBatchBlock(
+                targetBlock.uuid,
+                tasksContentArr,
+                {
+                  sibling: !parent,
+                  before: true,
+                }
+              );
+            }
           } catch (e) {
             logseq.App.showMsg(
               'There is an error inserting your tasks. No tasks have been removed from Todoist.'
