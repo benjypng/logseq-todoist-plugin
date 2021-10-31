@@ -55,7 +55,7 @@ const main = async () => {
             ...tasksWithPrefix.withPrefixArr,
             ...tasksWithoutPrefix.withoutPrefixArr,
           ];
-          console.log(tasksContentArr);
+
           let tasksIdArr = [
             ...tasksWithPrefix.tasksIdWithPrefixArr,
             ...tasksWithoutPrefix.tasksIdWithoutPrefixArr,
