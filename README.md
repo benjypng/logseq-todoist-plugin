@@ -1,14 +1,18 @@
 # Overview
 
-![](/screenshots/screen-record.gif)
-
 This simple plugin has 2 primary functions:
 
 ## Sending of tasks to your Inbox in Todoist
 
+![](/screenshots/send-task-todoist.gif)
+
+This function allows you to quickly send a task to your Inbox in Todoist.
+
 ## Pulling in of tasks
 
-pulls the active tasks (and their sub-tasks as separate, child-blocks) from a selected Project of your choice (as indicated in your .env file). I created this plugin as my workflow includes using Todoist as a Quick Capture tool, and Logseq as my main todo manager. As a result, once the tasks are captured in Logseq, they are removed from Todoist.
+![](/screenshots/screen-record.gif)
+
+This function pulls the active tasks (and their sub-tasks as separate, child-blocks) from a selected Project of your choice (as indicated in your .env file). I created this plugin as my workflow includes using Todoist as a Quick Capture tool, and Logseq as my main todo manager. As a result, once the tasks are captured in Logseq, they are removed from Todoist.
 
 This plugin can be used on all pages except the home page.
 
@@ -35,7 +39,7 @@ This is controlled by what you include in your `.env` file, and the Project that
 
 Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for adding in their REST APIs on top of their SYNC APIs!
 
-# Usage
+# Installation
 
 ### When installing a new release, please ensure that Step 7 is done before you reload the plugin in Logseq.
 
@@ -71,6 +75,10 @@ Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for add
 8. Go to Logseq and ensure that you have Developer mode enabled, before going to the Plugins page.
 9. Click "Load unpacked plugin", and navigate to the folder in (2) and click open.
 10. An icon will appear in the usual plugins bar. Navigate to a journal page, and click the button. There may be a delay as the API needs to call your tasks from Todoist. This plugin will not be able to be used on non-journal pages.
+
+# Updating
+
+After extracting the new zip file, please run `npm run build` again, and reload the plugin Logseq.
 
 # Future Enhancements
 
