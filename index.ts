@@ -7,13 +7,13 @@ const main = async () => {
   console.log('Plugin loaded');
 
   logseq.Editor.registerSlashCommand('todoist - send task', async () => {
-    let currentBlock = await logseq.Editor.getCurrentBlock();
+    const currentBlock = await logseq.Editor.getEditingBlockContent();
     if (currentBlock) {
-      sendTask.sendToTodoist(currentBlock.content);
+      sendTask.sendToTodoist(currentBlock);
       logseq.App.showMsg(`
         [:div.p-2
           [:h1 "Task sent to your Todoist Inbox!"]
-          [:h2.text-xl "${currentBlock.content}"]]
+          [:h2.text-xl "${currentBlock}"]]
       `);
     } else {
       logseq.App.showMsg(
