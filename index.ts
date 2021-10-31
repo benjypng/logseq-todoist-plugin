@@ -37,9 +37,7 @@ const main = async () => {
           tasksWithPrefix?.withPrefixArr.length === 0 &&
           tasksWithoutPrefix?.withoutPrefixArr.length === 0
         ) {
-          logseq.App.showMsg(
-            'There are no tasks in your indicated project(s).'
-          );
+          logseq.App.showMsg('There are no tasks in your indicated projects.');
           return;
         } else if (tasksWithPrefix && tasksWithoutPrefix) {
           // Insert header block
