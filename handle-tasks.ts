@@ -12,6 +12,18 @@ type Id = {
   id: number;
 };
 
+let getProjectName = async (projectId: string) => {
+  let project = await axios.get(
+    `https://api.todoist.com/rest/v1/projects/${projectId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${env.apiToken}`,
+      },
+    }
+  );
+  return project.data.name;
+};
+
 let handleTasksWithoutPrefix = async () => {
   if (env.projectIdWithoutPrefix) {
     try {
@@ -53,6 +65,14 @@ let handleTasksWithoutPrefix = async () => {
           continue;
         }
       }
+
+      // Add project name as a parent block
+      withoutPrefixArr = [
+        {
+          content: `[[${await getProjectName(env.projectIdWithoutPrefix)}]]`,
+          children: [...withoutPrefixArr],
+        },
+      ];
 
       // Map id from tasks without Prefix to mark as complete in Todoist
       let tasksIdWithoutPrefixArr = response.data.map((i: Id) => i.id);
@@ -114,6 +134,14 @@ let handleTasksWithPrefix = async () => {
         }
       }
 
+      // Add project name as a parent block
+      withPrefixArr = [
+        {
+          content: `[[${await getProjectName(env.projectIdWithPrefix)}]]`,
+          children: [...withPrefixArr],
+        },
+      ];
+
       // Map id from tasks with Prefix to mark as complete in Todoist
       let tasksIdWithPrefixArr = response2.data.map((i: Id) => i.id);
 
@@ -135,4 +163,8 @@ let handleTasksWithPrefix = async () => {
   }
 };
 
-export default { handleTasksWithPrefix, handleTasksWithoutPrefix };
+export default {
+  getProjectName,
+  handleTasksWithPrefix,
+  handleTasksWithoutPrefix,
+};

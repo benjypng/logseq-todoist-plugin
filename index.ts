@@ -1,5 +1,4 @@
 import '@logseq/libs';
-import axios from 'axios';
 import env from './endpoints.config';
 import handleTasks from './handle-tasks';
 import sendTask from './send-task-to-todoist';
@@ -55,6 +54,7 @@ const main = async () => {
             ...tasksWithPrefix.withPrefixArr,
             ...tasksWithoutPrefix.withoutPrefixArr,
           ];
+          console.log(tasksContentArr);
           let tasksIdArr = [
             ...tasksWithPrefix.tasksIdWithPrefixArr,
             ...tasksWithoutPrefix.tasksIdWithoutPrefixArr,
