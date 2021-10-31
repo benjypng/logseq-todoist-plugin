@@ -79,24 +79,24 @@ const main = async () => {
             return;
           }
 
-          try {
-            // Mark tasks as complete in Todoist
-            for (let i of tasksIdArr) {
-              console.log(`Clearing ${i}`);
-              await axios({
-                url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
-                method: 'POST',
-                headers: {
-                  Authorization: `Bearer ${env.apiToken}`,
-                },
-              });
-            }
-          } catch (e) {
-            logseq.App.showMsg(
-              'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
-            );
-            return;
-          }
+          // try {
+          //   // Mark tasks as complete in Todoist
+          //   for (let i of tasksIdArr) {
+          //     console.log(`Clearing ${i}`);
+          //     await axios({
+          //       url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
+          //       method: 'POST',
+          //       headers: {
+          //         Authorization: `Bearer ${env.apiToken}`,
+          //       },
+          //     });
+          //   }
+          // } catch (e) {
+          //   logseq.App.showMsg(
+          //     'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
+          //   );
+          //   return;
+          // }
         }
       } else {
         // Display error message if trying to add reflection on non-Journal page

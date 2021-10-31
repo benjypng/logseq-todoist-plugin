@@ -1,4 +1,5 @@
 import axios from 'axios';
+import env from './endpoints.config';
 
 const sendToTodoist = async (content: string) => {
   await axios.post(
