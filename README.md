@@ -82,8 +82,4 @@ After extracting the new zip file, please run `npm run build` again, and reload 
 
 # Future Enhancements
 
-Please let me know what functionalities you would like to add in Logseq's Discord channel. I hope to add the following:
-
-- Proper settings page instead of needing to create a `.env` file.
-- Including slash commands.
-- Tasks added via this plugin will be marked as completed in Todoist. (Added on 28/10/21)
+Please let me know what functionalities you would like to add in Logseq's Discord channel or in the forums.
