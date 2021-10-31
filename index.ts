@@ -2,9 +2,26 @@ import '@logseq/libs';
 import axios from 'axios';
 import env from './endpoints.config';
 import handleTasks from './handle-tasks';
+import sendTask from './send-task-to-todoist';
 
 const main = async () => {
   console.log('Plugin loaded');
+
+  logseq.Editor.registerSlashCommand('todoist - send task', async () => {
+    let currentBlock = await logseq.Editor.getCurrentBlock();
+    if (currentBlock) {
+      sendTask.sendToTodoist(currentBlock.content);
+      logseq.App.showMsg(`
+        [:div.p-2
+          [:h1 "Task sent to your Todoist Inbox!"]
+          [:h2.text-xl "${currentBlock.content}"]]
+      `);
+    } else {
+      logseq.App.showMsg(
+        'Please use this command at the end of writing out your task'
+      );
+    }
+  });
 
   logseq.provideModel({
     pullActiveTaks: async () => {
@@ -94,11 +111,11 @@ const main = async () => {
   logseq.App.registerUIItem('toolbar', {
     key: 'logseq-todoist-plugin',
     template: `
-      <a data-on-click="pullActiveTaks"
-        class="button">
-        <i class="ti ti-checkbox"></i>
-      </a>
-`,
+        <a data-on-click="pullActiveTaks"
+          class="button">
+          <i class="ti ti-checkbox"></i>
+        </a>
+  `,
   });
 };
 
