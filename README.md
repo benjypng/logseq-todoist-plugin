@@ -70,7 +70,7 @@ After extracting the new zip file, please run `npm run build` again, and reload 
    - Tasks in Project 298010283 will not be given any prefix after you import, hence you have the flexibility to add them in Todoist.
      ![image](/screenshots/sample-env.png)
 
-7. **RUN THIS STEP ONLY AFTER YOU CREATED THE `.env` file in Step 6** Using the Terminal, go to the root folder (where you can find package.json), and run `npm install && npm run build`. This will install the necessary packages for the plugin.
+7. **RUN THIS STEP ONLY AFTER YOU CREATED THE `.env` file in Step 6** Using the Terminal, go to the root folder (where you can find package.json), and run `npm install && npm run build`. This will install the necessary packages for the plugin. Please ensure that you already have NodeJS installed, if not, [click here to download](https://nodejs.org/en/download/).
 8. Go to Logseq and ensure that you have Developer mode enabled, before going to the Plugins page.
 9. Click "Load unpacked plugin", and navigate to the folder in (2) and click open.
 10. An icon will appear in the usual plugins bar. Navigate to a journal page, and click the button. There may be a delay as the API needs to call your tasks from Todoist. This plugin will not be able to be used on non-journal pages.
