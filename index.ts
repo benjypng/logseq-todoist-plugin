@@ -1,5 +1,6 @@
 import '@logseq/libs';
 import env from './endpoints.config';
+import axios from 'axios';
 import handleTasks from './handle-tasks';
 import sendTask from './send-task-to-todoist';
 
