@@ -6,6 +6,7 @@ type Task = {
   parent_id: number;
   id: number;
   content: string;
+  description: string;
 };
 
 type Id = {
@@ -44,7 +45,8 @@ let handleTasksWithoutPrefix = async () => {
           })
           .map((t: Task) => ({
             todoist_id: t.id,
-            content: `TODO ${t.content}`,
+            content: `TODO ${t.content}
+            ${t.description ? 'description:: ' + t.description : ''}`,
             children: [],
           }));
 
@@ -57,18 +59,21 @@ let handleTasksWithoutPrefix = async () => {
             todoist_id: t.id,
             content: t.content,
             parent_id: t.parent_id,
+            description: t.description,
           }));
 
         // Subsume sub tasks under main tasks
         for (let m of withoutPrefixArr) {
           for (let s of subTasks) {
-            if (s.parent_id == m.todoist_id) {
-              m.children.push({ content: `TODO ${s.content}` });
+            if (s.parent_id === m.todoist_id) {
+              m.children.push({
+                content: `TODO ${s.content}
+                ${s.description ? 'description:: ' + s.description : ''}`,
+              });
             }
             continue;
           }
         }
-
         // Add project name as a parent block
         withoutPrefixArr = [
           {
@@ -119,7 +124,8 @@ let handleTasksWithPrefix = async () => {
           })
           .map((t: Task) => ({
             todoist_id: t.id,
-            content: `${t.content}`,
+            content: `${t.content}
+            ${t.description ? 'description:: ' + t.description : ''}`,
             children: [],
           }));
 
@@ -132,13 +138,17 @@ let handleTasksWithPrefix = async () => {
             todoist_id: t.id,
             content: t.content,
             parent_id: t.parent_id,
+            description: t.description,
           }));
 
         // Subsume sub tasks under main tasks
         for (let m of withPrefixArr) {
           for (let s of subTasks) {
             if (s.parent_id == m.todoist_id) {
-              m.children.push({ content: `${s.content}` });
+              m.children.push({
+                content: `${s.content}
+                ${s.description ? 'description:: ' + s.description : ''}`,
+              });
             }
             continue;
           }
