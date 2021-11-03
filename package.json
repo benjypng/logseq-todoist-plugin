@@ -7,11 +7,10 @@
     "id": "logseq-todoist-plugin-ts",
     "title": "logseq-todoist-plugin-ts"
   },
-  "main": "index.html",
+  "main": "dist/index.html",
   "targets": {
     "main": false
   },
-  "default": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "parcel src/index.html",
