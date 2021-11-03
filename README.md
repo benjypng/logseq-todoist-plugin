@@ -1,4 +1,4 @@
-### If you are coming to this page from the Logseq marketplace, please hang on for a different set of instructions!"
+### If you are coming to this page from the Logseq marketplace, please hang on for a different set of instructions!
 
 # Overview
 
