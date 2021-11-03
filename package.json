@@ -14,8 +14,8 @@
   "default": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "parcel index.html",
-    "build": "parcel build --no-source-maps index.html --public-url ./"
+    "dev": "parcel src/index.html",
+    "build": "parcel build --no-source-maps src/index.html --public-url ./"
   },
   "license": "MIT",
   "dependencies": {
