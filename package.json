@@ -7,7 +7,7 @@
     "id": "logseq-todoist-plugin-ts",
     "title": "logseq-todoist-plugin-ts"
   },
-  "main": "dist/index.html",
+  "main": "index.html",
   "targets": {
     "main": false
   },
