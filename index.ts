@@ -86,7 +86,9 @@ const main = async () => {
                 url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
                 method: 'POST',
                 headers: {
-                  Authorization: `Bearer ${env.apiToken}`,
+                  Authorization: `Bearer ${
+                    env.apiToken || logseq.settings?.apiToken
+                  }`,
                 },
               });
             }

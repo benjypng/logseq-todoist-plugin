@@ -7,7 +7,7 @@ const sendToTodoist = async (content: string) => {
     { content: content },
     {
       headers: {
-        Authorization: `Bearer ${env.apiToken}`,
+        Authorization: `Bearer ${env.apiToken || logseq.settings?.apiToken}`,
       },
     }
   );

@@ -18,7 +18,7 @@ let getProjectName = async (projectId: string) => {
     `https://api.todoist.com/rest/v1/projects/${projectId}`,
     {
       headers: {
-        Authorization: `Bearer ${env.apiToken}`,
+        Authorization: `Bearer ${env.apiToken || logseq.settings?.apiToken}`,
       },
     }
   );
@@ -26,12 +26,16 @@ let getProjectName = async (projectId: string) => {
 };
 
 let handleTasksWithoutPrefix = async () => {
-  if (env.projectIdWithoutPrefix) {
+  if (env.projectIdWithoutPrefix || logseq.settings?.projectIdWithoutPrefix) {
     try {
       let response = await axios.get('https://api.todoist.com/rest/v1/tasks', {
-        params: { project_id: env.projectIdWithoutPrefix },
+        params: {
+          project_id:
+            env.projectIdWithoutPrefix ||
+            logseq.settings?.projectIdWithoutPrefix,
+        },
         headers: {
-          Authorization: `Bearer ${env.apiToken}`,
+          Authorization: `Bearer ${env.apiToken || logseq.settings?.apiToken}`,
         },
       });
 
@@ -77,7 +81,10 @@ let handleTasksWithoutPrefix = async () => {
         // Add project name as a parent block
         withoutPrefixArr = [
           {
-            content: `[[${await getProjectName(env.projectIdWithoutPrefix)}]]`,
+            content: `[[${await getProjectName(
+              env.projectIdWithoutPrefix ||
+                logseq.settings?.projectIdWithoutPrefix
+            )}]]`,
             children: [...withoutPrefixArr],
           },
         ];
