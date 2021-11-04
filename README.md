@@ -1,5 +1,3 @@
-### If you are coming to this page from the Logseq marketplace, please hang on for a different set of instructions!
-
 # Overview
 
 This simple plugin has 2 primary functions:
