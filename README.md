@@ -77,11 +77,11 @@ Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for add
 
 Please let me know what functionalities you would like to add in Logseq's Discord channel or in the forums.
 
-# Manual Updating to a new release
+## Manual Updating to a new release
 
 After extracting the new zip file, please run `npm run build` again, and reload the plugin in Logseq.
 
-# Manual Installation
+## Manual Installation
 
 1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 7.
 2. Login to your Todoist (on the web). Identify the project that you would like to bring in the tasks from. Navigate to that project's page. Note down the number found in the URL, as this is the Project ID that you will need in Step 7.
