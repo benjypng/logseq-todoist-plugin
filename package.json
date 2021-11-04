@@ -4,8 +4,8 @@
   "author": "hkgnp",
   "description": "Simple Todoist plugin to pull only active tasks from specified project, i.e. Inbox",
   "logseq": {
-    "id": "logseq-todoist-plugin-ts",
-    "title": "logseq-todoist-plugin-ts"
+    "id": "logseq-todoist-plugin",
+    "title": "logseq-todoist-plugin"
   },
   "main": "dist/index.html",
   "targets": {

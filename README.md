@@ -36,11 +36,54 @@ This is controlled by what you include in your `.env` file, and the Project that
 
 Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for adding in their REST APIs on top of their SYNC APIs!
 
-# Updating to a new release
+# Usage
+
+1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 7.
+2. Login to your Todoist (on the web). Identify the project that you would like to bring in the tasks from. Navigate to that project's page. Note down the number found in the URL, as this is the Project ID that you will need in Step 7.
+   ![image](/screenshots/todoist-url.png)
+3. Head on to the Marketplace and install the logseq-todoist-plugin.
+4. After it is installed, go to your Installed tab and access the plugin's settings by clicking `Open settings`. An empty text file would open.
+   ![](/screenshots/plugin-settings.png)
+5. Depending on how you would want to use the plugin, you would need to have different settings.
+   - If you want to include the prefix (e.g. NOW, LATER, WAITING) in Todoist **before** you import into Logseq, you would only use `projectIdWithPrefix`.
+   - If you want the `TODO` prefix to be automatically added **after** you import into Logseq, you would only use `projectIdWithoutPrefix`.
+   - If you want both, use `projectIdWithPrefix` and `projectIdWithoutPrefix`.
+6. After deciding on how you want to use the plugin, key in your settings into the file. Please see below for samples.
+
+   ```
+   If you want to include the prefix (e.g. NOW, LATER, WAITING) in Todoist **before** you import into Logseq, you would only use `projectIdWithPrefix`.
+   {
+      "apiToken": "2389asdkjhk921903lkasjd02193",
+      "projectIdWithPrefix": "2277097414"
+   }
+
+   If you want the `TODO` prefix to be automatically added **after** you import into Logseq, you would only use `projectIdWithoutPrefix`.
+   {
+      "apiToken": "2389asdkjhk921903lkasjd02193",
+      "projectIdWithoutPrefix": "2276796290",
+   }
+
+   If you want both, use `projectIdWithPrefix` and `projectIdWithoutPrefix`.
+   {
+      "apiToken": "2389asdkjhk921903lkasjd02193",
+      "projectIdWithoutPrefix": "2276796290",
+      "projectIdWithPrefix": "2277097414"
+   }
+   ```
+
+7. Save the file and close it.
+8. Restart Logseq.
+9. Click on the icon on the Toolbar to start using it! Please note that the plugin can only be used on journal pages and normal pages, but not the homepage.
+
+# Future Enhancements
+
+Please let me know what functionalities you would like to add in Logseq's Discord channel or in the forums.
+
+# Manual Updating to a new release
 
 After extracting the new zip file, please run `npm run build` again, and reload the plugin in Logseq.
 
-# Installation
+# Manual Installation
 
 1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 7.
 2. Login to your Todoist (on the web). Identify the project that you would like to bring in the tasks from. Navigate to that project's page. Note down the number found in the URL, as this is the Project ID that you will need in Step 7.
@@ -74,7 +117,3 @@ After extracting the new zip file, please run `npm run build` again, and reload 
 8. Go to Logseq and ensure that you have Developer mode enabled, before going to the Plugins page.
 9. Click "Load unpacked plugin", and navigate to the folder in (2) and click open.
 10. An icon will appear in the usual plugins bar. Navigate to a journal page, and click the button. There may be a delay as the API needs to call your tasks from Todoist. This plugin will not be able to be used on non-journal pages.
-
-# Future Enhancements
-
-Please let me know what functionalities you would like to add in Logseq's Discord channel or in the forums.
