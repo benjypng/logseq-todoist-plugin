@@ -28,12 +28,6 @@ or
 
 3. Both.
 
-This is controlled by what you include in your `.env` file, and the Project that you use in Logseq:
-
-- For (1), your `.env` file will only contain `PROJECT_ID_WITHOUT_PREFIX`.
-- For (2), your `.env` file will only contain `PROJECT_ID_WITH_PREFIX`.
-- For (3), your `.env` file will contain both variables above.
-
 Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for adding in their REST APIs on top of their SYNC APIs!
 
 # Usage
