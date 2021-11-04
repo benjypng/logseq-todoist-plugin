@@ -39,7 +39,9 @@ Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for add
 
 3. Head on to the Marketplace and install the logseq-todoist-plugin.
 4. After it is installed, go to your Installed tab and access the plugin's settings by clicking `Open settings`. An empty text file would open.
+
    ![](/screenshots/plugin-settings.png)
+
 5. Depending on how you would want to use the plugin, you would need to have different settings.
    - If you want to include the prefix (e.g. NOW, LATER, WAITING) in Todoist **before** you import into Logseq, you would only use `projectIdWithPrefix`.
    - If you want the `TODO` prefix to be automatically added **after** you import into Logseq, you would only use `projectIdWithoutPrefix`.
