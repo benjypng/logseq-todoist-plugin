@@ -18,7 +18,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@logseq/libs": "0.0.1-alpha.29",
+    "@logseq/libs": "latest",
     "axios": "^0.24.0"
   },
   "devDependencies": {
