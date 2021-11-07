@@ -8,11 +8,11 @@ This simple plugin has 2 primary functions:
 
 This function allows you to quickly send a task to your Inbox in Todoist.
 
-## Pulling in of tasks (below video is only for v1 and before)
+## Pulling in of tasks
 
 ![](/screenshots/pull-tasks-todoist.gif)
 
-This function pulls the active tasks (and their sub-tasks as separate, child-blocks) from a selected Project of your choice (as indicated in your .env file). I created this plugin as my workflow includes using Todoist as a Quick Capture tool, and Logseq as my main todo manager. As a result, once the tasks are captured in Logseq, they are removed from Todoist. If the task or sub-task contains a description, it will be included as well. This plugin can be used on all pages except the home page.
+This function pulls the active tasks (and their sub-tasks as separate, child-blocks) from a selected Project of your choice (as indicated in your settings file). I created this plugin as my workflow includes using Todoist as a Quick Capture tool, and Logseq as my main todo manager. As a result, once the tasks are captured in Logseq, they are removed from Todoist. If the task or sub-task contains a description, it will be included as well. This plugin can be used on all pages except the home page.
 
 I've included a functionality where you can either:
 
@@ -41,8 +41,11 @@ Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for add
    - If you want the `TODO` prefix to be automatically added **after** you import into Logseq, you would only use `projectIdWithoutPrefix`.
    - If you want both, use `projectIdWithPrefix` and `projectIdWithoutPrefix`.
 5. After it is installed, click on the plugin icon and key in your variables, as per the above step. Then click `Close` after that.
+
    ![](/screenshots/enter-variables.png)
+
 6. To start using it, use the slash command `/pull (todoist - pull tasks)`.
+
    ![](/screenshots/pull-tasks.png)
 
 # Usage (for v1 and previous)

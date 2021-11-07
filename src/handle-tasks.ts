@@ -1,6 +1,5 @@
 import '@logseq/libs';
 import axios from 'axios';
-import env from './endpoints.config';
 
 type Task = {
   parent_id: number;
@@ -18,7 +17,7 @@ let getProjectName = async (projectId: string) => {
     `https://api.todoist.com/rest/v1/projects/${projectId}`,
     {
       headers: {
-        Authorization: `Bearer ${env.apiToken || logseq.settings?.apiToken}`,
+        Authorization: `Bearer ${logseq.settings?.apiToken}`,
       },
     }
   );
@@ -26,16 +25,14 @@ let getProjectName = async (projectId: string) => {
 };
 
 let handleTasksWithoutPrefix = async () => {
-  if (env.projectIdWithoutPrefix || logseq.settings?.projectIdWithoutPrefix) {
+  if (logseq.settings?.projectIdWithoutPrefix) {
     try {
       let response = await axios.get('https://api.todoist.com/rest/v1/tasks', {
         params: {
-          project_id:
-            env.projectIdWithoutPrefix ||
-            logseq.settings?.projectIdWithoutPrefix,
+          project_id: logseq.settings?.projectIdWithoutPrefix,
         },
         headers: {
-          Authorization: `Bearer ${env.apiToken || logseq.settings?.apiToken}`,
+          Authorization: `Bearer ${logseq.settings?.apiToken}`,
         },
       });
 
@@ -82,8 +79,7 @@ let handleTasksWithoutPrefix = async () => {
         withoutPrefixArr = [
           {
             content: `[[${await getProjectName(
-              env.projectIdWithoutPrefix ||
-                logseq.settings?.projectIdWithoutPrefix
+              logseq.settings?.projectIdWithoutPrefix
             )}]]`,
             children: [...withoutPrefixArr],
           },
@@ -109,12 +105,14 @@ let handleTasksWithoutPrefix = async () => {
 };
 
 let handleTasksWithPrefix = async () => {
-  if (env.projectIdWithPrefix) {
+  if (logseq.settings?.projectIdWithPrefix) {
     try {
       let response2 = await axios.get('https://api.todoist.com/rest/v1/tasks', {
-        params: { project_id: env.projectIdWithPrefix },
+        params: {
+          project_id: logseq.settings?.projectIdWithPrefix,
+        },
         headers: {
-          Authorization: `Bearer ${env.apiToken}`,
+          Authorization: `Bearer ${logseq.settings?.apiToken}`,
         },
       });
 
@@ -164,7 +162,9 @@ let handleTasksWithPrefix = async () => {
         // Add project name as a parent block
         withPrefixArr = [
           {
-            content: `[[${await getProjectName(env.projectIdWithPrefix)}]]`,
+            content: `[[${await getProjectName(
+              logseq.settings?.projectIdWithPrefix
+            )}]]`,
             children: [...withPrefixArr],
           },
         ];

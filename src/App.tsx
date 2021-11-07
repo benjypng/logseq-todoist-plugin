@@ -12,11 +12,11 @@ export default class App extends React.Component {
     this.setState({
       [e.target.name]: e.target.value,
     });
-    logseq.updateSettings(this.state);
   };
 
   hide = () => {
     logseq.hideMainUI();
+    logseq.updateSettings(this.state);
   };
 
   render() {

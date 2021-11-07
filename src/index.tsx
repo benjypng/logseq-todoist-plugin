@@ -2,10 +2,9 @@ import '@logseq/libs';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import env from './endpoints.config';
-import axios from 'axios';
 import handleTasks from './handle-tasks';
 import sendTask from './send-task-to-todoist';
+import axios from 'axios';
 
 const main = async () => {
   console.log('Plugin loaded');
@@ -96,9 +95,7 @@ const main = async () => {
               url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
               method: 'POST',
               headers: {
-                Authorization: `Bearer ${
-                  env.apiToken || logseq.settings?.apiToken
-                }`,
+                Authorization: `Bearer ${logseq.settings?.apiToken}`,
               },
             });
           }

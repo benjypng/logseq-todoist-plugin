@@ -1,5 +1,4 @@
 import axios from 'axios';
-import env from './endpoints.config';
 
 const sendToTodoist = async (content: string) => {
   await axios.post(
@@ -7,7 +6,7 @@ const sendToTodoist = async (content: string) => {
     { content: content },
     {
       headers: {
-        Authorization: `Bearer ${env.apiToken || logseq.settings?.apiToken}`,
+        Authorization: `Bearer ${logseq.settings?.apiToken}`,
       },
     }
   );
