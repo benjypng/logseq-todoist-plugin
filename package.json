@@ -5,7 +5,8 @@
   "description": "Simple Todoist plugin to pull only active tasks from specified project, i.e. Inbox",
   "logseq": {
     "id": "logseq-todoist-plugin",
-    "title": "logseq-todoist-plugin"
+    "title": "logseq-todoist-plugin",
+    "icon": "./icon.png"
   },
   "main": "dist/index.html",
   "targets": {
@@ -19,10 +20,19 @@
   "license": "MIT",
   "dependencies": {
     "@logseq/libs": "latest",
-    "axios": "^0.24.0"
+    "axios": "^0.24.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-use": "^17.3.1"
   },
   "devDependencies": {
+    "@types/node": "16.11.6",
+    "@types/react": "17.0.34",
+    "@types/react-dom": "17.0.11",
+    "@typescript-eslint/eslint-plugin": "5.3.0",
+    "@typescript-eslint/parser": "5.3.0",
     "eslint": "^8.1.0",
+    "eslint-plugin-react": "7.26.1",
     "parcel": "^2.0.0",
     "typescript": "^4.4.4"
   }

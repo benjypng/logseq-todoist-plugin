@@ -1,0 +1,26 @@
+body,
+html {
+  font-family: Lucida Sans, Lucida Sans Regular, Lucida Grande,
+    Lucida Sans Unicode, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+}
+
+#todoist-settings {
+  padding: 1em;
+  max-width: 100%;
+  position: absolute;
+  top: 3em;
+  background-color: #ccc;
+  border-radius: 1em;
+}
