@@ -8,7 +8,7 @@ This simple plugin has 2 primary functions:
 
 This function allows you to quickly send a task to your Inbox in Todoist.
 
-## Pulling in of tasks
+## Pulling in of tasks (below video is only for v1 and before)
 
 ![](/screenshots/pull-tasks-todoist.gif)
 
@@ -28,7 +28,24 @@ or
 
 Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for adding in their REST APIs on top of their SYNC APIs!
 
-# Usage
+# Usage (for v2)
+
+1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 7.
+2. Login to your Todoist (on the web). Identify the project that you would like to bring in the tasks from. Navigate to that project's page. Note down the number found in the URL, as this is the Project ID that you will need in Step 7.
+
+   ![image](/screenshots/todoist-url.png)
+
+3. Head on to the Marketplace and install the logseq-todoist-plugin.
+4. Depending on how you would want to use the plugin, you would need to have different settings.
+   - If you want to include the prefix (e.g. NOW, LATER, WAITING) in Todoist **before** you import into Logseq, you would only use `projectIdWithPrefix`.
+   - If you want the `TODO` prefix to be automatically added **after** you import into Logseq, you would only use `projectIdWithoutPrefix`.
+   - If you want both, use `projectIdWithPrefix` and `projectIdWithoutPrefix`.
+5. After it is installed, click on the plugin icon and key in your variables, as per the above step. Then click `Close` after that.
+   ![](/screenshots/enter-variables.png)
+6. To start using it, use the slash command `/pull (todoist - pull tasks)`.
+   ![](/screenshots/pull-tasks.png)
+
+# Usage (for v1 and previous)
 
 1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 7.
 2. Login to your Todoist (on the web). Identify the project that you would like to bring in the tasks from. Navigate to that project's page. Note down the number found in the URL, as this is the Project ID that you will need in Step 7.
