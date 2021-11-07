@@ -28,7 +28,7 @@ or
 
 Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for adding in their REST APIs on top of their SYNC APIs!
 
-# Usage (for v2)
+# Usage (for v2 - when you install from marketplace from 7 Nov 2021 onwards)
 
 1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 7.
 2. Login to your Todoist (on the web). Identify the project that you would like to bring in the tasks from. Navigate to that project's page. Note down the number found in the URL, as this is the Project ID that you will need in Step 7.
