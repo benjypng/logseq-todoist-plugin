@@ -32,7 +32,7 @@ export default class App extends React.Component {
               Refer to the{' '}
               <a href="https://github.com/hkgnp/logseq-todoist-plugin">
                 Readme
-              </a>
+              </a>{' '}
               for instructions on how to complete the below
             </h3>
             <form>
