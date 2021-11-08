@@ -38,74 +38,68 @@ const main = async () => {
     let currentPage = await logseq.Editor.getCurrentPage();
 
     // Check currentPage so error message shows on homepage and check journal so error message shows on pages
-    if (currentPage) {
-      let tasksWithPrefix = await handleTasks.handleTasksWithPrefix();
-      let tasksWithoutPrefix = await handleTasks.handleTasksWithoutPrefix();
 
-      if (
-        tasksWithPrefix?.withPrefixArr.length === 0 &&
-        tasksWithoutPrefix?.withoutPrefixArr.length === 0
-      ) {
-        logseq.App.showMsg('There are no tasks in your indicated projects.');
+    let tasksWithPrefix = await handleTasks.handleTasksWithPrefix();
+    let tasksWithoutPrefix = await handleTasks.handleTasksWithoutPrefix();
+
+    if (
+      tasksWithPrefix?.withPrefixArr.length === 0 &&
+      tasksWithoutPrefix?.withoutPrefixArr.length === 0
+    ) {
+      logseq.App.showMsg('There are no tasks in your indicated projects.');
+      return;
+    } else if (tasksWithPrefix && tasksWithoutPrefix) {
+      // Insert header block
+      let currBlock = await logseq.Editor.getCurrentBlock();
+      await logseq.Editor.updateBlock(currBlock!.uuid, '[[Tasks Inbox]]');
+
+      let tasksContentArr = [
+        ...tasksWithPrefix.withPrefixArr,
+        ...tasksWithoutPrefix.withoutPrefixArr,
+      ];
+
+      let tasksIdArr = [
+        ...tasksWithPrefix.tasksIdWithPrefixArr,
+        ...tasksWithoutPrefix.tasksIdWithoutPrefixArr,
+      ];
+
+      try {
+        if (currBlock) {
+          // Insert tasks below header block
+          await logseq.Editor.insertBatchBlock(
+            currBlock.uuid,
+            tasksContentArr,
+            {
+              sibling: !parent,
+              before: true,
+            }
+          );
+        }
+      } catch (e) {
+        logseq.App.showMsg(
+          'There is an error inserting your tasks. No tasks have been removed from Todoist.'
+        );
         return;
-      } else if (tasksWithPrefix && tasksWithoutPrefix) {
-        // Insert header block
-        let currBlock = await logseq.Editor.getCurrentBlock();
-        await logseq.Editor.updateBlock(currBlock!.uuid, '[[Tasks Inbox]]');
-
-        let tasksContentArr = [
-          ...tasksWithPrefix.withPrefixArr,
-          ...tasksWithoutPrefix.withoutPrefixArr,
-        ];
-
-        let tasksIdArr = [
-          ...tasksWithPrefix.tasksIdWithPrefixArr,
-          ...tasksWithoutPrefix.tasksIdWithoutPrefixArr,
-        ];
-
-        try {
-          if (currBlock) {
-            // Insert tasks below header block
-            await logseq.Editor.insertBatchBlock(
-              currBlock.uuid,
-              tasksContentArr,
-              {
-                sibling: !parent,
-                before: true,
-              }
-            );
-          }
-        } catch (e) {
-          logseq.App.showMsg(
-            'There is an error inserting your tasks. No tasks have been removed from Todoist.'
-          );
-          return;
-        }
-
-        try {
-          // Mark tasks as complete in Todoist
-          for (let i of tasksIdArr) {
-            console.log(`Clearing ${i}`);
-            await axios({
-              url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${logseq.settings?.apiToken}`,
-              },
-            });
-          }
-        } catch (e) {
-          logseq.App.showMsg(
-            'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
-          );
-          return;
-        }
       }
-    } else {
-      // Display error message if trying to add reflection on non-Journal page
-      logseq.App.showMsg(
-        'This function is not available on the home page. Please try it on a Journal page or a regular page.'
-      );
+
+      try {
+        // Mark tasks as complete in Todoist
+        for (let i of tasksIdArr) {
+          console.log(`Clearing ${i}`);
+          await axios({
+            url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${logseq.settings?.apiToken}`,
+            },
+          });
+        }
+      } catch (e) {
+        logseq.App.showMsg(
+          'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
+        );
+        return;
+      }
     }
   });
 
