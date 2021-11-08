@@ -50,13 +50,8 @@ const main = async () => {
         return;
       } else if (tasksWithPrefix && tasksWithoutPrefix) {
         // Insert header block
-        let targetBlock = await logseq.Editor.insertBlock(
-          currentPage.name,
-          '[[Tasks Inbox]]',
-          {
-            isPageBlock: true,
-          }
-        );
+        let currBlock = await logseq.Editor.getCurrentBlock();
+        await logseq.Editor.updateBlock(currBlock!.uuid, '[[Tasks Inbox]]');
 
         let tasksContentArr = [
           ...tasksWithPrefix.withPrefixArr,
@@ -69,10 +64,10 @@ const main = async () => {
         ];
 
         try {
-          if (targetBlock) {
+          if (currBlock) {
             // Insert tasks below header block
             await logseq.Editor.insertBatchBlock(
-              targetBlock.uuid,
+              currBlock.uuid,
               tasksContentArr,
               {
                 sibling: !parent,

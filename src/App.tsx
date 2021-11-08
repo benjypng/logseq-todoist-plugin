@@ -16,6 +16,10 @@ export default class App extends React.Component {
 
   hide = () => {
     logseq.hideMainUI();
+  };
+
+  saveAndClose = () => {
+    logseq.hideMainUI();
     logseq.updateSettings(this.state);
   };
 
@@ -25,7 +29,11 @@ export default class App extends React.Component {
         <div id="wrapper">
           <div id="todoist-settings">
             <h3>
-              Refer to the Readme for instructions on how to complete the below
+              Refer to the{' '}
+              <a href="https://github.com/hkgnp/logseq-todoist-plugin">
+                Readme
+              </a>
+              for instructions on how to complete the below
             </h3>
             <form>
               <p>
@@ -62,7 +70,8 @@ export default class App extends React.Component {
                 />
               </p>
             </form>
-            <button onClick={this.hide}>Close</button>
+            <button onClick={this.hide}>Exit w/o Saving</button>
+            <button onClick={this.saveAndClose}>Save & Close</button>
           </div>
         </div>
       </React.Fragment>
