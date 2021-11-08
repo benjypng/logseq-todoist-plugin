@@ -40,7 +40,7 @@ Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for add
    - If you want to include the prefix (e.g. NOW, LATER, WAITING) in Todoist **before** you import into Logseq, you would only use `projectIdWithPrefix`.
    - If you want the `TODO` prefix to be automatically added **after** you import into Logseq, you would only use `projectIdWithoutPrefix`.
    - If you want both, use `projectIdWithPrefix` and `projectIdWithoutPrefix`.
-5. After it is installed, click on the plugin icon and key in your variables, as per the above step. Then click `Close` after that.
+5. After it is installed, click on the plugin icon and key in your variables, as per the above step. Then click `Save & Close` after that. To exit without saving the variables, click `Exit w/o Saving`.
 
    ![](/screenshots/enter-variables2.png)
 
