@@ -42,7 +42,7 @@ Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for add
    - If you want both, use `projectIdWithPrefix` and `projectIdWithoutPrefix`.
 5. After it is installed, click on the plugin icon and key in your variables, as per the above step. Then click `Close` after that.
 
-   ![](/screenshots/enter-variables.png)
+   ![](/screenshots/enter-variables2.png)
 
 6. To start using it, use the slash command `/pull (todoist - pull tasks)`.
 
