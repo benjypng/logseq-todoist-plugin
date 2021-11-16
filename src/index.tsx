@@ -3,11 +3,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import handleTasks from './handle-tasks';
-import sendTask from './send-task-to-todoist';
 import axios from 'axios';
+import sendTaskToTodoist from './send-task-to-todoist';
 
 const main = async () => {
-  console.log('Plugin loaded');
+  console.log('Logseq-Todoist-Plugin loaded');
 
   ReactDOM.render(
     <React.StrictMode>
@@ -18,14 +18,34 @@ const main = async () => {
 
   // Register push command
   logseq.Editor.registerSlashCommand('todoist - send task', async () => {
-    const currentBlock = await logseq.Editor.getEditingBlockContent();
-    if (currentBlock) {
-      sendTask.sendToTodoist(currentBlock);
-      logseq.App.showMsg(`
-        [:div.p-2
-          [:h1 "Task sent to your Todoist Inbox!"]
-          [:h2.text-xl "${currentBlock}"]]
-      `);
+    const currentBlockContent = await logseq.Editor.getEditingBlockContent();
+    const currentBlock = await logseq.Editor.getCurrentBlock();
+    const currentBlockProperties = await logseq.Editor.getBlockProperties(
+      currentBlock!.uuid
+    );
+
+    if (currentBlockContent) {
+      if (Object.keys(currentBlockProperties).length === 0) {
+        sendTaskToTodoist.sendTaskOnlyToTodoist(currentBlockContent);
+        logseq.App.showMsg(`
+          [:div.p-2
+            [:h1 "Task (without priority) sent to your Todoist Inbox!"]
+            [:h2.text-xl "${currentBlockContent}"]]`);
+      } else {
+        const contentWithoutPriority = currentBlockContent.substring(
+          0,
+          currentBlockContent.indexOf('\n')
+        );
+        sendTaskToTodoist.sendTaskAndPriorityToTodist(
+          contentWithoutPriority,
+          parseInt(currentBlockProperties.priority)
+        );
+        logseq.App.showMsg(`
+          [:div.p-2
+              [:h1 "Task (with priority) sent to your Todoist Inbox!"]
+            [:h2.text-xl "${contentWithoutPriority}"]]
+        `);
+      }
     } else {
       logseq.App.showMsg(
         'Please use this command at the end of writing out your task'
