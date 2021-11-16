@@ -34,11 +34,6 @@ const main = async () => {
   });
 
   logseq.Editor.registerSlashCommand('todoist - pull tasks', async () => {
-    // Get current page
-    let currentPage = await logseq.Editor.getCurrentPage();
-
-    // Check currentPage so error message shows on homepage and check journal so error message shows on pages
-
     let tasksWithPrefix = await handleTasks.handleTasksWithPrefix();
     let tasksWithoutPrefix = await handleTasks.handleTasksWithoutPrefix();
 
