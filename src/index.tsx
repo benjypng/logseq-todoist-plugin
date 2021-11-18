@@ -53,6 +53,7 @@ const main = async () => {
     }
   });
 
+  // Register pull command
   logseq.Editor.registerSlashCommand('todoist - pull tasks', async () => {
     let tasksWithPrefix = await handleTasks.handleTasksWithPrefix();
     let tasksWithoutPrefix = await handleTasks.handleTasksWithoutPrefix();
@@ -118,6 +119,29 @@ const main = async () => {
     }
   });
 
+  // Register pull today's tasks command
+  logseq.Editor.registerSlashCommand(
+    `todoist - pull today's tasks`,
+    async () => {
+      const tasksArr = await handleTasks.pullTodaysTask('today');
+      const currBlock = await logseq.Editor.getCurrentBlock();
+
+      if (currBlock && tasksArr) {
+        await logseq.Editor.updateBlock(currBlock!.uuid, 'Tasks for Today');
+
+        await logseq.Editor.insertBatchBlock(currBlock.uuid, tasksArr, {
+          sibling: !parent,
+          before: true,
+        });
+      } else {
+        logseq.App.showMsg(
+          'Error. Please double check the README on how to use this command.'
+        );
+      }
+    }
+  );
+
+  // Create UI for inserting env variables in settings
   const createModel = () => {
     return {
       show() {

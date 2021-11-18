@@ -12,6 +12,28 @@ type Id = {
   id: number;
 };
 
+let pullTodaysTask = async (date: string) => {
+  try {
+    let response = await axios.get('https://api.todoist.com/rest/v1/tasks', {
+      params: {
+        filter: date,
+      },
+      headers: {
+        Authorization: `Bearer ${logseq.settings?.apiToken}`,
+      },
+    });
+    console.log(response);
+
+    if (response.data.length === 0) {
+      logseq.App.showMsg('There are no tasks due today');
+    } else {
+      return response.data.map((t: Task) => ({ content: t.content }));
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 let getProjectName = async (projectId: string) => {
   let project = await axios.get(
     `https://api.todoist.com/rest/v1/projects/${projectId}`,
@@ -195,4 +217,5 @@ export default {
   getProjectName,
   handleTasksWithPrefix,
   handleTasksWithoutPrefix,
+  pullTodaysTask,
 };
