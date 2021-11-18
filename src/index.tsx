@@ -129,10 +129,33 @@ const main = async () => {
       if (currBlock && tasksArr) {
         await logseq.Editor.updateBlock(currBlock!.uuid, 'Tasks for Today');
 
-        await logseq.Editor.insertBatchBlock(currBlock.uuid, tasksArr, {
-          sibling: !parent,
-          before: true,
-        });
+        await logseq.Editor.insertBatchBlock(
+          currBlock.uuid,
+          tasksArr.tasksArr,
+          {
+            sibling: !parent,
+            before: true,
+          }
+        );
+
+        try {
+          // Mark tasks as complete in Todoist
+          for (let i of tasksArr.tasksIdArr) {
+            console.log(`Clearing ${i}`);
+            await axios({
+              url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${logseq.settings?.apiToken}`,
+              },
+            });
+          }
+        } catch (e) {
+          logseq.App.showMsg(
+            'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
+          );
+          return;
+        }
       } else {
         logseq.App.showMsg(
           'Error. Please double check the README on how to use this command.'

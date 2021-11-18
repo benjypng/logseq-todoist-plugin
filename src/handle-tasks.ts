@@ -27,7 +27,12 @@ let pullTodaysTask = async (date: string) => {
     if (response.data.length === 0) {
       logseq.App.showMsg('There are no tasks due today');
     } else {
-      return response.data.map((t: Task) => ({ content: t.content }));
+      return {
+        tasksArr: response.data.map((t: Task) => ({
+          content: `TODO ${t.content}`,
+        })),
+        tasksIdArr: response.data.map((t: Id) => t.id),
+      };
     }
   } catch (e) {
     console.log(e);
