@@ -1,4 +1,3 @@
-import '@logseq/libs';
 import axios from 'axios';
 
 type Task = {
@@ -12,34 +11,8 @@ type Id = {
   id: number;
 };
 
-let pullTodaysTask = async (date: string) => {
-  try {
-    let response = await axios.get('https://api.todoist.com/rest/v1/tasks', {
-      params: {
-        filter: date,
-      },
-      headers: {
-        Authorization: `Bearer ${logseq.settings?.apiToken}`,
-      },
-    });
-    console.log(response);
-
-    if (response.data.length === 0) {
-      logseq.App.showMsg('There are no tasks due today');
-    } else {
-      return {
-        tasksArr: response.data.map((t: Task) => ({
-          content: `TODO ${t.content}`,
-        })),
-        tasksIdArr: response.data.map((t: Id) => t.id),
-      };
-    }
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-let getProjectName = async (projectId: string) => {
+// Get project name to indicate in Todoist
+const getProjectName = async (projectId: string) => {
   let project = await axios.get(
     `https://api.todoist.com/rest/v1/projects/${projectId}`,
     {
@@ -51,17 +24,21 @@ let getProjectName = async (projectId: string) => {
   return project.data.name;
 };
 
-let handleTasksWithoutPrefix = async () => {
+// Function to handle tasks without a prefix indicated in Todoist so it needs to be added in Logseq
+const handleTasksWithoutPrefix = async () => {
   if (logseq.settings?.projectIdWithoutPrefix) {
     try {
-      let response = await axios.get('https://api.todoist.com/rest/v1/tasks', {
-        params: {
-          project_id: logseq.settings?.projectIdWithoutPrefix,
-        },
-        headers: {
-          Authorization: `Bearer ${logseq.settings?.apiToken}`,
-        },
-      });
+      const response = await axios.get(
+        'https://api.todoist.com/rest/v1/tasks',
+        {
+          params: {
+            project_id: logseq.settings?.projectIdWithoutPrefix,
+          },
+          headers: {
+            Authorization: `Bearer ${logseq.settings?.apiToken}`,
+          },
+        }
+      );
 
       if (response.data.length === 0) {
         return { withoutPrefixArr: [], tasksIdWithoutPrefixArr: [] };
@@ -79,7 +56,7 @@ let handleTasksWithoutPrefix = async () => {
           }));
 
         // Create array of sub tasks
-        let subTasks = response.data
+        const subTasks = response.data
           .filter((t: Task) => {
             return t.parent_id;
           })
@@ -131,7 +108,8 @@ let handleTasksWithoutPrefix = async () => {
   }
 };
 
-let handleTasksWithPrefix = async () => {
+// Function to handle tasks with a prefix indicated in Todoist
+const handleTasksWithPrefix = async () => {
   if (logseq.settings?.projectIdWithPrefix) {
     try {
       let response2 = await axios.get('https://api.todoist.com/rest/v1/tasks', {
@@ -162,7 +140,7 @@ let handleTasksWithPrefix = async () => {
           }));
 
         // Create array of sub tasks
-        let subTasks = response2.data
+        const subTasks = response2.data
           .filter((t: Task) => {
             return t.parent_id;
           })
@@ -197,7 +175,7 @@ let handleTasksWithPrefix = async () => {
         ];
 
         // Map id from tasks with Prefix to mark as complete in Todoist
-        let tasksIdWithPrefixArr = response2.data.map((i: Id) => i.id);
+        const tasksIdWithPrefixArr = response2.data.map((i: Id) => i.id);
 
         return {
           withPrefixArr: withPrefixArr,
@@ -218,9 +196,51 @@ let handleTasksWithPrefix = async () => {
   }
 };
 
+// Function to pull today's task
+const pullTodaysTask = async (date: string) => {
+  try {
+    let response = await axios.get('https://api.todoist.com/rest/v1/tasks', {
+      params: {
+        filter: date,
+      },
+      headers: {
+        Authorization: `Bearer ${logseq.settings?.apiToken}`,
+      },
+    });
+
+    if (response.data.length === 0) {
+      logseq.App.showMsg('There are no tasks due today');
+    } else {
+      return {
+        tasksArr: response.data.map((t: Task) => ({
+          content: `TODO ${t.content}`,
+        })),
+        tasksIdArr: response.data.map((t: Id) => t.id),
+      };
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+// Mark tasks as complete in Todoist
+const clearTasks = async (tasksIdArr: number[]) => {
+  for (let i of tasksIdArr) {
+    console.log(`Clearing ${i}`);
+    await axios({
+      url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${logseq.settings?.apiToken}`,
+      },
+    });
+  }
+};
+
 export default {
   getProjectName,
   handleTasksWithPrefix,
   handleTasksWithoutPrefix,
   pullTodaysTask,
+  clearTasks,
 };

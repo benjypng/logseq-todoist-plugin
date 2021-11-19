@@ -18,27 +18,29 @@ const main = async () => {
 
   // Register push command
   logseq.Editor.registerSlashCommand('todoist - send task', async () => {
-    const currentBlockContent = await logseq.Editor.getEditingBlockContent();
-    const currentBlock = await logseq.Editor.getCurrentBlock();
-    const currentBlockProperties = await logseq.Editor.getBlockProperties(
-      currentBlock!.uuid
+    const currBlockContent = await logseq.Editor.getEditingBlockContent();
+    const currBlock = await logseq.Editor.getCurrentBlock();
+    const currBlockProperties = await logseq.Editor.getBlockProperties(
+      currBlock!.uuid
     );
 
-    if (currentBlockContent) {
-      if (Object.keys(currentBlockProperties).length === 0) {
-        sendTaskToTodoist.sendTaskOnlyToTodoist(currentBlockContent);
+    if (currBlockContent) {
+      // Send task without priority
+      if (Object.keys(currBlockProperties).length === 0) {
+        sendTaskToTodoist.sendTaskOnlyToTodoist(currBlockContent);
         logseq.App.showMsg(`
           [:div.p-2
             [:h1 "Task (without priority) sent to your Todoist Inbox!"]
-            [:h2.text-xl "${currentBlockContent}"]]`);
+            [:h2.text-xl "${currBlockContent}"]]`);
       } else {
-        const contentWithoutPriority = currentBlockContent.substring(
+        // Send task with priority
+        const contentWithoutPriority = currBlockContent.substring(
           0,
-          currentBlockContent.indexOf('\n')
+          currBlockContent.indexOf('\n')
         );
         sendTaskToTodoist.sendTaskAndPriorityToTodist(
           contentWithoutPriority,
-          parseInt(currentBlockProperties.priority)
+          parseInt(currBlockProperties.priority)
         );
         logseq.App.showMsg(`
           [:div.p-2
@@ -100,16 +102,7 @@ const main = async () => {
 
       try {
         // Mark tasks as complete in Todoist
-        for (let i of tasksIdArr) {
-          console.log(`Clearing ${i}`);
-          await axios({
-            url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${logseq.settings?.apiToken}`,
-            },
-          });
-        }
+        handleTasks.clearTasks(tasksIdArr);
       } catch (e) {
         logseq.App.showMsg(
           'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
@@ -140,16 +133,7 @@ const main = async () => {
 
         try {
           // Mark tasks as complete in Todoist
-          for (let i of tasksArr.tasksIdArr) {
-            console.log(`Clearing ${i}`);
-            await axios({
-              url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${logseq.settings?.apiToken}`,
-              },
-            });
-          }
+          handleTasks.clearTasks(tasksArr.tasksIdArr);
         } catch (e) {
           logseq.App.showMsg(
             'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
