@@ -4,13 +4,23 @@
 
 This simple plugin has 2 primary functions:
 
-## Sending of tasks to your Inbox in Todoist
-
-![](/screenshots/send-task-todoist.gif)
+# Sending of tasks to your Inbox in Todoist
 
 This function allows you to quickly send a task to your Inbox in Todoist.
 
-## Pulling in of tasks
+**Sending a task without priority**
+![](/screenshots/send-task-todoist.gif)
+
+**Sending a task with priority**
+By including a block attribute when composing your task, you are able to send a task to todoist with priority.
+```
+Do this task
+priority:: 4
+```
+
+# Pulling in of tasks
+
+**Pulling tasks from specific projects**
 
 ![](/screenshots/pull-tasks-todoist.gif)
 
@@ -30,7 +40,11 @@ or
 
 Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for adding in their REST APIs on top of their SYNC APIs!
 
-# Usage (for v2 - when you install from marketplace from 7 Nov 2021 onwards)
+**Pulling tasks that are due TODAY, regardless of projects**
+
+Instead of pulling tasks from specific projects, you can pull tasks that are due TODAY, by using the command `/pull today`.
+
+## Installation (for v2 - when you install from marketplace from 7 Nov 2021 onwards)
 
 1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 7.
 2. Login to your Todoist (on the web). Identify the project that you would like to bring in the tasks from. Navigate to that project's page. Note down the number found in the URL, as this is the Project ID that you will need in Step 7.
@@ -50,7 +64,7 @@ Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for add
 
    ![](/screenshots/pull-tasks.png)
 
-# Usage (for v1 and previous)
+## Installation (when you install from marketplace before 7 Nov 2021)
 
 1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 7.
 2. Login to your Todoist (on the web). Identify the project that you would like to bring in the tasks from. Navigate to that project's page. Note down the number found in the URL, as this is the Project ID that you will need in Step 7.
