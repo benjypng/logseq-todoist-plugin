@@ -12,7 +12,9 @@ This function allows you to quickly send a task to your Inbox in Todoist.
 ![](/screenshots/send-task-todoist.gif)
 
 **Sending a task with priority**
+
 By including a block attribute when composing your task, you are able to send a task to todoist with priority.
+
 ```
 Do this task
 priority:: 4
