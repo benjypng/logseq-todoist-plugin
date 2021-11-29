@@ -3,7 +3,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import handleTasks from './handle-tasks';
-import axios from 'axios';
 import sendTaskToTodoist from './send-task-to-todoist';
 
 const main = async () => {
