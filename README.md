@@ -1,5 +1,3 @@
-![GitHub all releases](https://img.shields.io/github/downloads/hkgnp/logseq-todoist-plugin/total)
-
 # Overview
 
 This simple plugin has 2 primary functions:
