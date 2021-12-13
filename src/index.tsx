@@ -99,14 +99,16 @@ const main = async () => {
         return;
       }
 
-      try {
-        // Mark tasks as complete in Todoist
-        handleTasks.clearTasks(tasksIdArr);
-      } catch (e) {
-        logseq.App.showMsg(
-          'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
-        );
-        return;
+      if (logseq.settings?.clearTasks) {
+        try {
+          // Mark tasks as complete in Todoist
+          handleTasks.clearTasks(tasksIdArr);
+        } catch (e) {
+          logseq.App.showMsg(
+            'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
+          );
+          return;
+        }
       }
     }
   });
@@ -130,14 +132,16 @@ const main = async () => {
           }
         );
 
-        try {
-          // Mark tasks as complete in Todoist
-          handleTasks.clearTasks(tasksArr.tasksIdArr);
-        } catch (e) {
-          logseq.App.showMsg(
-            'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
-          );
-          return;
+        if (logseq.settings?.clearTasks) {
+          try {
+            // Mark tasks as complete in Todoist
+            handleTasks.clearTasks(tasksArr.tasksIdArr);
+          } catch (e) {
+            logseq.App.showMsg(
+              'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
+            );
+            return;
+          }
         }
       } else {
         logseq.App.showMsg(

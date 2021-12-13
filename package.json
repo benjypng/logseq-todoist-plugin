@@ -1,6 +1,6 @@
 {
   "name": "logseq-todoist-plugin",
-  "version": "2.0.1",
+  "version": "2.4",
   "author": "hkgnp",
   "description": "Simple Todoist plugin to pull only active tasks from specified project, i.e. Inbox",
   "logseq": {

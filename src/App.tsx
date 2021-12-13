@@ -3,15 +3,34 @@ import './App.css';
 
 export default class App extends React.Component {
   state = {
-    apiToken: '',
-    projectIdWithPrefix: '',
-    projectIdWithoutPrefix: '',
+    apiToken: logseq.settings?.apiToken,
+    projectIdWithPrefix: logseq.settings?.projectIdWithPrefix,
+    projectIdWithoutPrefix: logseq.settings?.projectIdWithoutPrefix,
+    clearTasks: logseq.settings?.clearTasks,
+  };
+
+  componentDidMount = () => {
+    logseq.updateSettings({
+      clearTasks: true,
+    });
   };
 
   handleInput = (e: any) => {
     this.setState({
       [e.target.name]: e.target.value,
     });
+  };
+
+  handleCheckbox = (e: any) => {
+    if (e.target.checked) {
+      this.setState({
+        [e.target.name]: true,
+      });
+    } else {
+      this.setState({
+        [e.target.name]: false,
+      });
+    }
   };
 
   hide = () => {
@@ -67,6 +86,16 @@ export default class App extends React.Component {
                   name="projectIdWithoutPrefix"
                   value={this.state.projectIdWithoutPrefix}
                   onChange={this.handleInput}
+                />
+              </p>
+              <p>
+                <label htmlFor="clearTasks">Clear Tasks?</label>
+                :
+                <input
+                  type="checkbox"
+                  name="clearTasks"
+                  checked={this.state.clearTasks}
+                  onChange={this.handleCheckbox}
                 />
               </p>
             </form>
