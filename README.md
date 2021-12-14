@@ -26,7 +26,7 @@ priority:: 4
 
 This function pulls the active tasks (and their sub-tasks as separate, child-blocks) from a selected Project of your choice (as indicated in your settings file). I created this plugin as my workflow includes using Todoist as a Quick Capture tool, and Logseq as my main todo manager. As a result, once the tasks are captured in Logseq, they are removed from Todoist. If the task or sub-task contains a description, it will be included as well. This plugin can be used on all pages except the home page.
 
-I've included a functionality where you can either:
+I've also included a functionality where you can either:
 
 1. Have `TODO` added to the task when you import them into Logseq.
 
@@ -38,7 +38,9 @@ or
 
 3. Both.
 
-Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for adding in their REST APIs on top of their SYNC APIs!
+Scheduled tasks in Todoist are also indicated in the Task as scheduled in Logseq.
+
+![](/screenshots/scheduled.png)
 
 **Pulling tasks that are due TODAY, regardless of projects**
 
