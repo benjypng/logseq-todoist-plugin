@@ -13,6 +13,7 @@ export default class App extends React.Component {
     logseq.updateSettings({
       clearTasks: true,
     });
+    console.log(this.state.clearTasks);
   };
 
   handleInput = (e: any) => {

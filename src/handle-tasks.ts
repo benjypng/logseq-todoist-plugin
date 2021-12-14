@@ -5,6 +5,9 @@ type Task = {
   id: number;
   content: string;
   description: string;
+  due: {
+    date: string;
+  };
 };
 
 type Id = {
@@ -51,7 +54,8 @@ const handleTasksWithoutPrefix = async () => {
           .map((t: Task) => ({
             todoist_id: t.id,
             content: `TODO ${t.content}
-            ${t.description ? 'description:: ' + t.description : ''}`,
+${t.due.date && `SCHEDULED: <${t.due.date} a>`}
+${t.description && `description:: ${t.description}`}`,
             children: [],
           }));
 
@@ -135,7 +139,7 @@ const handleTasksWithPrefix = async () => {
           .map((t: Task) => ({
             todoist_id: t.id,
             content: `${t.content}
-            ${t.description ? 'description:: ' + t.description : ''}`,
+${t.description && 'description:: ' + t.description}`,
             children: [],
           }));
 
