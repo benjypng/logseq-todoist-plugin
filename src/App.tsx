@@ -9,13 +9,6 @@ export default class App extends React.Component {
     clearTasks: logseq.settings?.clearTasks,
   };
 
-  componentDidMount = () => {
-    logseq.updateSettings({
-      clearTasks: true,
-    });
-    console.log(this.state.clearTasks);
-  };
-
   handleInput = (e: any) => {
     this.setState({
       [e.target.name]: e.target.value,
