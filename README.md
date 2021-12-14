@@ -38,11 +38,13 @@ or
 
 3. Both.
 
-Big thanks to [Todoist](https://developer.todoist.com/rest/v1/#overview) for adding in their REST APIs on top of their SYNC APIs!
-
 **Pulling tasks that are due TODAY, regardless of projects**
 
 Instead of pulling tasks from specific projects, you can pull tasks that are due TODAY, by using the command `/pull today`.
+
+**Scheduled Tasks**
+
+![](/screenshots/scheduled.png)
 
 ## Installation (for v2 - when you install from marketplace from 7 Nov 2021 onwards)
 
