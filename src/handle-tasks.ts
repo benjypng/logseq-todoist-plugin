@@ -54,8 +54,8 @@ const handleTasksWithoutPrefix = async () => {
           .map((t: Task) => ({
             todoist_id: t.id,
             content: `TODO ${t.content}
-${t.due.date && 'SCHEDULED: <' + t.due.date + ' a>'}
-${t.description && 'description:: ' + t.description}`,
+${t.due ? 'SCHEDULED: <' + t.due.date + ' a>' : ''}
+${t.description ? 'description:: ' + t.description : ''}`,
             children: [],
           }));
 
@@ -77,8 +77,8 @@ ${t.description && 'description:: ' + t.description}`,
             if (s.parent_id === m.todoist_id) {
               m.children.push({
                 content: `TODO ${s.content}
-${s.due.date && 'SCHEDULED: <' + s.due.date + ' a>'}
-${s.description && 'description:: ' + s.description}`,
+${s.due ? 'SCHEDULED: <' + s.due.date + ' a>' : ''}
+${s.description ? 'description:: ' + s.description : ''}`,
               });
             }
             continue;
@@ -140,7 +140,8 @@ const handleTasksWithPrefix = async () => {
           .map((t: Task) => ({
             todoist_id: t.id,
             content: `${t.content}
-            ${t.description ? 'description:: ' + t.description : ''}`,
+${t.due ? 'SCHEDULED: <' + t.due.date + ' a>' : ''}
+${t.description ? 'description:: ' + t.description : ''}`,
             children: [],
           }));
 
@@ -162,7 +163,8 @@ const handleTasksWithPrefix = async () => {
             if (s.parent_id == m.todoist_id) {
               m.children.push({
                 content: `${s.content}
-                ${s.description ? 'description:: ' + s.description : ''}`,
+${s.due ? 'SCHEDULED: <' + s.due.date + ' a>' : ''}
+${s.description ? 'description:: ' + s.description : ''}`,
               });
             }
             continue;
