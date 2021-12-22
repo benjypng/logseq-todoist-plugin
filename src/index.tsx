@@ -1,7 +1,7 @@
 import '@logseq/libs';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App2';
+import App from './App';
 import handleTasks from './handle-tasks';
 import sendTaskToTodoist from './send-task-to-todoist';
 
@@ -26,7 +26,8 @@ const main = async () => {
     if (currBlockContent) {
       // Send task without priority
       if (Object.keys(currBlockProperties).length === 0) {
-        sendTaskToTodoist.sendTaskOnlyToTodoist(currBlockContent);
+        const response =
+          sendTaskToTodoist.sendTaskOnlyToTodoist(currBlockContent);
         logseq.App.showMsg(`
           [:div.p-2
             [:h1 "Task (without priority) sent to your Todoist Inbox!"]
@@ -37,7 +38,7 @@ const main = async () => {
           0,
           currBlockContent.indexOf('\n')
         );
-        sendTaskToTodoist.sendTaskAndPriorityToTodist(
+        const response = sendTaskToTodoist.sendTaskAndPriorityToTodist(
           contentWithoutPriority,
           parseInt(currBlockProperties.priority)
         );
