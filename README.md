@@ -18,6 +18,8 @@ Do this task
 priority:: 4
 ```
 
+_Optional: You can also specify the project that you want all tasks to be sent to, and label that you want attached to these tasks._
+
 # Pulling in of tasks
 
 **Pulling tasks from specific projects**
@@ -49,20 +51,18 @@ Instead of pulling tasks from specific projects, you can pull tasks that are due
 ## Installation (for v2 - when you install from marketplace from 7 Nov 2021 onwards)
 
 1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 7.
+
 2. Login to your Todoist (on the web). Identify the project that you would like to bring in the tasks from. Navigate to that project's page. Note down the number found in the URL, as this is the Project ID that you will need in Step 7.
 
    ![image](/screenshots/todoist-url.png)
 
 3. Head on to the Marketplace and install the logseq-todoist-plugin.
-4. Depending on how you would want to use the plugin, you would need to have different settings.
-   - If you want to include the prefix (e.g. NOW, LATER, WAITING) in Todoist **before** you import into Logseq, you would only use `projectIdWithPrefix`.
-   - If you want the `TODO` prefix to be automatically added **after** you import into Logseq, you would only use `projectIdWithoutPrefix`.
-   - If you want both, use `projectIdWithPrefix` and `projectIdWithoutPrefix`.
-5. After it is installed, click on the plugin icon and key in your variables, as per the above step. Then click `Save & Close` after that. To exit without saving the variables, click `Exit w/o Saving`.
+
+4. After it is installed, click on the plugin icon and indicate your preferences in the settings.
 
    ![](/screenshots/enter-variables2.png)
 
-6. To start using it, use the slash command `/pull (todoist - pull tasks)`.
+5. After saving your preferences, you can start using the plugin by using the slash commands: `/pull today's tasks` or `/pull tasks` or `/send tasks`.
 
    ![](/screenshots/pull-tasks.png)
 
