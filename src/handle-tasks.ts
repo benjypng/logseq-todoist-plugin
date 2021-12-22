@@ -16,7 +16,7 @@ type Id = {
 
 // Get project name to indicate in Todoist
 const getProjectName = async (projectId: string) => {
-  let project = await axios.get(
+  const project = await axios.get(
     `https://api.todoist.com/rest/v1/projects/${projectId}`,
     {
       headers: {

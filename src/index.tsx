@@ -1,7 +1,7 @@
 import '@logseq/libs';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import App from './App2';
 import handleTasks from './handle-tasks';
 import sendTaskToTodoist from './send-task-to-todoist';
 
