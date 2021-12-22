@@ -1,3 +1,7 @@
+![GitHub all releases](https://img.shields.io/github/downloads/hkgnp/logseq-todoist-plugin/total)
+
+> In v3.0, you no longer need to obtain the actual Project ID and can just select your desired project from the dropdown list!
+
 # Overview
 
 This simple plugin has 2 primary functions:
@@ -50,19 +54,15 @@ Instead of pulling tasks from specific projects, you can pull tasks that are due
 
 ## Installation (for v2 - when you install from marketplace from 7 Nov 2021 onwards)
 
-1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 7.
+1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 3.
 
-2. Login to your Todoist (on the web). Identify the project that you would like to bring in the tasks from. Navigate to that project's page. Note down the number found in the URL, as this is the Project ID that you will need in Step 7.
+2. Head on to the Marketplace and install the logseq-todoist-plugin.
 
-   ![image](/screenshots/todoist-url.png)
-
-3. Head on to the Marketplace and install the logseq-todoist-plugin.
-
-4. After it is installed, click on the plugin icon and indicate your preferences in the settings.
+3. After it is installed, click on the plugin icon and indicate your preferences in the settings. Key in your API token that you obtained in Step 1 as well.
 
    ![](/screenshots/enter-variables2.png)
 
-5. After saving your preferences, you can start using the plugin by using the slash commands: `/pull today's tasks` or `/pull tasks` or `/send tasks`.
+4. After saving your preferences, you can start using the plugin by using the slash commands: `/pull today's tasks` or `/pull tasks` or `/send tasks`.
 
    ![](/screenshots/pull-tasks.png)
 
