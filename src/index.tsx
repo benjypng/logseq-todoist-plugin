@@ -67,10 +67,6 @@ const main = async () => {
       logseq.App.showMsg('There are no tasks in your indicated projects.');
       return;
     } else if (tasksWithPrefix && tasksWithoutPrefix) {
-      // Insert header block
-      let currBlock = await logseq.Editor.getCurrentBlock();
-      await logseq.Editor.updateBlock(currBlock!.uuid, '[[Tasks Inbox]]');
-
       let tasksContentArr = [
         ...tasksWithPrefix.withPrefixArr,
         ...tasksWithoutPrefix.withoutPrefixArr,
@@ -81,6 +77,9 @@ const main = async () => {
         ...tasksWithoutPrefix.tasksIdWithoutPrefixArr,
       ];
 
+      // Insert header block
+      let currBlock = await logseq.Editor.getCurrentBlock();
+
       try {
         if (currBlock) {
           // Insert tasks below header block
@@ -88,10 +87,11 @@ const main = async () => {
             currBlock.uuid,
             tasksContentArr,
             {
-              sibling: !parent,
-              before: true,
+              sibling: true,
+              before: false,
             }
           );
+          await logseq.Editor.removeBlock(currBlock.uuid);
         }
       } catch (e) {
         logseq.App.showMsg(
