@@ -1,6 +1,6 @@
-![GitHub all releases](https://img.shields.io/github/downloads/hkgnp/logseq-todoist-plugin/total)
-
 > In v3.0, you no longer need to obtain the actual Project ID and can just select your desired project from the dropdown list!
+
+<a href="https://www.buymeacoffee.com/hkgnp.dev" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/arial-violet.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 # Overview
 
