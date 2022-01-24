@@ -73,6 +73,11 @@ const sendTaskOnlyToTodoist = async (content: string) => {
         content: content,
         project_id: sendProject,
         label_ids: [sendLabel],
+        due_date: new Date()
+          .toLocaleDateString('en-GB')
+          .split('/')
+          .reverse()
+          .join('-'),
       },
       {
         headers: {
@@ -86,6 +91,11 @@ const sendTaskOnlyToTodoist = async (content: string) => {
       {
         content: content,
         label_ids: [sendLabel],
+        due_date: new Date()
+          .toLocaleDateString('en-GB')
+          .split('/')
+          .reverse()
+          .join('-'),
       },
       {
         headers: {
@@ -99,6 +109,11 @@ const sendTaskOnlyToTodoist = async (content: string) => {
       {
         content: content,
         project_id: sendProject,
+        due_date: new Date()
+          .toLocaleDateString('en-GB')
+          .split('/')
+          .reverse()
+          .join('-'),
       },
       {
         headers: {
@@ -111,6 +126,11 @@ const sendTaskOnlyToTodoist = async (content: string) => {
       'https://api.todoist.com/rest/v1/tasks',
       {
         content: content,
+        due_date: new Date()
+          .toLocaleDateString('en-GB')
+          .split('/')
+          .reverse()
+          .join('-'),
       },
       {
         headers: {
