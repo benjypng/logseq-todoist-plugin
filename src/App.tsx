@@ -15,25 +15,27 @@ type Label = {
 
 const App = () => {
   const [settingsInput, setSettingsInput] = useState({
-    apiToken: logseq.settings?.apiToken,
-    projectIdWithPrefix: logseq.settings?.projectIdWithPrefix,
-    projectIdWithoutPrefix: logseq.settings?.projectIdWithoutPrefix,
-    clearTasks: logseq.settings?.clearTasks,
-    sendLabel: logseq.settings?.sendProject,
-    sendProject: logseq.settings?.sendLabel,
+    apiToken: logseq.settings!.apiToken,
+    projectIdWithPrefix: logseq.settings!.projectIdWithPrefix,
+    projectIdWithoutPrefix: logseq.settings!.projectIdWithoutPrefix,
+    clearTasks: logseq.settings!.clearTasks,
+    sendLabel: logseq.settings!.sendProject,
+    sendProject: logseq.settings!.sendLabel,
     allProjects: [{ id: 0, name: '-' }],
     allLabels: [{ id: 0, name: '-' }],
+    setDeadlineToday: logseq.settings!.setDeadlineToday,
   });
 
   const [projectWithPrefix, setProjectWithPrefix] = useState(
-    logseq.settings?.projectWithPrefix
+    logseq.settings!.projectWithPrefix
   );
   const [projectWithoutPrefix, setProjectWithoutPrefix] = useState(
-    logseq.settings?.projectWithoutPrefix
+    logseq.settings!.projectWithoutPrefix
   );
 
   useEffect(() => {
-    getAllProjectsAndLabels(logseq.settings?.apiToken);
+    getAllProjectsAndLabels(logseq.settings!.apiToken);
+    console.log(settingsInput);
   }, []);
 
   ////////////////////////////// BUTTONS //////////////////////////////
@@ -167,6 +169,7 @@ const App = () => {
                   className="bg-yellow-200 border-b-red-400 p-1 m-1"
                   name="projectIdWithoutPrefix"
                   onChange={handleInput}
+                  value={settingsInput.projectIdWithoutPrefix}
                 >
                   {settingsInput.allProjects.map((p: Project) => (
                     <option value={p.id}>{p.name}</option>
@@ -189,6 +192,7 @@ const App = () => {
               <span>
                 <select
                   className="bg-yellow-200 border-b-red-400 p-1 m-1"
+                  value={settingsInput.projectIdWithoutPrefix}
                   disabled
                 >
                   <option>---</option>
@@ -213,6 +217,7 @@ const App = () => {
                   className="bg-yellow-200 border-b-red-400 p-1 m-1"
                   name="projectIdWithPrefix"
                   onChange={handleInput}
+                  value={settingsInput.projectIdWithPrefix}
                 >
                   {settingsInput.allProjects.map((p: Project) => (
                     <option value={p.id}>{p.name}</option>
@@ -235,6 +240,7 @@ const App = () => {
               <span>
                 <select
                   className="bg-yellow-200 border-b-red-400 p-1 m-1"
+                  value={settingsInput.projectIdWithPrefix}
                   disabled
                 >
                   <option>---</option>
@@ -250,6 +256,7 @@ const App = () => {
               name="clearTasks"
               className="text-indigo-500 w-8 h-8 mr-2 focus:ring-indigo-400 focus:ring-opacity-25 border border-gray-300 rounded"
               onChange={handleCheckbox}
+              value={settingsInput.clearTasks}
             />{' '}
             I want to clear the tasks from Todoist after pulling them over.
           </div>
@@ -264,6 +271,7 @@ const App = () => {
               className="bg-yellow-200 border-b-red-400 p-1 m-1"
               name="sendProject"
               onChange={handleInput}
+              value={settingsInput.sendProject}
             >
               {settingsInput.allProjects.map((p: Project) => (
                 <option value={p.id}>{p.name}</option>
@@ -274,10 +282,21 @@ const App = () => {
               className="bg-yellow-200 border-b-red-400 py-1 px-1 my-1 mx-1"
               onChange={handleInput}
               name="sendLabel"
+              value={settingsInput.sendLabel}
             >
               {settingsInput.allLabels.map((p: Label) => (
                 <option value={p.id}>{p.name}</option>
               ))}
+            </select>
+            , and{' '}
+            <select
+              className="bg-yellow-200 border-b-red-400 py-1 px-1 my-1 mx-1"
+              onChange={handleInput}
+              name="setDeadlineToday"
+              value={settingsInput.setDeadlineToday}
+            >
+              <option value="yes">set the deadline to today</option>
+              <option value="no">do not set any deadline</option>
             </select>
             . I can ignore this if I'm not using the send function.
           </div>

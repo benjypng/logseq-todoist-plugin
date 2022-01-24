@@ -3,10 +3,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import handleTasks from './handle-tasks';
+import { handleClosePopup } from './handleClosePopup';
 import sendTaskToTodoist from './send-task-to-todoist';
 
 const main = async () => {
   console.log('Logseq-Todoist-Plugin loaded');
+
+  handleClosePopup();
 
   ReactDOM.render(
     <React.StrictMode>
@@ -38,7 +41,7 @@ const main = async () => {
           0,
           currBlockContent.indexOf('\n')
         );
-        const response = sendTaskToTodoist.sendTaskAndPriorityToTodist(
+        sendTaskToTodoist.sendTaskAndPriorityToTodist(
           contentWithoutPriority,
           parseInt(currBlockProperties.priority)
         );
