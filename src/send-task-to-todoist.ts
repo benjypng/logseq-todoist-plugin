@@ -65,79 +65,137 @@ const sendTaskAndPriorityToTodist = async (
 };
 
 const sendTaskOnlyToTodoist = async (content: string) => {
-  const { sendProject, sendLabel, apiToken } = logseq.settings!;
-  if (sendProject && sendProject !== '0' && sendLabel && sendLabel !== '0') {
-    await axios.post(
-      'https://api.todoist.com/rest/v1/tasks',
-      {
-        content: content,
-        project_id: sendProject,
-        label_ids: [sendLabel],
-        due_date: new Date()
-          .toLocaleDateString('en-GB')
-          .split('/')
-          .reverse()
-          .join('-'),
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${apiToken}`,
+  const { sendProject, sendLabel, apiToken, setDeadlineToday } =
+    logseq.settings!;
+
+  if (setDeadlineToday === 'yes') {
+    if (sendProject && sendProject !== '0' && sendLabel && sendLabel !== '0') {
+      await axios.post(
+        'https://api.todoist.com/rest/v1/tasks',
+        {
+          content: content,
+          project_id: sendProject,
+          label_ids: [sendLabel],
+          due_date: new Date()
+            .toLocaleDateString('en-GB')
+            .split('/')
+            .reverse()
+            .join('-'),
         },
-      }
-    );
-  } else if (sendLabel && (!sendProject || sendProject === '0')) {
-    await axios.post(
-      'https://api.todoist.com/rest/v1/tasks',
-      {
-        content: content,
-        label_ids: [sendLabel],
-        due_date: new Date()
-          .toLocaleDateString('en-GB')
-          .split('/')
-          .reverse()
-          .join('-'),
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${apiToken}`,
+        {
+          headers: {
+            Authorization: `Bearer ${apiToken}`,
+          },
+        }
+      );
+    } else if (sendLabel && (!sendProject || sendProject === '0')) {
+      await axios.post(
+        'https://api.todoist.com/rest/v1/tasks',
+        {
+          content: content,
+          label_ids: [sendLabel],
+          due_date: new Date()
+            .toLocaleDateString('en-GB')
+            .split('/')
+            .reverse()
+            .join('-'),
         },
-      }
-    );
-  } else if (sendProject && (!sendLabel || sendLabel === '0')) {
-    await axios.post(
-      'https://api.todoist.com/rest/v1/tasks',
-      {
-        content: content,
-        project_id: sendProject,
-        due_date: new Date()
-          .toLocaleDateString('en-GB')
-          .split('/')
-          .reverse()
-          .join('-'),
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${apiToken}`,
+        {
+          headers: {
+            Authorization: `Bearer ${apiToken}`,
+          },
+        }
+      );
+    } else if (sendProject && (!sendLabel || sendLabel === '0')) {
+      await axios.post(
+        'https://api.todoist.com/rest/v1/tasks',
+        {
+          content: content,
+          project_id: sendProject,
+          due_date: new Date()
+            .toLocaleDateString('en-GB')
+            .split('/')
+            .reverse()
+            .join('-'),
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${apiToken}`,
+          },
+        }
+      );
+    } else {
+      await axios.post(
+        'https://api.todoist.com/rest/v1/tasks',
+        {
+          content: content,
+          due_date: new Date()
+            .toLocaleDateString('en-GB')
+            .split('/')
+            .reverse()
+            .join('-'),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${apiToken}`,
+          },
+        }
+      );
+    }
   } else {
-    await axios.post(
-      'https://api.todoist.com/rest/v1/tasks',
-      {
-        content: content,
-        due_date: new Date()
-          .toLocaleDateString('en-GB')
-          .split('/')
-          .reverse()
-          .join('-'),
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${apiToken}`,
+    if (sendProject && sendProject !== '0' && sendLabel && sendLabel !== '0') {
+      await axios.post(
+        'https://api.todoist.com/rest/v1/tasks',
+        {
+          content: content,
+          project_id: sendProject,
+          label_ids: [sendLabel],
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${apiToken}`,
+          },
+        }
+      );
+    } else if (sendLabel && (!sendProject || sendProject === '0')) {
+      await axios.post(
+        'https://api.todoist.com/rest/v1/tasks',
+        {
+          content: content,
+          label_ids: [sendLabel],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${apiToken}`,
+          },
+        }
+      );
+    } else if (sendProject && (!sendLabel || sendLabel === '0')) {
+      await axios.post(
+        'https://api.todoist.com/rest/v1/tasks',
+        {
+          content: content,
+          project_id: sendProject,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${apiToken}`,
+          },
+        }
+      );
+    } else {
+      await axios.post(
+        'https://api.todoist.com/rest/v1/tasks',
+        {
+          content: content,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${apiToken}`,
+          },
+        }
+      );
+    }
   }
 };
 
