@@ -68,12 +68,22 @@ const sendTaskOnlyToTodoist = async (content: string) => {
   const { sendProject, sendLabel, apiToken, setDeadlineToday } =
     logseq.settings!;
 
+  const replaceTodoDoingInContent = (c: string) => {
+    if (c.startsWith('TODO')) {
+      c = c.replace('TODO', '');
+    }
+    if (c.startsWith('DOING')) {
+      c = c.replace('DOING', '');
+    }
+    return c;
+  };
+
   if (setDeadlineToday === 'yes') {
     if (sendProject && sendProject !== '0' && sendLabel && sendLabel !== '0') {
       await axios.post(
         'https://api.todoist.com/rest/v1/tasks',
         {
-          content: content,
+          content: replaceTodoDoingInContent(content),
           project_id: sendProject,
           label_ids: [sendLabel],
           due_date: new Date()
@@ -92,7 +102,7 @@ const sendTaskOnlyToTodoist = async (content: string) => {
       await axios.post(
         'https://api.todoist.com/rest/v1/tasks',
         {
-          content: content,
+          content: replaceTodoDoingInContent(content),
           label_ids: [sendLabel],
           due_date: new Date()
             .toLocaleDateString('en-GB')
@@ -110,7 +120,7 @@ const sendTaskOnlyToTodoist = async (content: string) => {
       await axios.post(
         'https://api.todoist.com/rest/v1/tasks',
         {
-          content: content,
+          content: replaceTodoDoingInContent(content),
           project_id: sendProject,
           due_date: new Date()
             .toLocaleDateString('en-GB')
@@ -128,7 +138,7 @@ const sendTaskOnlyToTodoist = async (content: string) => {
       await axios.post(
         'https://api.todoist.com/rest/v1/tasks',
         {
-          content: content,
+          content: replaceTodoDoingInContent(content),
           due_date: new Date()
             .toLocaleDateString('en-GB')
             .split('/')
@@ -147,7 +157,7 @@ const sendTaskOnlyToTodoist = async (content: string) => {
       await axios.post(
         'https://api.todoist.com/rest/v1/tasks',
         {
-          content: content,
+          content: replaceTodoDoingInContent(content),
           project_id: sendProject,
           label_ids: [sendLabel],
         },
@@ -161,7 +171,7 @@ const sendTaskOnlyToTodoist = async (content: string) => {
       await axios.post(
         'https://api.todoist.com/rest/v1/tasks',
         {
-          content: content,
+          content: replaceTodoDoingInContent(content),
           label_ids: [sendLabel],
         },
         {
@@ -174,7 +184,7 @@ const sendTaskOnlyToTodoist = async (content: string) => {
       await axios.post(
         'https://api.todoist.com/rest/v1/tasks',
         {
-          content: content,
+          content: replaceTodoDoingInContent(content),
           project_id: sendProject,
         },
         {
@@ -187,7 +197,7 @@ const sendTaskOnlyToTodoist = async (content: string) => {
       await axios.post(
         'https://api.todoist.com/rest/v1/tasks',
         {
-          content: content,
+          content: replaceTodoDoingInContent(content),
         },
         {
           headers: {
