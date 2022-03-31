@@ -21,6 +21,7 @@
     "@logseq/libs": "latest",
     "autoprefix": "^1.0.1",
     "axios": "^0.24.0",
+    "logseq-dateutils": "^0.0.20",
     "postcss": "^8.4.5",
     "postcss-cli": "^9.1.0",
     "postcss-import": "^14.0.2",

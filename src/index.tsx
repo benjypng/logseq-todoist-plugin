@@ -1,13 +1,13 @@
-import '@logseq/libs';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import handleTasks from './handle-tasks';
-import { handleClosePopup } from './handleClosePopup';
-import sendTaskToTodoist from './send-task-to-todoist';
+import "@logseq/libs";
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import handleTasks from "./handleTasks";
+import { handleClosePopup } from "./handleClosePopup";
+import sendTaskToTodoist from "./send-task-to-todoist";
 
 const main = async () => {
-  console.log('Logseq-Todoist-Plugin loaded');
+  console.log("Logseq-Todoist-Plugin loaded");
 
   handleClosePopup();
 
@@ -15,11 +15,11 @@ const main = async () => {
     <React.StrictMode>
       <App />
     </React.StrictMode>,
-    document.getElementById('app')
+    document.getElementById("app")
   );
 
   // Register push command
-  logseq.Editor.registerSlashCommand('todoist - send task', async () => {
+  logseq.Editor.registerSlashCommand("todoist - send task", async () => {
     const currBlockContent = await logseq.Editor.getEditingBlockContent();
     const currBlock = await logseq.Editor.getCurrentBlock();
     const currBlockProperties = await logseq.Editor.getBlockProperties(
@@ -29,8 +29,7 @@ const main = async () => {
     if (currBlockContent) {
       // Send task without priority
       if (Object.keys(currBlockProperties).length === 0) {
-        const response =
-          sendTaskToTodoist.sendTaskOnlyToTodoist(currBlockContent);
+        sendTaskToTodoist.sendTaskOnlyToTodoist(currBlockContent);
         logseq.App.showMsg(`
           [:div.p-2
             [:h1 "Task (without priority) sent to your Todoist Inbox!"]
@@ -39,7 +38,7 @@ const main = async () => {
         // Send task with priority
         const contentWithoutPriority = currBlockContent.substring(
           0,
-          currBlockContent.indexOf('\n')
+          currBlockContent.indexOf("\n")
         );
         sendTaskToTodoist.sendTaskAndPriorityToTodist(
           contentWithoutPriority,
@@ -53,13 +52,13 @@ const main = async () => {
       }
     } else {
       logseq.App.showMsg(
-        'Please use this command at the end of writing out your task'
+        "Please use this command at the end of writing out your task"
       );
     }
   });
 
   // Register pull command
-  logseq.Editor.registerSlashCommand('todoist - pull tasks', async () => {
+  logseq.Editor.registerSlashCommand("todoist - pull tasks", async () => {
     let tasksWithPrefix = await handleTasks.handleTasksWithPrefix();
     let tasksWithoutPrefix = await handleTasks.handleTasksWithoutPrefix();
 
@@ -67,7 +66,7 @@ const main = async () => {
       tasksWithPrefix?.withPrefixArr.length === 0 &&
       tasksWithoutPrefix?.withoutPrefixArr.length === 0
     ) {
-      logseq.App.showMsg('There are no tasks in your indicated projects.');
+      logseq.App.showMsg("There are no tasks in your indicated projects.");
       return;
     } else if (tasksWithPrefix && tasksWithoutPrefix) {
       let tasksContentArr = [
@@ -98,7 +97,7 @@ const main = async () => {
         }
       } catch (e) {
         logseq.App.showMsg(
-          'There is an error inserting your tasks. No tasks have been removed from Todoist.'
+          "There is an error inserting your tasks. No tasks have been removed from Todoist."
         );
         return;
       }
@@ -109,7 +108,7 @@ const main = async () => {
           handleTasks.clearTasks(tasksIdArr);
         } catch (e) {
           logseq.App.showMsg(
-            'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
+            "There is an error removing your tasks from Todoist. Please remove them directly from Todoist."
           );
           return;
         }
@@ -121,11 +120,11 @@ const main = async () => {
   logseq.Editor.registerSlashCommand(
     `todoist - pull today's tasks`,
     async () => {
-      const tasksArr = await handleTasks.pullTodaysTask('today');
+      const tasksArr = await handleTasks.pullTodaysTask("today");
       const currBlock = await logseq.Editor.getCurrentBlock();
 
       if (currBlock && tasksArr) {
-        await logseq.Editor.updateBlock(currBlock!.uuid, 'Tasks for Today');
+        await logseq.Editor.updateBlock(currBlock!.uuid, "Tasks for Today");
 
         await logseq.Editor.insertBatchBlock(
           currBlock.uuid,
@@ -142,14 +141,14 @@ const main = async () => {
             handleTasks.clearTasks(tasksArr.tasksIdArr);
           } catch (e) {
             logseq.App.showMsg(
-              'There is an error removing your tasks from Todoist. Please remove them directly from Todoist.'
+              "There is an error removing your tasks from Todoist. Please remove them directly from Todoist."
             );
             return;
           }
         }
       } else {
         logseq.App.showMsg(
-          'Error. Please double check the README on how to use this command.'
+          "Error. Please double check the README on how to use this command."
         );
       }
     }
@@ -167,8 +166,8 @@ const main = async () => {
   logseq.provideModel(createModel());
 
   // Register UI
-  logseq.App.registerUIItem('toolbar', {
-    key: 'logseq-todoist-plugin',
+  logseq.App.registerUIItem("toolbar", {
+    key: "logseq-todoist-plugin",
     template: `
         <a data-on-click="show"
           class="button">
