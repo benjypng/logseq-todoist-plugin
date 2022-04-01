@@ -44,6 +44,7 @@ ${
       t.due.date +
       " " +
       getDayInText(new Date(t.due.date)) +
+      " " +
       (t.due.datetime ? t.due.date.slice(-5) : "") +
       ">"
     : ""
@@ -76,6 +77,7 @@ ${
       s.due.date +
       " " +
       getDayInText(new Date(s.due.date)) +
+      " " +
       (s.due.datetime ? s.due.date.slice(-5) : "") +
       ">"
     : ""
