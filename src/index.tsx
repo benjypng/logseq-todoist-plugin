@@ -93,7 +93,8 @@ const main = async () => {
               before: false,
             }
           );
-          await logseq.Editor.removeBlock(currBlock.uuid);
+          //          Behaviour of removing block seems to have changed
+          //          await logseq.Editor.removeBlock(currBlock.uuid);
         }
       } catch (e) {
         logseq.App.showMsg(
