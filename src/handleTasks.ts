@@ -3,7 +3,7 @@ import { getTasks } from "./getTasks";
 import { Task, Id } from "../idTask";
 
 // Get project name to indicate in Todoist
-const getProjectName = async (projectId: string) => {
+export const getProjectName = async (projectId: string) => {
   const project = await axios.get(
     `https://api.todoist.com/rest/v1/projects/${projectId}`,
     {
@@ -16,7 +16,7 @@ const getProjectName = async (projectId: string) => {
 };
 
 // Function to handle tasks without a prefix indicated in Todoist so it needs to be added in Logseq
-const handleTasksWithoutPrefix = async () => {
+export const handleTasksWithoutPrefix = async () => {
   if (logseq.settings?.projectIdWithoutPrefix) {
     try {
       return {
@@ -39,7 +39,7 @@ const handleTasksWithoutPrefix = async () => {
 };
 
 // Function to handle tasks with a prefix indicated in Todoist
-const handleTasksWithPrefix = async () => {
+export const handleTasksWithPrefix = async () => {
   if (logseq.settings?.projectIdWithPrefix) {
     try {
       return {
@@ -64,7 +64,7 @@ const handleTasksWithPrefix = async () => {
 };
 
 // Function to pull today's task
-const pullTodaysTask = async (date: string) => {
+export const pullTodaysTask = async (date: string) => {
   try {
     let response = await axios.get("https://api.todoist.com/rest/v1/tasks", {
       params: {
@@ -91,7 +91,7 @@ const pullTodaysTask = async (date: string) => {
 };
 
 // Mark tasks as complete in Todoist
-const clearTasks = async (tasksIdArr: number[]) => {
+export const clearTasks = async (tasksIdArr: number[]) => {
   for (let i of tasksIdArr) {
     console.log(`Clearing ${i}`);
     await axios({
@@ -102,12 +102,4 @@ const clearTasks = async (tasksIdArr: number[]) => {
       },
     });
   }
-};
-
-export default {
-  getProjectName,
-  handleTasksWithPrefix,
-  handleTasksWithoutPrefix,
-  pullTodaysTask,
-  clearTasks,
 };

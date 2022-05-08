@@ -2,12 +2,14 @@ import "@logseq/libs";
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
-import handleTasks from "./handleTasks";
+import { callSettings } from "./callSettings";
 import { handleClosePopup } from "./handleClosePopup";
 import sendTaskToTodoist from "./send-task-to-todoist";
 
 const main = async () => {
   console.log("Logseq-Todoist-Plugin loaded");
+
+  callSettings();
 
   handleClosePopup();
 
