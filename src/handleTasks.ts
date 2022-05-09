@@ -2,19 +2,6 @@ import axios from "axios";
 import { getTasks } from "./getTasks";
 import { Task, Id } from "../idTask";
 
-// Get project name to indicate in Todoist
-export const getProjectName = async (projectId: string) => {
-  const project = await axios.get(
-    `https://api.todoist.com/rest/v1/projects/${projectId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${logseq.settings?.apiToken}`,
-      },
-    }
-  );
-  return project.data.name;
-};
-
 // Function to handle tasks without a prefix indicated in Todoist so it needs to be added in Logseq
 export const handleTasksWithoutPrefix = async () => {
   if (logseq.settings?.projectIdWithoutPrefix) {

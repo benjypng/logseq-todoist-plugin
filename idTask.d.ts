@@ -4,6 +4,7 @@ export declare type Task = {
   content: string;
   description: string;
   due: {
+    string: string;
     date: string;
     datetime: string;
   };

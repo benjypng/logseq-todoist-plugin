@@ -5,6 +5,7 @@ import App from "./App";
 import { callSettings } from "./callSettings";
 import { handleClosePopup } from "./handleClosePopup";
 import sendTaskToTodoist from "./send-task-to-todoist";
+import { insertTasksIntoLogseq } from "./helpersLogseq";
 
 const main = async () => {
   console.log("Logseq-Todoist-Plugin loaded");
@@ -61,99 +62,14 @@ const main = async () => {
 
   // Register pull command
   logseq.Editor.registerSlashCommand("todoist - pull tasks", async () => {
-    let tasksWithPrefix = await handleTasks.handleTasksWithPrefix();
-    let tasksWithoutPrefix = await handleTasks.handleTasksWithoutPrefix();
-
-    if (
-      tasksWithPrefix?.withPrefixArr.length === 0 &&
-      tasksWithoutPrefix?.withoutPrefixArr.length === 0
-    ) {
-      logseq.App.showMsg("There are no tasks in your indicated projects.");
-      return;
-    } else if (tasksWithPrefix && tasksWithoutPrefix) {
-      let tasksContentArr = [
-        ...tasksWithPrefix.withPrefixArr,
-        ...tasksWithoutPrefix.withoutPrefixArr,
-      ];
-
-      let tasksIdArr = [
-        ...tasksWithPrefix.tasksIdWithPrefixArr,
-        ...tasksWithoutPrefix.tasksIdWithoutPrefixArr,
-      ];
-
-      // Insert header block
-      let currBlock = await logseq.Editor.getCurrentBlock();
-
-      try {
-        if (currBlock) {
-          // Insert tasks below header block
-          await logseq.Editor.insertBatchBlock(
-            currBlock.uuid,
-            tasksContentArr,
-            {
-              sibling: true,
-              before: false,
-            }
-          );
-          //          Behaviour of removing block seems to have changed
-          //          await logseq.Editor.removeBlock(currBlock.uuid);
-        }
-      } catch (e) {
-        logseq.App.showMsg(
-          "There is an error inserting your tasks. No tasks have been removed from Todoist."
-        );
-        return;
-      }
-
-      if (logseq.settings?.clearTasks) {
-        try {
-          // Mark tasks as complete in Todoist
-          handleTasks.clearTasks(tasksIdArr);
-        } catch (e) {
-          logseq.App.showMsg(
-            "There is an error removing your tasks from Todoist. Please remove them directly from Todoist."
-          );
-          return;
-        }
-      }
-    }
+    await insertTasksIntoLogseq();
   });
 
   // Register pull today's tasks command
   logseq.Editor.registerSlashCommand(
     `todoist - pull today's tasks`,
     async () => {
-      const tasksArr = await handleTasks.pullTodaysTask("today");
-      const currBlock = await logseq.Editor.getCurrentBlock();
-
-      if (currBlock && tasksArr) {
-        await logseq.Editor.updateBlock(currBlock!.uuid, "Tasks for Today");
-
-        await logseq.Editor.insertBatchBlock(
-          currBlock.uuid,
-          tasksArr.tasksArr,
-          {
-            sibling: !parent,
-            before: true,
-          }
-        );
-
-        if (logseq.settings?.clearTasks) {
-          try {
-            // Mark tasks as complete in Todoist
-            handleTasks.clearTasks(tasksArr.tasksIdArr);
-          } catch (e) {
-            logseq.App.showMsg(
-              "There is an error removing your tasks from Todoist. Please remove them directly from Todoist."
-            );
-            return;
-          }
-        }
-      } else {
-        logseq.App.showMsg(
-          "Error. Please double check the README on how to use this command."
-        );
-      }
+      await insertTasksIntoLogseq("today");
     }
   );
 
