@@ -76,17 +76,3 @@ export const pullTodaysTask = async (date: string) => {
     console.log(e);
   }
 };
-
-// Mark tasks as complete in Todoist
-export const clearTasks = async (tasksIdArr: number[]) => {
-  for (let i of tasksIdArr) {
-    console.log(`Clearing ${i}`);
-    await axios({
-      url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${logseq.settings?.apiToken}`,
-      },
-    });
-  }
-};

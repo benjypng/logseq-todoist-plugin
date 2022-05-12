@@ -1,4 +1,8 @@
-import { getIdFromProjectAndLabel, pullTasks } from "./helpersTodoist";
+import {
+  clearTasks,
+  getIdFromProjectAndLabel,
+  pullTasks,
+} from "./helpersTodoist";
 
 export async function insertTasksIntoLogseq(todayOrNot?: string) {
   const tasksContentArr = await pullTasks(
@@ -24,7 +28,6 @@ export async function insertTasksIntoLogseq(todayOrNot?: string) {
             before: false,
           }
         );
-        await logseq.Editor.exitEditingMode();
       }
     } catch (e) {
       logseq.App.showMsg(
@@ -33,9 +36,13 @@ export async function insertTasksIntoLogseq(todayOrNot?: string) {
       return;
     }
 
+    await logseq.Editor.exitEditingMode();
+
     if (logseq.settings?.clearTasks) {
       try {
         // Mark tasks as complete in Todoist
+        console.log(tasksContentArr.tasksIdArr);
+        clearTasks(tasksContentArr.tasksIdArr);
       } catch (e) {
         logseq.App.showMsg(
           "There is an error removing your tasks from Todoist. Please remove them directly from Todoist."
