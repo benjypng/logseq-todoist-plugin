@@ -28,6 +28,8 @@ export async function insertTasksIntoLogseq(todayOrNot?: string) {
             before: false,
           }
         );
+
+        await logseq.Editor.exitEditingMode();
       }
     } catch (e) {
       logseq.App.showMsg(

@@ -2,16 +2,16 @@ import axios from "axios";
 import { Task, Id } from "../idTask";
 import { getScheduledDeadlineDateDay } from "logseq-dateutils";
 
-const getYYYYMMDD = (d: Date) => {
+function getYYYYMMDD(d: Date) {
   return [
     d.getFullYear(),
     ("0" + (d.getMonth() + 1)).slice(-2),
     ("0" + d.getDate()).slice(-2),
   ].join("-");
-};
+}
 
 // Get all projects
-export const getAllProjects = async () => {
+export async function getAllProjects() {
   const response = await axios.get(`https://api.todoist.com/rest/v1/projects`, {
     headers: {
       Authorization: `Bearer ${logseq.settings!.apiToken}`,
@@ -21,7 +21,7 @@ export const getAllProjects = async () => {
   return response.data.map(
     (i: { name: string; id: string }) => `${i.name} (${i.id})`
   );
-};
+}
 
 // Get all labels
 export const getAllLabels = async () => {
@@ -35,6 +35,28 @@ export const getAllLabels = async () => {
     (i: { name: string; id: string }) => `${i.name} (${i.id})`
   );
 };
+
+// Get attachments
+async function getAttachments(taskId: number) {
+  const response = await axios({
+    url: `https://api.todoist.com/rest/v1/comments`,
+    method: "get",
+    headers: {
+      Authorization: `Bearer ${logseq.settings?.apiToken}`,
+    },
+    params: {
+      task_id: taskId,
+    },
+  });
+
+  return response.data
+    .map(
+      (i: {
+        attachment: { file_name: string; file_type: string; file_url: string };
+      }) => `[${i.attachment.file_name}](${i.attachment.file_url})`
+    )
+    .join(", ");
+}
 
 // Mark tasks as complete in Todoist
 export const clearTasks = async (tasksIdArr: number[]) => {
@@ -92,14 +114,14 @@ export const pullTasks = async (projectId: string, todayOrNot?: string) => {
   if (response.data.length === 0) {
     return { tasksArr: [], tasksIdArr: [] };
   } else {
-    // Create array of main tasks
-    let tasksArr = response.data
-      .filter((t: Task) => {
-        return !t.parent_id;
-      })
-      .map((t: Task) => ({
-        todoist_id: t.id,
-        content: `TODO ${t.content}
+    let tasksArr: any[] = [];
+    for (let t of response.data) {
+      if (!t.parent_id) {
+        tasksArr.push({
+          todoist_id: t.id,
+          content: `TODO ${t.content} ${
+            t.comment_count ? `(${await getAttachments(t.id)})` : ""
+          }
 ${
   t.due
     ? `SCHEDULED: <${getScheduledDeadlineDateDay(new Date(t.due.date))}${
@@ -108,8 +130,10 @@ ${
     : ""
 }
 ${t.description ? "description:: " + t.description : ""}`,
-        children: [],
-      }));
+          children: [],
+        });
+      }
+    }
 
     // Create array of sub tasks
     const subTasks = response.data
@@ -123,7 +147,7 @@ ${t.description ? "description:: " + t.description : ""}`,
         description: t.description,
       }));
 
-    // CAN THINK ABOUT RECURSION
+    // CAN THINK ABOUT RECURSION FOR SUB SUB SUB TASKS
     // Subsume sub tasks under main tasks
     for (let m of tasksArr) {
       for (let s of subTasks) {

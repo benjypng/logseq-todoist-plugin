@@ -8,6 +8,11 @@ export declare type Task = {
     date: string;
     datetime: string;
   };
+  comment_count: {
+    fileUrl: string;
+    fileName: string;
+    fileType: string;
+  };
 };
 
 export declare type Id = {
