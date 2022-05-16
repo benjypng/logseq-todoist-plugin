@@ -1,63 +1,21 @@
 import "@logseq/libs";
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./App";
+import { BlockEntity } from "@logseq/libs/dist/LSPlugin.user";
 import { callSettings } from "./callSettings";
 import { handleClosePopup } from "./handleClosePopup";
-import sendTaskToTodoist from "./send-task-to-todoist";
 import { insertTasksIntoLogseq } from "./helpersLogseq";
+import { sendTask } from "./sendTask";
 
 const main = async () => {
-  console.log("Logseq-Todoist-Plugin loaded");
+  console.log("logseq-todoist-plugin loaded");
 
   callSettings();
 
   handleClosePopup();
 
-  ReactDOM.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
-    document.getElementById("app")
-  );
-
   // Register push command
-  logseq.Editor.registerSlashCommand("todoist - send task", async () => {
-    const currBlockContent = await logseq.Editor.getEditingBlockContent();
-    const currBlock = await logseq.Editor.getCurrentBlock();
-    const currBlockProperties = await logseq.Editor.getBlockProperties(
-      currBlock!.uuid
-    );
-
-    if (currBlockContent) {
-      // Send task without priority
-      if (Object.keys(currBlockProperties).length === 0) {
-        sendTaskToTodoist.sendTaskOnlyToTodoist(currBlockContent);
-        logseq.App.showMsg(`
-          [:div.p-2
-            [:h1 "Task (without priority) sent to your Todoist Inbox!"]
-            [:h2.text-xl "${currBlockContent}"]]`);
-      } else {
-        // Send task with priority
-        const contentWithoutPriority = currBlockContent.substring(
-          0,
-          currBlockContent.indexOf("\n")
-        );
-        sendTaskToTodoist.sendTaskAndPriorityToTodist(
-          contentWithoutPriority,
-          parseInt(currBlockProperties.priority)
-        );
-        logseq.App.showMsg(`
-          [:div.p-2
-              [:h1 "Task (with priority) sent to your Todoist Inbox!"]
-            [:h2.text-xl "${contentWithoutPriority}"]]
-        `);
-      }
-    } else {
-      logseq.App.showMsg(
-        "Please use this command at the end of writing out your task"
-      );
-    }
+  logseq.Editor.registerSlashCommand("todoist - send task", async (e) => {
+    const currBlk = (await logseq.Editor.getBlock(e.uuid)) as BlockEntity;
+    sendTask(currBlk.content);
   });
 
   // Register pull command

@@ -2,8 +2,14 @@ import { SettingSchemaDesc } from "@logseq/libs/dist/LSPlugin";
 import { getAllLabels, getAllProjects } from "./helpersTodoist";
 
 export const callSettings = async () => {
-  const allProjects: any[] = await getAllProjects();
-  const allLabels: any[] = await getAllLabels();
+  let allProjects: any[] = await getAllProjects();
+  allProjects = allProjects.map(
+    (i: { name: string; id: string }) => `${i.name} (${i.id})`
+  );
+  let allLabels: any[] = await getAllLabels();
+  allLabels = allLabels.map(
+    (i: { name: string; id: string }) => `${i.name} (${i.id})`
+  );
 
   const settings: SettingSchemaDesc[] = [
     {

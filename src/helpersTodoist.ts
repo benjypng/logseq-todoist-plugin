@@ -18,9 +18,7 @@ export async function getAllProjects() {
     },
   });
 
-  return response.data.map(
-    (i: { name: string; id: string }) => `${i.name} (${i.id})`
-  );
+  return response.data;
 }
 
 // Get all labels
@@ -31,9 +29,7 @@ export const getAllLabels = async () => {
     },
   });
 
-  return response.data.map(
-    (i: { name: string; id: string }) => `${i.name} (${i.id})`
-  );
+  return response.data;
 };
 
 // Get attachments

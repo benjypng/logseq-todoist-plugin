@@ -38,12 +38,9 @@ export async function insertTasksIntoLogseq(todayOrNot?: string) {
       return;
     }
 
-    await logseq.Editor.exitEditingMode();
-
     if (logseq.settings?.clearTasks) {
       try {
         // Mark tasks as complete in Todoist
-        console.log(tasksContentArr.tasksIdArr);
         clearTasks(tasksContentArr.tasksIdArr);
       } catch (e) {
         logseq.App.showMsg(
