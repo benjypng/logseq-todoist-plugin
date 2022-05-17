@@ -15,7 +15,7 @@ const main = async () => {
   // Register push command
   logseq.Editor.registerSlashCommand("todoist - send task", async (e) => {
     const currBlk = (await logseq.Editor.getBlock(e.uuid)) as BlockEntity;
-    sendTask(currBlk.content);
+    sendTask(currBlk.content, currBlk.uuid);
   });
 
   // Register pull command

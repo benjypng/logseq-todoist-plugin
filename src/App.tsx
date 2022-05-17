@@ -50,8 +50,11 @@ export default function App(props: any) {
     if (priority && priority !== "0") data["priority"] = parseInt(priority);
     if (due && due !== "") data["due"] = due;
     data["content"] = props.content;
+    if (logseq.settings!.appendLogseqUri) {
+      data["description"] = `logseq://graph/logseq?block-id=${props.uuid}`;
+    }
 
-    await axios({
+    const sendResponse = await axios({
       method: "post",
       url: "https://api.todoist.com/rest/v1/tasks",
       data,
@@ -59,6 +62,18 @@ export default function App(props: any) {
         Authorization: `Bearer ${logseq.settings!.apiToken}`,
       },
     });
+
+    if (logseq.settings!.appendTodoistUrl) {
+      await logseq.Editor.updateBlock(
+        props.uuid,
+        `${props.content}
+link:: ${sendResponse.data.url}`
+      );
+    }
+
+    window.setTimeout(async function () {
+      await logseq.Editor.exitEditingMode();
+    }, 100);
 
     logseq.hideMainUI();
     setFormData({

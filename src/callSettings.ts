@@ -77,6 +77,22 @@ export const callSettings = async () => {
       enumChoices: allLabels,
       default: "",
     },
+    {
+      key: "appendLogseqUri",
+      title: "Append Logseq URI to Description",
+      description:
+        "If enabled, all tasks sent to Todoist will have the Logseq URI added to the task's description.",
+      type: "boolean",
+      default: true,
+    },
+    {
+      key: "appendTodoistUrl",
+      title: "Append Todoist URL to Block",
+      description:
+        "If enabled, all tasks sent to Todoist will its Todoist url added to the block after sending.",
+      type: "boolean",
+      default: false,
+    },
   ];
   logseq.useSettingsSchema(settings);
 };
