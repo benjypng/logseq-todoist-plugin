@@ -11,7 +11,7 @@ export default function App(props: any) {
     project_id: "",
     label_ids: "",
     priority: "",
-    due: "",
+    due_string: "",
   });
 
   useEffect(() => {
@@ -41,14 +41,14 @@ export default function App(props: any) {
   };
 
   const sendTask = async () => {
-    const { project_id, label_ids, priority, due } = formData;
+    const { project_id, label_ids, priority, due_string } = formData;
     let data: any = {};
     if (project_id && project_id !== "0")
       data["project_id"] = parseInt(project_id);
     if (label_ids && label_ids !== "0")
       data["label_ids"] = [parseInt(label_ids)];
     if (priority && priority !== "0") data["priority"] = parseInt(priority);
-    if (due && due !== "") data["due"] = due;
+    if (due_string && due_string !== "") data["due_string"] = due_string;
     if (logseq.settings!.appendLogseqUri) {
       data[
         "content"
@@ -71,16 +71,12 @@ export default function App(props: any) {
       );
     }
 
-    window.setTimeout(async function () {
-      await logseq.Editor.exitEditingMode();
-    }, 100);
-
     logseq.hideMainUI();
     setFormData({
       project_id: "",
       label_ids: "",
       priority: "",
-      due: "",
+      due_string: "",
     });
     logseq.App.showMsg(`
          [:div.p-2
@@ -162,9 +158,9 @@ export default function App(props: any) {
             <input
               className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
               type="text"
-              name="due"
+              name="due_string"
               onChange={handleInput}
-              value={formData.due}
+              value={formData.due_string}
               placeholder="You can use Todoist's Human defined task due date (ex.: 'next Monday', 'Tomorrow'). Value is set using local (not UTC) time."
             />
           </div>
