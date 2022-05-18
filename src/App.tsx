@@ -49,9 +49,10 @@ export default function App(props: any) {
       data["label_ids"] = [parseInt(label_ids)];
     if (priority && priority !== "0") data["priority"] = parseInt(priority);
     if (due && due !== "") data["due"] = due;
-    data["content"] = props.content;
     if (logseq.settings!.appendLogseqUri) {
-      data["description"] = `logseq://graph/logseq?block-id=${props.uuid}`;
+      data[
+        "content"
+      ] = `[${props.content}](logseq://graph/logseq?block-id=${props.uuid})`;
     }
 
     const sendResponse = await axios({
@@ -66,8 +67,7 @@ export default function App(props: any) {
     if (logseq.settings!.appendTodoistUrl) {
       await logseq.Editor.updateBlock(
         props.uuid,
-        `${props.content}
-link:: ${sendResponse.data.url}`
+        `[${props.content}](${sendResponse.data.url})`
       );
     }
 
