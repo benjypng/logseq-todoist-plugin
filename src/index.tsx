@@ -32,28 +32,6 @@ const main = async () => {
       await insertTasksIntoLogseq("today");
     }
   );
-
-  // Create UI for inserting env variables in settings
-  const createModel = () => {
-    return {
-      show() {
-        logseq.showMainUI();
-      },
-    };
-  };
-
-  logseq.provideModel(createModel());
-
-  // Register UI
-  logseq.App.registerUIItem("toolbar", {
-    key: "logseq-todoist-plugin",
-    template: `
-        <a data-on-click="show"
-          class="button">
-          <i class="ti ti-checkbox"></i>
-        </a>
-  `,
-  });
 };
 
 logseq.ready(main).catch(console.error);
