@@ -84,8 +84,8 @@ export const getProjectName = async (projectId: string) => {
 export const getIdFromProjectAndLabel = (content: string) => {
   const rxId = new RegExp(`(?<=\\()(\\S.*?)(?=\\))`, `g`);
   const id = content.match(rxId);
-  if (id) {
-    return id[0];
+  if (id!.length > 0) {
+    return id![0];
   } else {
     logseq.App.showMsg(
       "Error getting project IDs. Please report an issue on Github."
