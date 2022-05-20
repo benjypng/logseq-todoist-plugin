@@ -217,3 +217,23 @@ ${s.description ? "description:: " + s.description : ""}`,
     };
   }
 };
+
+export async function sendTaskFunction(data: object) {
+  try {
+    const response = await axios({
+      method: "post",
+      url: "https://api.todoist.com/rest/v1/tasks",
+      data,
+      headers: {
+        Authorization: `Bearer ${logseq.settings!.apiToken}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    logseq.App.showMsg(
+      "There is an error sending your task. Please file an issue on Github."
+    );
+  }
+}

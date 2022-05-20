@@ -82,7 +82,7 @@ export default function App(props: any) {
     });
     logseq.App.showMsg(`
          [:div.p-2
-           [:h1 "Task (without priority) sent to your Todoist Inbox!"]
+           [:h1 "Task sent to your Todoist Inbox!"]
            [:h2.text-xl "${props.content}"]]`);
   };
 

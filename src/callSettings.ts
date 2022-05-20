@@ -6,10 +6,13 @@ export const callSettings = async () => {
   allProjects = allProjects.map(
     (i: { name: string; id: string }) => `${i.name} (${i.id})`
   );
+  allProjects.unshift(`---`);
+
   let allLabels: any[] = await getAllLabels();
   allLabels = allLabels.map(
     (i: { name: string; id: string }) => `${i.name} (${i.id})`
   );
+  allLabels.unshift(`---`);
 
   const settings: SettingSchemaDesc[] = [
     {
@@ -55,7 +58,8 @@ export const callSettings = async () => {
     {
       key: "sendDefaultProject",
       title: "Sending Tasks - Default Project",
-      description: "Default project to send tasks to.",
+      description:
+        "Default project to send tasks to. If set, sending tasks will not allow any customisation.",
       type: "enum",
       enumPicker: "select",
       enumChoices: allProjects,
@@ -64,14 +68,16 @@ export const callSettings = async () => {
     {
       key: "sendDefaultDeadline",
       title: "Sending Tasks - Default Deadline",
-      description: "Set deadline as TODAY for all tasks sent to Todoist.",
+      description:
+        "Set deadline as TODAY for all tasks sent to Todoist. If set, sending tasks will not allow any customisation.",
       type: "boolean",
       default: false,
     },
     {
       key: "sendDefaultLabel",
       title: "Sending Tasks - Default Label",
-      description: "Set label for all tasks sent to Todoist.",
+      description:
+        "Set label for all tasks sent to Todoist. If set, sending tasks will not allow any customisation.",
       type: "enum",
       enumPicker: "select",
       enumChoices: allLabels,
