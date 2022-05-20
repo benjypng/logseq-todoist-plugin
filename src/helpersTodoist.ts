@@ -129,17 +129,31 @@ export function removePrefix(content: string) {
 }
 
 export const pullTasks = async (projectId: string, todayOrNot?: string) => {
-  const response = await axios({
-    method: "get",
-    url: "https://api.todoist.com/rest/v1/tasks",
-    params: {
-      project_id: projectId,
-      filter: todayOrNot === "today" ? getYYYYMMDD(new Date()) : "",
-    },
-    headers: {
-      Authorization: `Bearer ${logseq.settings?.apiToken}`,
-    },
-  });
+  let response;
+
+  if (todayOrNot !== "today") {
+    response = await axios({
+      method: "get",
+      url: "https://api.todoist.com/rest/v1/tasks",
+      params: {
+        project_id: projectId,
+      },
+      headers: {
+        Authorization: `Bearer ${logseq.settings?.apiToken}`,
+      },
+    });
+  } else {
+    response = await axios({
+      method: "get",
+      url: "https://api.todoist.com/rest/v1/tasks",
+      params: {
+        filter: getYYYYMMDD(new Date()),
+      },
+      headers: {
+        Authorization: `Bearer ${logseq.settings?.apiToken}`,
+      },
+    });
+  }
 
   if (response.data.length === 0) {
     return { tasksArr: [], tasksIdArr: [] };
