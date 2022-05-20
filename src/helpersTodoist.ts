@@ -12,24 +12,47 @@ function getYYYYMMDD(d: Date) {
 
 // Get all projects
 export async function getAllProjects() {
-  const response = await axios.get(`https://api.todoist.com/rest/v1/projects`, {
-    headers: {
-      Authorization: `Bearer ${logseq.settings!.apiToken}`,
-    },
-  });
+  try {
+    const response = await axios.get(
+      `https://api.todoist.com/rest/v1/projects`,
+      {
+        headers: {
+          Authorization: `Bearer ${logseq.settings!.apiToken}`,
+        },
+      }
+    );
 
-  return response.data;
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return [
+      {
+        name: "Please check that your API token is correct and restart Logseq.",
+        id: "0",
+      },
+    ];
+  }
 }
 
 // Get all labels
 export const getAllLabels = async () => {
-  const response = await axios.get(`https://api.todoist.com/rest/v1/labels`, {
-    headers: {
-      Authorization: `Bearer ${logseq.settings!.apiToken}`,
-    },
-  });
+  try {
+    const response = await axios.get(`https://api.todoist.com/rest/v1/labels`, {
+      headers: {
+        Authorization: `Bearer ${logseq.settings!.apiToken}`,
+      },
+    });
 
-  return response.data;
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return [
+      {
+        name: "Please check that your API token is correct and restart Logseq.",
+        id: "0",
+      },
+    ];
+  }
 };
 
 // Get attachments
@@ -84,7 +107,6 @@ export const getProjectName = async (projectId: string) => {
 export const getIdFromProjectAndLabel = (content: string) => {
   const rxId = new RegExp(`(?<=\\()(\\S.*?)(?=\\))`, `g`);
   const id = content.match(rxId);
-  console.log(id);
   if (id) {
     return id[0];
   } else {
@@ -94,6 +116,17 @@ export const getIdFromProjectAndLabel = (content: string) => {
     return;
   }
 };
+
+export function removePrefix(content: string) {
+  const prefixes = ["TODO", "DOING", "NOW", "LATER", "WAITING"];
+  let newContent: string = content;
+  for (let p of prefixes) {
+    if (newContent.startsWith(p)) {
+      newContent = newContent.replace(p, "");
+    }
+  }
+  return newContent;
+}
 
 export const pullTasks = async (projectId: string, todayOrNot?: string) => {
   const response = await axios({

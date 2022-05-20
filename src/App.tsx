@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import "@logseq/libs";
-import { getAllLabels, getAllProjects } from "./helpersTodoist";
+import { getAllLabels, getAllProjects, removePrefix } from "./helpersTodoist";
 import axios from "axios";
 
 export default function App(props: any) {
@@ -50,9 +50,11 @@ export default function App(props: any) {
     if (priority && priority !== "0") data["priority"] = parseInt(priority);
     if (due_string && due_string !== "") data["due_string"] = due_string;
     if (logseq.settings!.appendLogseqUri) {
-      data[
-        "content"
-      ] = `[${props.content}](logseq://graph/logseq?block-id=${props.uuid})`;
+      data["content"] = `[${removePrefix(
+        props.content
+      )}](logseq://graph/logseq?block-id=${props.uuid})`;
+    } else {
+      data["content"] = removePrefix(props.content);
     }
 
     const sendResponse = await axios({
