@@ -75,7 +75,15 @@ const main = async () => {
 
   // Register pull command
   logseq.Editor.registerSlashCommand("todoist - pull tasks", async () => {
-    await insertTasksIntoLogseq();
+    const id = getIdFromProjectAndLabel(logseq.settings!.pullDefaultProject);
+
+    if (id.startsWith("Error")) {
+      logseq.App.showMsg(
+        "Error getting default project ID. Do you want to pull TODAY's tasks instead?"
+      );
+    } else {
+      await insertTasksIntoLogseq(id);
+    }
   });
 
   // Register pull today's tasks command

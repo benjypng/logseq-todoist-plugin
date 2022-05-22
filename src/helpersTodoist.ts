@@ -110,10 +110,7 @@ export const getIdFromProjectAndLabel = (content: string) => {
   if (id) {
     return id[0];
   } else {
-    logseq.App.showMsg(
-      "Error getting project IDs. Please report an issue on Github."
-    );
-    return;
+    return "Error getting ID from project and label";
   }
 };
 
@@ -128,15 +125,15 @@ export function removePrefix(content: string) {
   return newContent;
 }
 
-export const pullTasks = async (projectId: string, todayOrNot?: string) => {
+export const pullTasks = async (condition: string) => {
   let response;
 
-  if (todayOrNot !== "today") {
+  if (condition === "today") {
     response = await axios({
       method: "get",
       url: "https://api.todoist.com/rest/v1/tasks",
       params: {
-        project_id: projectId,
+        filter: getYYYYMMDD(new Date()),
       },
       headers: {
         Authorization: `Bearer ${logseq.settings?.apiToken}`,
@@ -147,7 +144,7 @@ export const pullTasks = async (projectId: string, todayOrNot?: string) => {
       method: "get",
       url: "https://api.todoist.com/rest/v1/tasks",
       params: {
-        filter: getYYYYMMDD(new Date()),
+        project_id: condition,
       },
       headers: {
         Authorization: `Bearer ${logseq.settings?.apiToken}`,
@@ -163,6 +160,7 @@ export const pullTasks = async (projectId: string, todayOrNot?: string) => {
       if (!t.parent_id) {
         tasksArr.push({
           todoist_id: t.id,
+          project_id: t.project_id,
           content: `TODO ${t.content} ${
             t.comment_count ? `(${await getAttachments(t.id)})` : ""
           }
@@ -210,16 +208,6 @@ ${s.description ? "description:: " + s.description : ""}`,
         }
         continue;
       }
-    }
-
-    // Add project name as a parent block
-    if (logseq.settings!.addParentBlock) {
-      tasksArr = [
-        {
-          content: `[[${await getProjectName(projectId)}]]`,
-          children: [...tasksArr],
-        },
-      ];
     }
 
     // Map id from tasks without Prefix to mark as complete in Todoist
