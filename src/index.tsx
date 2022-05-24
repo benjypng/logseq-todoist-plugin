@@ -6,6 +6,7 @@ import { insertTasksIntoLogseq } from "./helpersLogseq";
 import {
   getIdFromProjectAndLabel,
   removePrefix,
+  removePrefixWhenAddingTodoistUrl,
   sendTaskFunction,
 } from "./helpersTodoist";
 import { sendTask } from "./sendTask";
@@ -60,7 +61,9 @@ const main = async () => {
       if (appendTodoistUrl) {
         await logseq.Editor.updateBlock(
           currBlk.uuid,
-          `[${currBlk.content}](${sendResponse.url})`
+          `${removePrefixWhenAddingTodoistUrl(currBlk.content)}(${
+            sendResponse.url
+          })`
         );
       }
       window.setTimeout(async function () {

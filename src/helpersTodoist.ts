@@ -122,6 +122,23 @@ export function removePrefix(content: string) {
       newContent = newContent.replace(p, "");
     }
   }
+
+  // Remove LOGBOOK if have
+  if (newContent.includes("LOGBOOK")) {
+    newContent = newContent.substring(0, newContent.indexOf("LOGBOOK"));
+  }
+
+  return newContent;
+}
+
+export function removePrefixWhenAddingTodoistUrl(content: string) {
+  const prefixes = ["TODO", "DOING", "NOW", "LATER", "WAITING"];
+  let newContent: string = content;
+  for (let p of prefixes) {
+    if (newContent.startsWith(p)) {
+      newContent = `${p} [${removePrefix(content).trim()}]`;
+    }
+  }
   return newContent;
 }
 
