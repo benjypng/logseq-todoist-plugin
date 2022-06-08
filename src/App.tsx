@@ -4,7 +4,7 @@ import "@logseq/libs";
 import { getAllLabels, getAllProjects, removePrefix } from "./helpersTodoist";
 import axios from "axios";
 
-export default function App(props: any) {
+export default function App(props: {content: string, uuid:string, graphName: string}) {
   const [projects, setProjects] = useState([]) as any[];
   const [labels, setLabels] = useState([]) as any[];
   const [formData, setFormData] = useState({
@@ -52,7 +52,7 @@ export default function App(props: any) {
     if (logseq.settings!.appendLogseqUri) {
       data["content"] = `[${removePrefix(
         props.content
-      )}](logseq://graph/logseq?block-id=${props.uuid})`;
+      )}](logseq://graph/${props.graphName}?block-id=${props.uuid})`;
     } else {
       data["content"] = removePrefix(props.content);
     }

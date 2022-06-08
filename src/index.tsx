@@ -28,12 +28,13 @@ const main = async () => {
       appendTodoistUrl,
     } = logseq.settings!;
 
+    const currGraphName = (await logseq.App.getCurrentGraph())?.name ?? "logseq"
     const currBlk = (await logseq.Editor.getBlock(e.uuid)) as BlockEntity;
 
     await new Promise((r) => setTimeout(r, 2000));
 
     if (!sendDefaultProject && !sendDefaultLabel && !sendDefaultDeadline) {
-      await sendTask(currBlk.content, currBlk.uuid);
+      await sendTask(currBlk.content, currBlk.uuid, currGraphName);
     } else {
       let data: {
         content: string;
@@ -44,7 +45,7 @@ const main = async () => {
         content: appendLogseqUri
           ? `[${removePrefix(
               currBlk.content
-            )}](logseq://graph/logseq?block-id=${currBlk.uuid})`
+            )}](logseq://graph/${currGraphName}?block-id=${currBlk.uuid})`
           : removePrefix(currBlk.content),
       };
       if (sendDefaultProject && sendDefaultProject !== "---")
