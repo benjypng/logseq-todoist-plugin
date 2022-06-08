@@ -134,11 +134,20 @@ export function removePrefix(content: string) {
 export function removePrefixWhenAddingTodoistUrl(content: string) {
   const prefixes = ["TODO", "DOING", "NOW", "LATER", "WAITING"];
   let newContent: string = content;
+  let isTaskBlk = false;
+
   for (let p of prefixes) {
     if (newContent.startsWith(p)) {
+      isTaskBlk = true;
       newContent = `${p} [${removePrefix(content).trim()}]`;
+      break;
     }
   }
+
+  if (!isTaskBlk) {
+    newContent = `[${newContent}]`
+  }
+
   return newContent;
 }
 
