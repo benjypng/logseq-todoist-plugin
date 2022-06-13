@@ -16,7 +16,6 @@ export const callSettings = async () => {
 
   let appendLogseqUriOptions = ["Disable", "Link title", "Link description"]
   let appendLogseqUriDefault = "Disable"
-
   // migrate `appendLogseqUriOptions` to new setting
   if (logseq.settings?.appendLogseqUri !== undefined && typeof logseq.settings?.appendLogseqUri === 'boolean') {
     if (logseq.settings.appendLogseqUri) {
@@ -24,6 +23,18 @@ export const callSettings = async () => {
     }
     logseq.updateSettings({ appendLogseqUri: appendLogseqUriDefault });
   }
+
+  let appendTodoistUriOptions = ["Disable", "Link content", "Append link"]
+  let appendTodoistUriDefault = "Disable"
+  // migrate `appendLogseqUriOptions` to new setting
+  if (logseq.settings?.appendTodoistUrl !== undefined && typeof logseq.settings?.appendLogseqUri === 'boolean') {
+    if (logseq.settings.appendTodoistUrl) {
+      appendLogseqUriDefault = 'Link content';
+    }
+    logseq.updateSettings({ appendTodoistUri: appendTodoistUriDefault });
+  }
+
+
 
   const settings: SettingSchemaDesc[] = [
     {
@@ -109,8 +120,10 @@ export const callSettings = async () => {
       title: "Append Todoist URL to Block",
       description:
         "If enabled, all tasks sent to Todoist will its Todoist url added to the block after sending.",
-      type: "boolean",
-      default: false,
+        type: "enum",
+      enumPicker: "select",
+      enumChoices: appendTodoistUriOptions,
+      default: appendTodoistUriDefault,
     },
   ];
   logseq.useSettingsSchema(settings);
