@@ -72,7 +72,7 @@ export default function App(props: {content: string, uuid:string, graphName: str
       newBlockContent = `[${props.content}](${sendResponse.data.url})`
     }
 
-    if (logseq.settings!.appendTodoistUrl === "Link content") {
+    if (logseq.settings!.appendTodoistUrl === "Append link") {
       newBlockContent = `${props.content} [(todoist)](${sendResponse.data.url})`
     }
 
