@@ -66,12 +66,21 @@ export default function App(props: {content: string, uuid:string, graphName: str
       },
     });
 
-    if (logseq.settings!.appendTodoistUrl) {
-      await logseq.Editor.updateBlock(
-        props.uuid,
-        `[${props.content}](${sendResponse.data.url})`
-      );
+    let newBlockContent = props.content
+
+    if (logseq.settings!.appendTodoistUrl === "Link content") {
+      newBlockContent = `[${props.content}](${sendResponse.data.url})`
     }
+
+    if (logseq.settings!.appendTodoistUrl === "Link content") {
+      newBlockContent = `${props.content} [(todoist)](${sendResponse.data.url})`
+    }
+
+
+    await logseq.Editor.updateBlock(
+      props.uuid,
+      newBlockContent
+    );
 
     logseq.hideMainUI();
     setFormData({

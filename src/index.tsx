@@ -62,14 +62,21 @@ const main = async () => {
         ];
 
       const sendResponse = await sendTaskFunction(data);
-      if (appendTodoistUrl) {
-        await logseq.Editor.updateBlock(
-          currBlk.uuid,
-          `${removePrefixWhenAddingTodoistUrl(currBlk.content)}(${
-            sendResponse.url
-          })`
-        );
+
+      let newBlockContent = currBlk.content
+
+      if (appendTodoistUrl === "Link content") {
+        newBlockContent = `${removePrefixWhenAddingTodoistUrl(currBlk.content)}(${sendResponse.url})`
       }
+
+      if (appendTodoistUrl === "Append link") {
+        newBlockContent = `${currBlk.content} [(todoist)](${sendResponse.url})`
+      }
+      await logseq.Editor.updateBlock(
+        currBlk.uuid,
+        newBlockContent
+      );
+
       window.setTimeout(async function () {
         await logseq.Editor.exitEditingMode();
         logseq.App.showMsg(`
