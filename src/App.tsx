@@ -49,13 +49,13 @@ export default function App(props: {content: string, uuid:string, graphName: str
       data["label_ids"] = [parseInt(label_ids)];
     if (priority && priority !== "0") data["priority"] = parseInt(priority);
     if (due_string && due_string !== "") data["due_string"] = due_string;
-    if (logseq.settings!.appendLogseqUri) {
-      data["content"] = `[${removePrefix(
-        props.content
-      )}](logseq://graph/${props.graphName}?block-id=${props.uuid})`;
-    } else {
-      data["content"] = removePrefix(props.content);
-    }
+
+    let blockUri = `logseq://graph/${props.graphName}?block-id=${props.uuid}`
+    let taskTitle = (logseq.settings!.appendLogseqUri === "Link title") ? `[${removePrefix(props.content)}](${blockUri})` : removePrefix(props.content)
+    let taskDes = (logseq.settings!.appendLogseqUri === "Link description") ? `[(logseq link)](${blockUri})`: ""
+
+    data["content"] = taskTitle;
+    data['description'] = taskDes;
 
     const sendResponse = await axios({
       method: "post",
@@ -66,12 +66,21 @@ export default function App(props: {content: string, uuid:string, graphName: str
       },
     });
 
-    if (logseq.settings!.appendTodoistUrl) {
-      await logseq.Editor.updateBlock(
-        props.uuid,
-        `[${props.content}](${sendResponse.data.url})`
-      );
+    let newBlockContent = props.content
+
+    if (logseq.settings!.appendTodoistUrl === "Link content") {
+      newBlockContent = `[${props.content}](${sendResponse.data.url})`
     }
+
+    if (logseq.settings!.appendTodoistUrl === "Append link") {
+      newBlockContent = `${props.content} [(todoist)](${sendResponse.data.url})`
+    }
+
+
+    await logseq.Editor.updateBlock(
+      props.uuid,
+      newBlockContent
+    );
 
     logseq.hideMainUI();
     setFormData({

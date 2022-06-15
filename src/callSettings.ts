@@ -14,6 +14,28 @@ export const callSettings = async () => {
   );
   allLabels.unshift(`---`);
 
+  let appendLogseqUriOptions = ["Disable", "Link title", "Link description"]
+  let appendLogseqUriDefault = "Disable"
+  // migrate `appendLogseqUriOptions` to new setting
+  if (logseq.settings?.appendLogseqUri !== undefined && typeof logseq.settings?.appendLogseqUri === 'boolean') {
+    if (logseq.settings.appendLogseqUri) {
+      appendLogseqUriDefault = 'Link title';
+    }
+    logseq.updateSettings({ appendLogseqUri: appendLogseqUriDefault });
+  }
+
+  let appendTodoistUrlOptions = ["Disable", "Link content", "Append link"]
+  let appendTodoistUrlDefault = "Disable"
+  // migrate `appendTodoistUrlDefault` to new setting
+  if (logseq.settings?.appendTodoistUrl !== undefined && typeof logseq.settings?.appendTodoistUrl === 'boolean') {
+    if (logseq.settings.appendTodoistUrl) {
+      appendTodoistUrlDefault = 'Link content';
+    }
+    logseq.updateSettings({ appendTodoistUrl: appendTodoistUrlDefault });
+  }
+
+
+
   const settings: SettingSchemaDesc[] = [
     {
       key: "apiToken",
@@ -88,16 +110,20 @@ export const callSettings = async () => {
       title: "Append Logseq URI to Description",
       description:
         "If enabled, all tasks sent to Todoist will have the Logseq URI added to the task's description.",
-      type: "boolean",
-      default: true,
+      type: "enum",
+      enumPicker: "select",
+      enumChoices: appendLogseqUriOptions,
+      default: appendLogseqUriDefault,
     },
     {
       key: "appendTodoistUrl",
       title: "Append Todoist URL to Block",
       description:
         "If enabled, all tasks sent to Todoist will its Todoist url added to the block after sending.",
-      type: "boolean",
-      default: false,
+        type: "enum",
+      enumPicker: "select",
+      enumChoices: appendTodoistUrlOptions,
+      default: appendTodoistUrlDefault,
     },
   ];
   logseq.useSettingsSchema(settings);

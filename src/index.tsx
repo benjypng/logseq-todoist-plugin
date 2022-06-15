@@ -36,18 +36,21 @@ const main = async () => {
     if (!sendDefaultProject && !sendDefaultLabel && !sendDefaultDeadline) {
       await sendTask(currBlk.content, currBlk.uuid, currGraphName);
     } else {
+      let blockUri = `logseq://graph/${currGraphName}?block-id=${currBlk.uuid}`
+      let taskTitle = (appendLogseqUri === "Link title") ? `[${removePrefix(currBlk.content)}](${blockUri})` : removePrefix(currBlk.content)
+      let taskDes = (appendLogseqUri === "Link description") ? `[(logseq link)](${blockUri})`: ""
+
       let data: {
         content: string;
+        description?: string;
         project_id?: number;
         due_string?: string;
         label_ids?: number[];
       } = {
-        content: appendLogseqUri
-          ? `[${removePrefix(
-              currBlk.content
-            )}](logseq://graph/${currGraphName}?block-id=${currBlk.uuid})`
-          : removePrefix(currBlk.content),
+        content: taskTitle,
+        description: taskDes,
       };
+
       if (sendDefaultProject && sendDefaultProject !== "---")
         data["project_id"] = parseInt(
           getIdFromProjectAndLabel(sendDefaultProject) as string
@@ -59,14 +62,21 @@ const main = async () => {
         ];
 
       const sendResponse = await sendTaskFunction(data);
-      if (appendTodoistUrl) {
-        await logseq.Editor.updateBlock(
-          currBlk.uuid,
-          `${removePrefixWhenAddingTodoistUrl(currBlk.content)}(${
-            sendResponse.url
-          })`
-        );
+
+      let newBlockContent = currBlk.content
+
+      if (appendTodoistUrl === "Link content") {
+        newBlockContent = `${removePrefixWhenAddingTodoistUrl(currBlk.content)}(${sendResponse.url})`
       }
+
+      if (appendTodoistUrl === "Append link") {
+        newBlockContent = `${currBlk.content} [(todoist)](${sendResponse.url})`
+      }
+      await logseq.Editor.updateBlock(
+        currBlk.uuid,
+        newBlockContent
+      );
+
       window.setTimeout(async function () {
         await logseq.Editor.exitEditingMode();
         logseq.App.showMsg(`
