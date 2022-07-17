@@ -178,6 +178,7 @@ export const pullTasks = async (condition: string) => {
     });
   }
 
+  const prefix = logseq.settings?.pullDefaultAppend ? "TODO " : "";
   if (response.data.length === 0) {
     return { tasksArr: [], tasksIdArr: [] };
   } else {
@@ -187,7 +188,7 @@ export const pullTasks = async (condition: string) => {
         tasksArr.push({
           todoist_id: t.id,
           project_id: t.project_id,
-          content: `TODO ${t.content} ${
+          content: `${prefix}${t.content} ${
             t.comment_count ? `(${await getAttachments(t.id)})` : ""
           }
 ${
@@ -221,7 +222,7 @@ ${t.description ? "description:: " + t.description : ""}`,
       for (let s of subTasks) {
         if (s.parent_id === m.todoist_id) {
           m.children.push({
-            content: `TODO ${s.content}
+            content: `${prefix}${s.content}
 ${
   s.due
     ? `SCHEDULED: <${getScheduledDeadlineDateDay(new Date(s.due.date))}${
