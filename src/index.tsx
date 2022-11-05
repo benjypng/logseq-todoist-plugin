@@ -28,7 +28,8 @@ const main = async () => {
       appendTodoistUrl,
     } = logseq.settings!;
 
-    const currGraphName = (await logseq.App.getCurrentGraph())?.name ?? "logseq"
+    const currGraphName =
+      (await logseq.App.getCurrentGraph())?.name ?? "logseq";
     const currBlk = (await logseq.Editor.getBlock(e.uuid)) as BlockEntity;
 
     await new Promise((r) => setTimeout(r, 2000));
@@ -36,9 +37,15 @@ const main = async () => {
     if (!sendDefaultProject && !sendDefaultLabel && !sendDefaultDeadline) {
       await sendTask(currBlk.content, currBlk.uuid, currGraphName);
     } else {
-      let blockUri = `logseq://graph/${currGraphName}?block-id=${currBlk.uuid}`
-      let taskTitle = (appendLogseqUri === "Link title") ? `[${removePrefix(currBlk.content)}](${blockUri})` : removePrefix(currBlk.content)
-      let taskDes = (appendLogseqUri === "Link description") ? `[(logseq link)](${blockUri})`: ""
+      let blockUri = `logseq://graph/${currGraphName}?block-id=${currBlk.uuid}`;
+      let taskTitle =
+        appendLogseqUri === "Link title"
+          ? `[${removePrefix(currBlk.content)}](${blockUri})`
+          : removePrefix(currBlk.content);
+      let taskDes =
+        appendLogseqUri === "Link description"
+          ? `[(logseq link)](${blockUri})`
+          : "";
 
       let data: {
         content: string;
@@ -63,19 +70,18 @@ const main = async () => {
 
       const sendResponse = await sendTaskFunction(data);
 
-      let newBlockContent = currBlk.content
+      let newBlockContent = currBlk.content;
 
       if (appendTodoistUrl === "Link content") {
-        newBlockContent = `${removePrefixWhenAddingTodoistUrl(currBlk.content)}(${sendResponse.url})`
+        newBlockContent = `${removePrefixWhenAddingTodoistUrl(
+          currBlk.content
+        )}(${sendResponse.url})`;
       }
 
       if (appendTodoistUrl === "Append link") {
-        newBlockContent = `${currBlk.content} [(todoist)](${sendResponse.url})`
+        newBlockContent = `${currBlk.content} [(todoist)](${sendResponse.url})`;
       }
-      await logseq.Editor.updateBlock(
-        currBlk.uuid,
-        newBlockContent
-      );
+      await logseq.Editor.updateBlock(currBlk.uuid, newBlockContent);
 
       window.setTimeout(async function () {
         await logseq.Editor.exitEditingMode();
@@ -107,6 +113,13 @@ const main = async () => {
       await insertTasksIntoLogseq("today");
     }
   );
+
+  // For use with daily template
+  logseq.App.onMacroRendererSlotted(async function ({ slot, payload }) {
+    const [type] = payload.arguments;
+    if (!type.startsWith(":todoist_")) return;
+    await insertTasksIntoLogseq("today");
+  });
 };
 
 logseq.ready(main).catch(console.error);

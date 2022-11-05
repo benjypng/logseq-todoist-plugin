@@ -14,27 +14,31 @@ export const callSettings = async () => {
   );
   allLabels.unshift(`---`);
 
-  let appendLogseqUriOptions = ["Disable", "Link title", "Link description"]
-  let appendLogseqUriDefault = "Disable"
+  let appendLogseqUriOptions = ["Disable", "Link title", "Link description"];
+  let appendLogseqUriDefault = "Disable";
   // migrate `appendLogseqUriOptions` to new setting
-  if (logseq.settings?.appendLogseqUri !== undefined && typeof logseq.settings?.appendLogseqUri === 'boolean') {
+  if (
+    logseq.settings?.appendLogseqUri !== undefined &&
+    typeof logseq.settings?.appendLogseqUri === "boolean"
+  ) {
     if (logseq.settings.appendLogseqUri) {
-      appendLogseqUriDefault = 'Link title';
+      appendLogseqUriDefault = "Link title";
     }
     logseq.updateSettings({ appendLogseqUri: appendLogseqUriDefault });
   }
 
-  let appendTodoistUrlOptions = ["Disable", "Link content", "Append link"]
-  let appendTodoistUrlDefault = "Disable"
+  let appendTodoistUrlOptions = ["Disable", "Link content", "Append link"];
+  let appendTodoistUrlDefault = "Disable";
   // migrate `appendTodoistUrlDefault` to new setting
-  if (logseq.settings?.appendTodoistUrl !== undefined && typeof logseq.settings?.appendTodoistUrl === 'boolean') {
+  if (
+    logseq.settings?.appendTodoistUrl !== undefined &&
+    typeof logseq.settings?.appendTodoistUrl === "boolean"
+  ) {
     if (logseq.settings.appendTodoistUrl) {
-      appendTodoistUrlDefault = 'Link content';
+      appendTodoistUrlDefault = "Link content";
     }
     logseq.updateSettings({ appendTodoistUrl: appendTodoistUrlDefault });
   }
-
-
 
   const settings: SettingSchemaDesc[] = [
     {
@@ -120,10 +124,18 @@ export const callSettings = async () => {
       title: "Append Todoist URL to Block",
       description:
         "If enabled, all tasks sent to Todoist will its Todoist url added to the block after sending.",
-        type: "enum",
+      type: "enum",
       enumPicker: "select",
       enumChoices: appendTodoistUrlOptions,
       default: appendTodoistUrlDefault,
+    },
+    {
+      key: "appOrWebLink",
+      title: "Select App or Web links as default when sending tasks",
+      description:
+        "Chooses whether you prefer your links to be app links or web links.",
+      type: "string",
+      default: "app",
     },
   ];
   logseq.useSettingsSchema(settings);
