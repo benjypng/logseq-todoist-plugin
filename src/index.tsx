@@ -116,9 +116,11 @@ const main = async () => {
 
   // For use with daily template
   logseq.App.onMacroRendererSlotted(async function ({ slot, payload }) {
+    const uuid = payload.uuid;
     const [type] = payload.arguments;
     if (!type.startsWith(":todoist_")) return;
     await insertTasksIntoLogseq("today");
+    await logseq.Editor.removeBlock(uuid);
   });
 };
 
