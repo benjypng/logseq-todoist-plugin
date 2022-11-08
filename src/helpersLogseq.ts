@@ -27,7 +27,8 @@ export async function insertTasksIntoLogseq(condition: string) {
       if (logseq.settings!.addParentBlock) {
         const projectNameBlk = await logseq.Editor.insertBlock(
           currBlk!.uuid,
-          `[[${await getProjectName(condition)}]]`
+          `[[${await getProjectName(condition)}]]`,
+          { sibling: true }
         );
         await logseq.Editor.insertBatchBlock(
           projectNameBlk!.uuid,
@@ -80,8 +81,6 @@ export async function insertTasksIntoLogseq(condition: string) {
             );
           }
         }
-
-        await logseq.Editor.removeBlock(currBlk.uuid);
       } else {
         await logseq.Editor.insertBatchBlock(
           currBlk!.uuid,
@@ -90,6 +89,8 @@ export async function insertTasksIntoLogseq(condition: string) {
         );
       }
     }
+
+    await logseq.Editor.removeBlock(currBlk.uuid);
 
     if (logseq.settings?.clearTasks) {
       try {
