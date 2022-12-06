@@ -14,7 +14,7 @@ function getYYYYMMDD(d: Date) {
 export async function getAllProjects() {
   try {
     const response = await axios.get(
-      `https://api.todoist.com/rest/v1/projects`,
+      `https://api.todoist.com/rest/v2/projects`,
       {
         headers: {
           Authorization: `Bearer ${logseq.settings!.apiToken}`,
@@ -37,7 +37,7 @@ export async function getAllProjects() {
 // Get all labels
 export const getAllLabels = async () => {
   try {
-    const response = await axios.get(`https://api.todoist.com/rest/v1/labels`, {
+    const response = await axios.get(`https://api.todoist.com/rest/v2/labels`, {
       headers: {
         Authorization: `Bearer ${logseq.settings!.apiToken}`,
       },
@@ -58,7 +58,7 @@ export const getAllLabels = async () => {
 // Get attachments
 async function getAttachments(taskId: number) {
   const response = await axios({
-    url: `https://api.todoist.com/rest/v1/comments`,
+    url: `https://api.todoist.com/rest/v2/comments`,
     method: "get",
     headers: {
       Authorization: `Bearer ${logseq.settings?.apiToken}`,
@@ -82,7 +82,7 @@ export const clearTasks = async (tasksIdArr: number[]) => {
   for (let i of tasksIdArr) {
     console.log(`Clearing ${i}`);
     await axios({
-      url: `https://api.todoist.com/rest/v1/tasks/${i}/close`,
+      url: `https://api.todoist.com/rest/v2/tasks/${i}/close`,
       method: "POST",
       headers: {
         Authorization: `Bearer ${logseq.settings?.apiToken}`,
@@ -94,7 +94,7 @@ export const clearTasks = async (tasksIdArr: number[]) => {
 // Get project name from Project ID
 export const getProjectName = async (projectId: string) => {
   const project = await axios.get(
-    `https://api.todoist.com/rest/v1/projects/${projectId}`,
+    `https://api.todoist.com/rest/v2/projects/${projectId}`,
     {
       headers: {
         Authorization: `Bearer ${logseq.settings?.apiToken}`,
@@ -145,7 +145,7 @@ export function removePrefixWhenAddingTodoistUrl(content: string) {
   }
 
   if (!isTaskBlk) {
-    newContent = `[${newContent}]`
+    newContent = `[${newContent}]`;
   }
 
   return newContent;
@@ -157,7 +157,7 @@ export const pullTasks = async (condition: string) => {
   if (condition === "today") {
     response = await axios({
       method: "get",
-      url: "https://api.todoist.com/rest/v1/tasks",
+      url: "https://api.todoist.com/rest/v2/tasks",
       params: {
         filter: getYYYYMMDD(new Date()),
       },
@@ -168,7 +168,7 @@ export const pullTasks = async (condition: string) => {
   } else {
     response = await axios({
       method: "get",
-      url: "https://api.todoist.com/rest/v1/tasks",
+      url: "https://api.todoist.com/rest/v2/tasks",
       params: {
         project_id: condition,
       },
@@ -250,7 +250,7 @@ export async function sendTaskFunction(data: object) {
   try {
     const response = await axios({
       method: "post",
-      url: "https://api.todoist.com/rest/v1/tasks",
+      url: "https://api.todoist.com/rest/v2/tasks",
       data,
       headers: {
         Authorization: `Bearer ${logseq.settings!.apiToken}`,

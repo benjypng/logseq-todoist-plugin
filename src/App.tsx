@@ -4,7 +4,11 @@ import "@logseq/libs";
 import { getAllLabels, getAllProjects, removePrefix } from "./helpersTodoist";
 import axios from "axios";
 
-export default function App(props: {content: string, uuid:string, graphName: string}) {
+export default function App(props: {
+  content: string;
+  uuid: string;
+  graphName: string;
+}) {
   const [projects, setProjects] = useState([]) as any[];
   const [labels, setLabels] = useState([]) as any[];
   const [formData, setFormData] = useState({
@@ -50,37 +54,39 @@ export default function App(props: {content: string, uuid:string, graphName: str
     if (priority && priority !== "0") data["priority"] = parseInt(priority);
     if (due_string && due_string !== "") data["due_string"] = due_string;
 
-    let blockUri = `logseq://graph/${props.graphName}?block-id=${props.uuid}`
-    let taskTitle = (logseq.settings!.appendLogseqUri === "Link title") ? `[${removePrefix(props.content)}](${blockUri})` : removePrefix(props.content)
-    let taskDes = (logseq.settings!.appendLogseqUri === "Link description") ? `[(logseq link)](${blockUri})`: ""
+    let blockUri = `logseq://graph/${props.graphName}?block-id=${props.uuid}`;
+    let taskTitle =
+      logseq.settings!.appendLogseqUri === "Link title"
+        ? `[${removePrefix(props.content)}](${blockUri})`
+        : removePrefix(props.content);
+    let taskDes =
+      logseq.settings!.appendLogseqUri === "Link description"
+        ? `[(logseq link)](${blockUri})`
+        : "";
 
     data["content"] = taskTitle;
-    data['description'] = taskDes;
+    data["description"] = taskDes;
 
     const sendResponse = await axios({
       method: "post",
-      url: "https://api.todoist.com/rest/v1/tasks",
+      url: "https://api.todoist.com/rest/v2/tasks",
       data,
       headers: {
         Authorization: `Bearer ${logseq.settings!.apiToken}`,
       },
     });
 
-    let newBlockContent = props.content
+    let newBlockContent = props.content;
 
     if (logseq.settings!.appendTodoistUrl === "Link content") {
-      newBlockContent = `[${props.content}](${sendResponse.data.url})`
+      newBlockContent = `[${props.content}](${sendResponse.data.url})`;
     }
 
     if (logseq.settings!.appendTodoistUrl === "Append link") {
-      newBlockContent = `${props.content} [(todoist)](${sendResponse.data.url})`
+      newBlockContent = `${props.content} [(todoist)](${sendResponse.data.url})`;
     }
 
-
-    await logseq.Editor.updateBlock(
-      props.uuid,
-      newBlockContent
-    );
+    await logseq.Editor.updateBlock(props.uuid, newBlockContent);
 
     logseq.hideMainUI();
     setFormData({
