@@ -1,4 +1,9 @@
-import { Label, Project, TodoistApi } from "@doist/todoist-api-typescript";
+import {
+  Label,
+  Project,
+  Task,
+  TodoistApi,
+} from "@doist/todoist-api-typescript";
 
 export async function getAllProjects() {
   const api = new TodoistApi(logseq.settings!.apiToken);
@@ -30,10 +35,12 @@ export async function sendTaskToLogseq(
   deadline: string
 ) {
   const api = new TodoistApi(logseq.settings!.apiToken);
+
   const graphName = (await logseq.App.getCurrentGraph())!.name;
   if (logseq.settings!.sendAppendUri) {
     content = `[${content}](logseq://graph/${graphName}?block-id=${uuid})`;
   }
+
   try {
     await api.addTask({
       content: content,
@@ -50,4 +57,38 @@ export async function sendTaskToLogseq(
       "error"
     );
   }
+}
+
+export async function retrieveTasks() {
+  const api = new TodoistApi(logseq.settings!.apiToken);
+
+  const allTasks: Task[] = await api.getTasks();
+
+  let parentTasks = allTasks
+    .filter((task) => !task.parentId)
+    .map((task) => ({
+      todoistId: task.id,
+      content: task.content,
+      subTasks: [],
+    }));
+
+  // TODO Need to create custom type for parentTasks
+  function recursion(parentTasks: any[], allTasks: Task[]) {
+    for (const t of allTasks) {
+      for (const u of parentTasks) {
+        if (t.parentId === u.todoistId) {
+          u.subTasks.push({
+            todoistId: t.id,
+            content: t.content,
+            subTasks: [],
+          });
+          recursion(u.subTasks, allTasks);
+        }
+      }
+    }
+  }
+
+  recursion(parentTasks, allTasks);
+
+  return allTasks;
 }

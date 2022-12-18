@@ -6,7 +6,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import SendTask from "./components/SendTask";
 import "./App.css";
-import { sendTaskToLogseq } from "./services/todoistHelpers";
+import { retrieveTasks, sendTaskToLogseq } from "./services/todoistHelpers";
 import getIdFromString from "./utils/getIdFromString";
 
 async function main() {
@@ -27,7 +27,7 @@ async function main() {
       sendDefaultLabel !== "--- ---" ||
       sendDefaultDeadline
     ) {
-      await sendTaskToLogseq(
+      sendTaskToLogseq(
         e.uuid,
         content,
         getIdFromString(sendDefaultProject),
@@ -51,13 +51,17 @@ async function main() {
   });
 
   // PULL TASKS
-  logseq.Editor.registerSlashCommand("Todoist: Pull Tasks", async function () {
-    // Insert here
-  });
+  logseq.Editor.registerSlashCommand(
+    "Todoist: Retrieve Tasks",
+    async function () {
+      // Insert here
+      retrieveTasks();
+    }
+  );
 
   // PULL TODAY's TASKS
   logseq.Editor.registerSlashCommand(
-    "Todoist: Pull Today's Tasks",
+    "Todoist: Retrieve Today's Tasks",
     async function () {
       // Insert here
     }
