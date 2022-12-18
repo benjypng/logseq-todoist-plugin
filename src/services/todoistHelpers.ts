@@ -5,7 +5,6 @@ import {
   TodoistApi,
 } from "@doist/todoist-api-typescript";
 import {
-  getIdFromString,
   getNameFromString,
   handleContentWithUrlAndTodo,
 } from "../utils/parseStrings";
@@ -80,17 +79,21 @@ async function retrieveTasksHelper(flag: string) {
       return {
         content: handleContentWithUrlAndTodo(task.content, task),
         children: [],
+        todoistId: task.id,
       };
     });
 
-  // TODO Need to create custom type for parentTasks
-  function recursion(parentTasks: any[], allTasks: Task[]) {
+  function recursion(
+    parentTasks: { content: string; children: any[]; todoistId: string }[],
+    allTasks: Task[]
+  ) {
     for (const t of allTasks) {
       for (const u of parentTasks) {
         if (t.parentId === u.todoistId) {
           u.children.push({
             content: handleContentWithUrlAndTodo(t.content, t),
             children: [],
+            todoistId: t.id,
           });
           recursion(u.children, allTasks);
         }
