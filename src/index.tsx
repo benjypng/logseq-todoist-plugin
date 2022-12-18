@@ -7,7 +7,7 @@ import ReactDOM from "react-dom";
 import SendTask from "./components/SendTask";
 import "./App.css";
 import { retrieveTasks, sendTaskToLogseq } from "./services/todoistHelpers";
-import { getIdFromString, getNameFromString } from "./utils/parseStrings";
+import { getIdFromString } from "./utils/parseStrings";
 
 async function main() {
   console.log("logseq-todoist-plugin loaded");

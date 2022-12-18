@@ -1,3 +1,5 @@
+import { getDayInText } from "logseq-dateutils";
+
 export function getIdFromString(content: string) {
   const regExp = /\((.*?)\)/;
   const matched = regExp.exec(content.trim());
@@ -17,6 +19,13 @@ export function handleContentWithUrlAndTodo(content: string, task: any) {
 
   content = retrieveAppendUrl ? `[${content}](${task.url})` : content;
   content = retrieveAppendTodo ? `TODO ${content}` : content;
+  content = task.due
+    ? `TODO ${content}
+DEADLINE: <${task.due.date} ${getDayInText(new Date(task.due.date)).substring(
+        0,
+        3
+      )}>`
+    : content;
 
   return content;
 }
