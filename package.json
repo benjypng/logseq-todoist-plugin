@@ -13,7 +13,7 @@
     "main": false
   },
   "scripts": {
-    "build": "rm -R dist && echo 'dist folder removed'; postcss src/tailwind.css -o src/App.css && parcel build --no-source-maps src/index.html --public-url ./"
+    "build": "rm -R dist && echo 'dist folder removed'; postcss src/tailwind.css -o src/App.css && parcel build --no-source-maps --no-optimize src/index.html --public-url ./"
   },
   "license": "MIT",
   "dependencies": {
@@ -28,6 +28,7 @@
     "@types/node": "^18.11.16",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
+    "buffer": "^5.5.0",
     "cssnano": "^5.1.14",
     "parcel": "^2.8.2",
     "postcss": "^8.4.20",
