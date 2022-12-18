@@ -7,7 +7,7 @@ import ReactDOM from "react-dom";
 import SendTask from "./components/SendTask";
 import "./App.css";
 import { retrieveTasks, sendTaskToLogseq } from "./services/todoistHelpers";
-import getIdFromString from "./utils/getIdFromString";
+import { getIdFromString, getNameFromString } from "./utils/parseStrings";
 
 async function main() {
   console.log("logseq-todoist-plugin loaded");
@@ -53,17 +53,19 @@ async function main() {
   // PULL TASKS
   logseq.Editor.registerSlashCommand(
     "Todoist: Retrieve Tasks",
-    async function () {
-      // Insert here
-      retrieveTasks();
+    async function (e) {
+      retrieveTasks(
+        e,
+        getIdFromString(logseq.settings!.retrieveDefaultProject)
+      );
     }
   );
 
   // PULL TODAY's TASKS
   logseq.Editor.registerSlashCommand(
     "Todoist: Retrieve Today's Tasks",
-    async function () {
-      // Insert here
+    async function (e) {
+      retrieveTasks(e, "today");
     }
   );
 }

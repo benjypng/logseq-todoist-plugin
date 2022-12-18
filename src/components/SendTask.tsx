@@ -4,7 +4,7 @@ import {
   getAllProjects,
   sendTaskToLogseq,
 } from "../services/todoistHelpers";
-import getIdFromString from "../utils/getIdFromString";
+import { getIdFromString } from "../utils/parseStrings";
 
 export default function SendTask(props: { content: string; uuid: string }) {
   const [params, setParams] = useState<{

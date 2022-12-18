@@ -4,6 +4,11 @@ import {
   Task,
   TodoistApi,
 } from "@doist/todoist-api-typescript";
+import {
+  getIdFromString,
+  getNameFromString,
+  handleContentWithUrlAndTodo,
+} from "../utils/parseStrings";
 
 export async function getAllProjects() {
   const api = new TodoistApi(logseq.settings!.apiToken);
@@ -59,30 +64,35 @@ export async function sendTaskToLogseq(
   }
 }
 
-export async function retrieveTasks() {
+async function retrieveTasksHelper(flag: string) {
   const api = new TodoistApi(logseq.settings!.apiToken);
+  let allTasks: Task[] = [];
 
-  const allTasks: Task[] = await api.getTasks();
+  if (flag === "today") {
+    allTasks = await api.getTasks({ filter: flag });
+  } else {
+    allTasks = await api.getTasks({ projectId: flag });
+  }
 
   let parentTasks = allTasks
     .filter((task) => !task.parentId)
-    .map((task) => ({
-      todoistId: task.id,
-      content: task.content,
-      subTasks: [],
-    }));
+    .map((task) => {
+      return {
+        content: handleContentWithUrlAndTodo(task.content, task),
+        children: [],
+      };
+    });
 
   // TODO Need to create custom type for parentTasks
   function recursion(parentTasks: any[], allTasks: Task[]) {
     for (const t of allTasks) {
       for (const u of parentTasks) {
         if (t.parentId === u.todoistId) {
-          u.subTasks.push({
-            todoistId: t.id,
-            content: t.content,
-            subTasks: [],
+          u.children.push({
+            content: handleContentWithUrlAndTodo(t.content, t),
+            children: [],
           });
-          recursion(u.subTasks, allTasks);
+          recursion(u.children, allTasks);
         }
       }
     }
@@ -90,5 +100,35 @@ export async function retrieveTasks() {
 
   recursion(parentTasks, allTasks);
 
-  return allTasks;
+  if (logseq.settings!.retrieveClearTasks) {
+    allTasks.map(async (task) => await api.closeTask(task.id));
+  }
+
+  return parentTasks;
+}
+
+export async function retrieveTasks(event: { uuid: string }, flag: string) {
+  const { retrieveDefaultProject, projectNameAsParentBlk } = logseq.settings!;
+
+  if (retrieveDefaultProject === "--- ---" || !retrieveDefaultProject) {
+    logseq.UI.showMsg(
+      "Please select a default project in the plugin settings!",
+      "error"
+    );
+    return;
+  }
+
+  const tasksArr = await retrieveTasksHelper(flag);
+
+  projectNameAsParentBlk
+    ? await logseq.Editor.updateBlock(
+        event.uuid,
+        `[[${getNameFromString(retrieveDefaultProject)}]]`
+      )
+    : "";
+
+  await logseq.Editor.insertBatchBlock(event.uuid, tasksArr, {
+    sibling: !projectNameAsParentBlk,
+    before: false,
+  });
 }

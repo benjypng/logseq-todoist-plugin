@@ -57,13 +57,50 @@ export default async function callSettings() {
       key: "",
       type: "heading",
       default: "",
-      title: "Pulling Tasks",
+      title: "Retrieving Tasks",
       description: "",
     },
-    // Default pull project
-    // Default pull append todo
-    // Default clear tasks
-    // Default add project name as parent block
+    {
+      key: "retrieveDefaultProject",
+      type: "enum",
+      default: "",
+      enumChoices: await getAllProjects(),
+      enumPicker: "select",
+      title: "Default Project",
+      description: "Default project to retrieve tasks from",
+    },
+    {
+      key: "projectNameAsParentBlk",
+      type: "boolean",
+      default: false,
+      title: "Set Project Name as Parent Block",
+      description:
+        "If true, tasks will be added under a parent block with their project name.",
+    },
+    {
+      key: "retrieveAppendTodo",
+      type: "boolean",
+      default: true,
+      title: "Append TODO",
+      description:
+        "If set to true, all retrieved tasks will have a TODO appended.",
+    },
+    {
+      key: "retrieveAppendUrl",
+      type: "boolean",
+      default: false,
+      title: "Append URL",
+      description:
+        "If set to true, all retrieved tasks will have a Todoist URL appended.",
+    },
+    {
+      key: "retrieveClearTasks",
+      type: "boolean",
+      default: false,
+      title: "Clear Tasks from Todoist",
+      description:
+        "If set to true, retrieved tasks will be deleted in Todoist.",
+    },
   ];
   logseq.useSettingsSchema(settings);
 }
