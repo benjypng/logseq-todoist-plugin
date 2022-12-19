@@ -63,6 +63,37 @@ export async function sendTaskToLogseq(
   }
 }
 
+async function handleComments(
+  taskId: string,
+  obj: {
+    content: string;
+    children: any[];
+    todoistId: string;
+    properties: { attachment: string; comments: string };
+  }
+) {
+  const api = new TodoistApi(logseq.settings!.apiToken);
+  const comments = await api.getComments({ taskId: taskId });
+  if (comments.length > 0) {
+    for (const comment of comments) {
+      if (comment.attachment) {
+        obj[
+          "properties"
+        ].attachment = `[${comment.attachment.fileName}](${comment.attachment.fileUrl})`;
+      }
+      if (comment.content) {
+        let content = obj["properties"].comments;
+        obj["properties"].comments = (
+          content +
+          ", " +
+          comment.content
+        ).substring(1);
+      }
+    }
+  }
+  return obj;
+}
+
 async function retrieveTasksHelper(flag: string) {
   const api = new TodoistApi(logseq.settings!.apiToken);
   let allTasks: Task[] = [];
@@ -73,35 +104,54 @@ async function retrieveTasksHelper(flag: string) {
     allTasks = await api.getTasks({ projectId: flag });
   }
 
-  let parentTasks = allTasks
-    .filter((task) => !task.parentId)
-    .map((task) => {
-      return {
+  let parentTasks: any[] = [];
+
+  for (const task of allTasks) {
+    if (!task.parentId) {
+      let obj = {
         content: handleContentWithUrlAndTodo(task.content, task),
         children: [],
         todoistId: task.id,
+        properties: {
+          attachment: "",
+          comments: "",
+        },
       };
-    });
 
-  function recursion(
+      const finalObj = await handleComments(task.id, obj);
+
+      parentTasks.push(finalObj);
+    }
+  }
+
+  async function recursion(
     parentTasks: { content: string; children: any[]; todoistId: string }[],
     allTasks: Task[]
   ) {
     for (const t of allTasks) {
       for (const u of parentTasks) {
         if (t.parentId === u.todoistId) {
-          u.children.push({
+          let obj = {
             content: handleContentWithUrlAndTodo(t.content, t),
             children: [],
             todoistId: t.id,
-          });
+            properties: {
+              attachment: "",
+              comments: "",
+            },
+          };
+
+          const finalObj = await handleComments(t.id, obj);
+
+          u.children.push(finalObj);
+
           recursion(u.children, allTasks);
         }
       }
     }
   }
 
-  recursion(parentTasks, allTasks);
+  await recursion(parentTasks, allTasks);
 
   if (logseq.settings!.retrieveClearTasks) {
     allTasks.map(async (task) => await api.closeTask(task.id));
