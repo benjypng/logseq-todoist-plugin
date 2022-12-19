@@ -8,6 +8,7 @@ import SendTask from "./components/SendTask";
 import "./App.css";
 import { retrieveTasks, sendTaskToLogseq } from "./services/todoistHelpers";
 import { getIdFromString } from "./utils/parseStrings";
+import generateUniqueId from "./utils/generateUniqueId";
 
 async function main() {
   console.log("logseq-todoist-plugin loaded");
@@ -66,6 +67,15 @@ async function main() {
     "Todoist: Retrieve Today's Tasks",
     async function (e) {
       retrieveTasks(e, "today");
+    }
+  );
+
+  logseq.Editor.registerSlashCommand(
+    "Todoist: Insert sync block",
+    async function () {
+      await logseq.Editor.insertAtEditingCursor(
+        `{{renderer :todoistsync_${generateUniqueId()}}}`
+      );
     }
   );
 }
