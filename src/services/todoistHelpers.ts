@@ -31,6 +31,18 @@ export async function getAllLabels() {
   return labelArr;
 }
 
+function removeTaskFlags(content: string) {
+  const taskFlags = ["TODO", "DOING", "NOW", "LATER", "DONE"];
+
+  for (const flag of taskFlags) {
+    if (content.includes(flag)) {
+      content = content.replace(`${flag} `, "");
+    }
+  }
+
+  return content;
+}
+
 export async function sendTaskToLogseq(
   uuid: string,
   content: string,
@@ -47,7 +59,7 @@ export async function sendTaskToLogseq(
 
   try {
     await api.addTask({
-      content: content,
+      content: removeTaskFlags(content),
       dueString: deadline,
       labels: [label],
       // Below is to handle empty projectIds since Todoist does not accept a blank string if no projectId exists
