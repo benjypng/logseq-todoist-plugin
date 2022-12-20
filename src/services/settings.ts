@@ -101,6 +101,21 @@ export default async function callSettings() {
       description:
         "If set to true, retrieved tasks will be deleted in Todoist.",
     },
+    {
+      key: "",
+      type: "heading",
+      default: "",
+      title: "Todoist Sync",
+      description: "",
+    },
+    {
+      key: "enableTodoistSync",
+      type: "boolean",
+      default: false,
+      title: "Enable Todoist Sync",
+      description:
+        "If set to true, Todoist Sync will be enabled. The default retrieve project identified above will be used as the synchronising project",
+    },
   ];
   logseq.useSettingsSchema(settings);
 }

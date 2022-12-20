@@ -4,7 +4,9 @@ import {
   Task,
   TodoistApi,
 } from "@doist/todoist-api-typescript";
+import { BlockEntity } from "@logseq/libs/dist/LSPlugin.user";
 import {
+  getIdFromString,
   getNameFromString,
   handleContentWithUrlAndTodo,
 } from "../utils/parseStrings";
@@ -80,12 +82,13 @@ async function handleComments(
   obj: {
     content: string;
     children: any[];
-    todoistId: string;
-    properties: { attachment: string; comments: string };
+    properties: { attachment: string; comments: string; todoistid: string };
   }
 ) {
   const api = new TodoistApi(logseq.settings!.apiToken);
+
   const comments = await api.getComments({ taskId: taskId });
+
   if (comments.length > 0) {
     for (const comment of comments) {
       if (comment.attachment) {
@@ -123,8 +126,8 @@ async function retrieveTasksHelper(flag: string) {
       let obj = {
         content: handleContentWithUrlAndTodo(task.content, task),
         children: [],
-        todoistId: task.id,
         properties: {
+          todoistid: task.id,
           attachment: "",
           comments: "",
         },
@@ -146,8 +149,8 @@ async function retrieveTasksHelper(flag: string) {
           let obj = {
             content: handleContentWithUrlAndTodo(t.content, t),
             children: [],
-            todoistId: t.id,
             properties: {
+              todoistid: t.id,
               attachment: "",
               comments: "",
             },
@@ -192,8 +195,52 @@ export async function retrieveTasks(event: { uuid: string }, flag: string) {
       )
     : "";
 
-  await logseq.Editor.insertBatchBlock(event.uuid, tasksArr, {
-    sibling: !projectNameAsParentBlk,
-    before: false,
-  });
+  if (logseq.settings!.enableTodoistSync) {
+    const api = new TodoistApi(logseq.settings!.apiToken);
+
+    let blk = await logseq.Editor.getBlock(event.uuid, {
+      includeChildren: true,
+    });
+
+    if (blk!.children!.length > 0) {
+      for (const block of blk!.children!) {
+        await logseq.Editor.removeBlock((block as BlockEntity).uuid);
+      }
+    }
+
+    await logseq.Editor.insertBatchBlock(event.uuid, tasksArr, {
+      sibling: false,
+      before: false,
+    });
+
+    blk = await logseq.Editor.getBlock(event.uuid, {
+      includeChildren: true,
+    });
+
+    for (const block of blk!.children!) {
+      logseq.DB.onBlockChanged((block as BlockEntity).uuid, async function (e) {
+        if (e.marker === "DONE") {
+          await api.closeTask(e.properties!.todoistid.toString());
+        } else if (e.marker === "TODO") {
+          await api.reopenTask(e.properties!.todoistid.toString());
+        }
+      });
+    }
+
+    logseq.UI.showMsg("Sync complete", "success");
+  } else {
+    await logseq.Editor.insertBatchBlock(event.uuid, tasksArr, {
+      sibling: !projectNameAsParentBlk,
+      before: false,
+    });
+  }
+}
+
+export async function syncTask(payload: { uuid: string }) {
+  logseq.UI.showMsg("Please wait", "warning");
+
+  retrieveTasks(
+    payload,
+    getIdFromString(logseq.settings!.retrieveDefaultProject)
+  );
 }
