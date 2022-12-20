@@ -196,38 +196,7 @@ export async function retrieveTasks(event: { uuid: string }, flag: string) {
     : "";
 
   if (logseq.settings!.enableTodoistSync) {
-    const api = new TodoistApi(logseq.settings!.apiToken);
-
-    let blk = await logseq.Editor.getBlock(event.uuid, {
-      includeChildren: true,
-    });
-
-    if (blk!.children!.length > 0) {
-      for (const block of blk!.children!) {
-        await logseq.Editor.removeBlock((block as BlockEntity).uuid);
-      }
-    }
-
-    await logseq.Editor.insertBatchBlock(event.uuid, tasksArr, {
-      sibling: false,
-      before: false,
-    });
-
-    blk = await logseq.Editor.getBlock(event.uuid, {
-      includeChildren: true,
-    });
-
-    for (const block of blk!.children!) {
-      logseq.DB.onBlockChanged((block as BlockEntity).uuid, async function (e) {
-        if (e.marker === "DONE") {
-          await api.closeTask(e.properties!.todoistid.toString());
-        } else if (e.marker === "TODO") {
-          await api.reopenTask(e.properties!.todoistid.toString());
-        }
-      });
-    }
-
-    logseq.UI.showMsg("Sync complete", "success");
+    syncTask(event, tasksArr);
   } else {
     await logseq.Editor.insertBatchBlock(event.uuid, tasksArr, {
       sibling: !projectNameAsParentBlk,
@@ -236,11 +205,43 @@ export async function retrieveTasks(event: { uuid: string }, flag: string) {
   }
 }
 
-export async function syncTask(payload: { uuid: string }) {
+export async function syncTask(event: { uuid: string }, tasksArr: any[]) {
+  const api = new TodoistApi(logseq.settings!.apiToken);
+
   logseq.UI.showMsg("Please wait", "warning");
 
-  retrieveTasks(
-    payload,
-    getIdFromString(logseq.settings!.retrieveDefaultProject)
-  );
+  let blk = await logseq.Editor.getBlock(event.uuid, {
+    includeChildren: true,
+  });
+
+  if (blk!.children!.length > 0) {
+    for (const block of blk!.children!) {
+      await logseq.Editor.removeBlock((block as BlockEntity).uuid);
+    }
+  }
+
+  await logseq.Editor.insertBatchBlock(event.uuid, tasksArr, {
+    sibling: false,
+    before: false,
+  });
+
+  blk = await logseq.Editor.getBlock(event.uuid, {
+    includeChildren: true,
+  });
+
+  for (const block of blk!.children!) {
+    logseq.DB.onBlockChanged((block as BlockEntity).uuid, async function (e) {
+      if (e.marker === "DONE") {
+        (await api.closeTask(e.properties!.todoistid.toString()))
+          ? logseq.UI.showMsg("Task closed in Todoist", "success")
+          : logseq.UI.showMsg("Task not closed in Todoist", "error");
+      } else if (e.marker === "TODO") {
+        (await api.reopenTask(e.properties!.todoistid.toString()))
+          ? logseq.UI.showMsg("Task re-opened in Todoist", "success")
+          : logseq.UI.showMsg("Task not re-opened in Todoist", "error");
+      }
+    });
+  }
+
+  logseq.UI.showMsg("Sync complete", "success");
 }

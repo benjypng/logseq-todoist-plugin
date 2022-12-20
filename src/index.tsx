@@ -92,15 +92,18 @@ async function main() {
 
     logseq.provideModel({
       async todoistSync() {
-        syncTask(payload);
+        await retrieveTasks(
+          payload,
+          getIdFromString(logseq.settings!.retrieveDefaultProject)
+        );
       },
     });
 
     logseq.provideUI({
-      key: "test",
+      key: "logseq-todoist-plugin",
       reset: false,
       slot,
-      template: `<button class="todoist-btn" id="todoist-btn" data-on-click="todoistSync">Todoist Sync</button>`,
+      template: `<button class="px-1.5 py-0 rounded-md bg-red-600 text-white" data-on-click="todoistSync">Todoist Sync</button>`,
     });
   });
 }
