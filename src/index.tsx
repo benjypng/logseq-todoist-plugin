@@ -6,14 +6,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import SendTask from "./components/SendTask";
 import "./App.css";
-import {
-  retrieveTasks,
-  sendTaskToLogseq,
-  syncTask,
-} from "./services/todoistHelpers";
+import { retrieveTasks, sendTaskToTodoist } from "./services/todoistHelpers";
 import { getIdFromString } from "./utils/parseStrings";
 import generateUniqueId from "./utils/generateUniqueId";
-import { BlockEntity } from "@logseq/libs/dist/LSPlugin.user";
 
 async function main() {
   console.log("logseq-todoist-plugin loaded");
@@ -33,7 +28,7 @@ async function main() {
       sendDefaultLabel !== "--- ---" ||
       sendDefaultDeadline
     ) {
-      sendTaskToLogseq(
+      await sendTaskToTodoist(
         e.uuid,
         content,
         getIdFromString(sendDefaultProject),
@@ -79,6 +74,8 @@ async function main() {
   logseq.Editor.registerSlashCommand(
     "Todoist: Insert sync block",
     async function () {
+      logseq.UI.showMsg("Please wait", "warning");
+
       await logseq.Editor.insertAtEditingCursor(
         `{{renderer :todoistsync_${generateUniqueId()}}}`
       );
@@ -103,7 +100,7 @@ async function main() {
       key: "logseq-todoist-plugin",
       reset: false,
       slot,
-      template: `<button class="px-1.5 py-0 rounded-md bg-red-600 text-white" data-on-click="todoistSync">Todoist Sync</button>`,
+      template: `<button class="px-2 py-0 rounded-md bg-red-600 text-white" data-on-click="todoistSync">Todoist Sync</button>`,
     });
   });
 }

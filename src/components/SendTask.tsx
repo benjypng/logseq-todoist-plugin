@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   getAllLabels,
   getAllProjects,
-  sendTaskToLogseq,
+  sendTaskToTodoist,
 } from "../services/todoistHelpers";
 import { getIdFromString } from "../utils/parseStrings";
 
@@ -38,7 +38,7 @@ export default function SendTask(props: { content: string; uuid: string }) {
 
   function sendTask() {
     const { project, label, deadline } = params;
-    sendTaskToLogseq(props.uuid, props.content, project, label, deadline);
+    sendTaskToTodoist(props.uuid, props.content, project, label, deadline);
     logseq.hideMainUI();
     setParams({
       project: "",

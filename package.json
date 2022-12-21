@@ -13,7 +13,7 @@
     "main": false
   },
   "scripts": {
-    "build": "rm -R dist && echo 'dist folder removed'; postcss src/tailwind.css -o src/App.css && parcel build --no-source-maps --no-optimize src/index.html --public-url ./"
+    "build": "rm -R dist && echo 'dist folder removed'; postcss src/tailwind.css -o src/App.css && parcel build --no-source-maps src/index.html --public-url ./"
   },
   "license": "MIT",
   "dependencies": {
