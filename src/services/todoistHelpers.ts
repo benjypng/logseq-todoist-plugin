@@ -12,25 +12,31 @@ import {
 } from "../utils/parseStrings";
 
 export async function getAllProjects() {
-  const api = new TodoistApi(logseq.settings!.apiToken);
-
-  const allProjects: Project[] = await api.getProjects();
-
-  let projArr = allProjects.map((project) => `${project.name} (${project.id})`);
-  projArr.unshift("--- ---");
-
-  return projArr;
+  try {
+    const api = new TodoistApi(logseq.settings!.apiToken);
+    const allProjects: Project[] = await api.getProjects();
+    let projArr = allProjects.map(
+      (project) => `${project.name} (${project.id})`
+    );
+    projArr.unshift("--- ---");
+    return projArr;
+  } catch (e) {
+    console.log(e);
+    return ["--- ---"];
+  }
 }
 
 export async function getAllLabels() {
-  const api = new TodoistApi(logseq.settings!.apiToken);
-
-  const allLabels: Label[] = await api.getLabels();
-
-  let labelArr = allLabels.map((label) => `${label.name} (${label.id})`);
-  labelArr.unshift("--- ---");
-
-  return labelArr;
+  try {
+    const api = new TodoistApi(logseq.settings!.apiToken);
+    const allLabels: Label[] = await api.getLabels();
+    let labelArr = allLabels.map((label) => `${label.name} (${label.id})`);
+    labelArr.unshift("--- ---");
+    return labelArr;
+  } catch (e) {
+    console.log(e);
+    return ["--- ---"];
+  }
 }
 
 function removeTaskFlags(content: string) {

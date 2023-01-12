@@ -10,7 +10,7 @@ export default async function callSettings() {
       default: "KtE71bDUeY2OpDBr3LQEgWEHUZPFN1yi",
       title: "API Token",
       description:
-        "You can retrieve your API token from your Todoist developer dashboard.",
+        "Please enter your API token and restart Logseq. You can retrieve your API token from your Todoist developer dashboard.",
     },
     {
       key: "",
@@ -117,5 +117,6 @@ export default async function callSettings() {
         "If set to true, Todoist Sync will be enabled. The default retrieve project identified above will be used as the synchronising project",
     },
   ];
+
   logseq.useSettingsSchema(settings);
 }
