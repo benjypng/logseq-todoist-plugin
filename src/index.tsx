@@ -18,17 +18,20 @@ async function main() {
   callSettings();
 
   // SEND TASK
-  logseq.Editor.registerSlashCommand("Todoist: Send Task", async function (e) {
+  logseq.Editor.registerSlashCommand("Todoist: Send Task", async function(e) {
     const { sendDefaultProject, sendDefaultLabel, sendDefaultDeadline } =
       logseq.settings!;
     let content: string = (await logseq.Editor.getEditingBlockContent()).trim();
 
-    if (
-      sendDefaultProject !== "--- ---" ||
-      sendDefaultLabel !== "--- ---" ||
-      sendDefaultDeadline
-    ) {
-      await sendTaskToTodoist(
+    if (content === "") {
+      logseq.UI.showMsg("Task cannot be empty!", "error");
+      return;
+    }
+
+    const anyDefaultSettings = sendDefaultProject !== "" || sendDefaultLabel !== "" || sendDefaultDeadline
+
+    if (anyDefaultSettings) {
+      sendTaskToTodoist(
         e.uuid,
         content,
         getIdFromString(sendDefaultProject),
@@ -36,25 +39,21 @@ async function main() {
         sendDefaultDeadline ? "today" : ""
       );
     } else {
-      if (content === "") {
-        logseq.UI.showMsg("Task cannot be empty!", "error");
-        return;
-      } else {
-        ReactDOM.render(
-          <React.StrictMode>
-            <SendTask content={content} uuid={e.uuid} />
-          </React.StrictMode>,
-          document.getElementById("app")
-        );
-        logseq.showMainUI();
-      }
+      ReactDOM.render(
+        <React.StrictMode>
+          <SendTask content={content} uuid={e.uuid} />
+        </React.StrictMode>,
+        document.getElementById("app")
+      );
+      logseq.showMainUI();
     }
+
   });
 
   // PULL TASKS
   logseq.Editor.registerSlashCommand(
     "Todoist: Retrieve Tasks",
-    async function (e) {
+    async function(e) {
       await retrieveTasks(
         e,
         getIdFromString(logseq.settings!.retrieveDefaultProject)
@@ -65,7 +64,7 @@ async function main() {
   // PULL TODAY's TASKS
   logseq.Editor.registerSlashCommand(
     "Todoist: Retrieve Today's Tasks",
-    async function (e) {
+    async function(e) {
       await retrieveTasks(e, "today");
     }
   );
@@ -73,7 +72,7 @@ async function main() {
   // KEEP IN SYNC
   logseq.Editor.registerSlashCommand(
     "Todoist: Insert sync block",
-    async function () {
+    async function() {
       logseq.UI.showMsg("Please wait", "warning");
 
       await logseq.Editor.insertAtEditingCursor(
@@ -82,7 +81,7 @@ async function main() {
     }
   );
 
-  logseq.App.onMacroRendererSlotted(async function ({ slot, payload }) {
+  logseq.App.onMacroRendererSlotted(async function({ slot, payload }) {
     const [type] = payload.arguments;
 
     if (!type.startsWith(":todoistsync_")) return;
