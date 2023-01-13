@@ -102,9 +102,9 @@ export async function sendTaskToTodoist(taskInfo: TaskInfo) {
   const { sendDefaultProject, sendDefaultLabel, sendDefaultDeadline } = logseq.settings!;
 
   const transformTaskInfo = async () => {
-    const contentLines = content.split("\n").map(str => str.trim())
+    const lines = content.split("\n").map(str => str.trim())
 
-    let [dueLines, titleLines] = contentLines.reduce((arrays, line) => {
+    let [dueLines, titleLines] = lines.reduce((arrays, line) => {
       if (line.startsWith("SCHEDULED") || line.startsWith("DEADLINE")) {
         arrays[0].push(line);
       } else {
@@ -117,7 +117,7 @@ export async function sendTaskToTodoist(taskInfo: TaskInfo) {
     let transformedContent = titleLines.join('\n')
     const graphName = (await logseq.App.getCurrentGraph())!.name;
     if (logseq.settings!.sendAppendUri && !logseq.settings!.enableTodoistSync) {
-      transformedContent = `[${transformedContent}](logseq://graph/${graphName}?block-id=${uuid})`;
+      transformedContent = `[${content}](logseq://graph/${graphName}?block-id=${uuid})`;
     }
     return {
       content: removeTaskFlags(transformedContent),
