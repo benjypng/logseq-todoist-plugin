@@ -1,4 +1,5 @@
 import {
+  AddTaskArgs,
   Label,
   Project,
   Task,
@@ -51,29 +52,89 @@ function removeTaskFlags(content: string) {
   return content;
 }
 
-export async function sendTaskToTodoist(
+export interface TaskInfo {
   uuid: string,
   content: string,
-  projectId: string,
-  label: string,
-  deadline: string
-) {
-  const api = new TodoistApi(logseq.settings!.apiToken);
+}
 
-  const graphName = (await logseq.App.getCurrentGraph())!.name;
-  if (logseq.settings!.sendAppendUri && !logseq.settings!.enableTodoistSync) {
-    content = `[${content}](logseq://graph/${graphName}?block-id=${uuid})`;
+//i.e SCHEDULED(DEADLINE): <2023-01-26 Thu 15:40 ++2w> 
+//-> {dueDatetime: '2023-01-26 15:40', dueString: 'every 2 week'}
+// if there are both SCHEDULED and DEADLINE, select the first line
+const createDue = (dueLines: string[], defaultDeadline: boolean) => {
+  let dueString = defaultDeadline ? "today" : ""
+  if (!dueLines) {
+    return {
+      dueDatetime: '',
+      dueString
+    }
+  } else {
+    const str = dueLines[0]
+    let dateMatch = str.match(/<(\d{4}-\d{2}-\d{2})/);
+    let date = dateMatch ? dateMatch[1] : "";
+    let timeMatch = str.match(/(\d{2}:\d{2})/);
+    let time = timeMatch ? timeMatch[1] : "";
+    let repeatMatch = str.match(/(\+\+\d+[h|d|w|m|y])/);
+    let repeat = repeatMatch ? repeatMatch[1] : "";
+    let repeatNum = repeat ? repeat.slice(2, -1) : "";
+    let repeatUnit = "";
+    if (repeat) {
+      if (repeat.endsWith("h")) {
+        repeatUnit = "hour";
+      } else if (repeat.endsWith("d")) {
+        repeatUnit = "day"
+      } else if (repeat.endsWith("w")) {
+        repeatUnit = "week";
+      } else if (repeat.endsWith("m")) {
+        repeatUnit = "month";
+      } else if (repeat.endsWith("y")) {
+        repeatUnit = "year";
+      }
+    }
+    return {
+      dueDatetime: `${date} ${time}`.trim(),
+      dueString: repeatNum ? `every ${repeatNum} ${repeatUnit}` : ''
+    }
+  }
+}
+
+export async function sendTaskToTodoist(taskInfo: TaskInfo) {
+  const { uuid, content } = taskInfo
+  const { sendDefaultProject, sendDefaultLabel, sendDefaultDeadline } = logseq.settings!;
+
+  const transformTaskInfo = async () => {
+    const contentLines = content.split("\n").map(str => str.trim())
+
+    let [dueLines, titleLines] = contentLines.reduce((arrays, line) => {
+      if (line.startsWith("SCHEDULED") || line.startsWith("DEADLINE")) {
+        arrays[0].push(line);
+      } else {
+        arrays[1].push(line);
+      }
+      return arrays;
+    }, [[] as string[], [] as string[]]);
+    const { dueDatetime, dueString } = createDue(dueLines, sendDefaultDeadline);
+
+    let transformedContent = titleLines.join('\n')
+    const graphName = (await logseq.App.getCurrentGraph())!.name;
+    if (logseq.settings!.sendAppendUri && !logseq.settings!.enableTodoistSync) {
+      transformedContent = `[${transformedContent}](logseq://graph/${graphName}?block-id=${uuid})`;
+    }
+    return {
+      content: removeTaskFlags(transformedContent),
+      dueDatetime,
+      dueString,
+    }
+  }
+
+  const processedTaskInfo = await transformTaskInfo()
+  const api = new TodoistApi(logseq.settings!.apiToken);
+  const addArgs: AddTaskArgs = { ...processedTaskInfo, labels: [sendDefaultLabel]}
+  if (sendDefaultProject !== '--- ---'){
+    addArgs.projectId = getIdFromString(sendDefaultProject)
   }
 
   try {
-    await api.addTask({
-      content: removeTaskFlags(content),
-      dueString: deadline,
-      labels: [label],
-      // Below is to handle empty projectIds since Todoist does not accept a blank string if no projectId exists
-      ...(projectId && { projectId: projectId }),
-    });
-
+    await api.addTask(addArgs);
     logseq.UI.showMsg("Task sent!", "success");
   } catch (e) {
     logseq.UI.showMsg(
@@ -196,9 +257,9 @@ export async function retrieveTasks(event: { uuid: string }, flag: string) {
 
   projectNameAsParentBlk
     ? await logseq.Editor.updateBlock(
-        event.uuid,
-        `[[${getNameFromString(retrieveDefaultProject)}]]`
-      )
+      event.uuid,
+      `[[${getNameFromString(retrieveDefaultProject)}]]`
+    )
     : "";
 
   if (logseq.settings!.enableTodoistSync) {
@@ -227,13 +288,10 @@ export async function syncTask(event: { uuid: string }) {
           logseq.settings!;
 
         // Insert send task
-        await sendTaskToTodoist(
-          (block as BlockEntity).uuid,
-          (block as BlockEntity).content,
-          getIdFromString(sendDefaultProject),
-          getIdFromString(sendDefaultLabel),
-          sendDefaultDeadline ? "today" : ""
-        );
+        await sendTaskToTodoist({
+          uuid: (block as BlockEntity).uuid,
+          content: (block as BlockEntity).content,
+        });
 
         await logseq.Editor.removeBlock((block as BlockEntity).uuid);
       } else {
@@ -258,7 +316,7 @@ export async function syncTask(event: { uuid: string }) {
   });
 
   for (const block of blk!.children!) {
-    logseq.DB.onBlockChanged((block as BlockEntity).uuid, async function (e) {
+    logseq.DB.onBlockChanged((block as BlockEntity).uuid, async function(e) {
       if (e.marker === "DONE") {
         await api.closeTask(e.properties!.todoistid.toString());
       } else if (e.marker === "TODO") {

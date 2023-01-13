@@ -19,24 +19,21 @@ async function main() {
 
   // SEND TASK
   logseq.Editor.registerSlashCommand("Todoist: Send Task", async function(e) {
-    const { sendDefaultProject, sendDefaultLabel, sendDefaultDeadline } =
-      logseq.settings!;
+    const { sendDefaultProject, sendDefaultLabel, sendDefaultDeadline } = logseq.settings!;
     let content: string = (await logseq.Editor.getEditingBlockContent()).trim();
 
     if (content === "") {
       logseq.UI.showMsg("Task cannot be empty!", "error");
-      return;
+      return
     }
 
-    const anyDefaultSettings = sendDefaultProject !== "" || sendDefaultLabel !== "" || sendDefaultDeadline
-
+    const anyDefaultSettings = sendDefaultProject !== "--- ---" || sendDefaultLabel !== "" || sendDefaultDeadline
     if (anyDefaultSettings) {
       sendTaskToTodoist(
-        e.uuid,
-        content,
-        getIdFromString(sendDefaultProject),
-        getIdFromString(sendDefaultLabel),
-        sendDefaultDeadline ? "today" : ""
+        {
+          uuid: e.uuid,
+          content,
+        }
       );
     } else {
       ReactDOM.render(
