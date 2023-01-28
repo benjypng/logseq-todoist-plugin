@@ -231,7 +231,7 @@ export async function syncTask(event: { uuid: string }) {
           (block as BlockEntity).uuid,
           (block as BlockEntity).content,
           getIdFromString(sendDefaultProject),
-          getIdFromString(sendDefaultLabel),
+          sendDefaultLabel,
           sendDefaultDeadline ? "today" : ""
         );
 
