@@ -32,7 +32,7 @@ async function main() {
         e.uuid,
         content,
         getIdFromString(sendDefaultProject),
-        getIdFromString(sendDefaultLabel),
+        sendDefaultLabel,
         sendDefaultDeadline ? "today" : ""
       );
     } else {
