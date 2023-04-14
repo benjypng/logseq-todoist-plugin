@@ -145,13 +145,19 @@ async function retrieveTasksHelper(flag: string) {
     }
   }
 
+  await recursion(parentTasks, allTasks);
+
   async function recursion(
-    parentTasks: { content: string; children: any[]; todoistId: string }[],
+    parentTasks: {
+      content: string;
+      children: any[];
+      properties: { todoistid: string; attachments: any; comments: any };
+    }[],
     allTasks: Task[]
   ) {
     for (const t of allTasks) {
       for (const u of parentTasks) {
-        if (t.parentId === u.todoistId) {
+        if (t.parentId == u.properties.todoistid) {
           let obj = {
             content: handleContentWithUrlAndTodo(t.content, t),
             children: [],
@@ -166,13 +172,11 @@ async function retrieveTasksHelper(flag: string) {
 
           u.children.push(finalObj);
 
-          recursion(u.children, allTasks);
+          await recursion(u.children, allTasks);
         }
       }
     }
   }
-
-  await recursion(parentTasks, allTasks);
 
   if (logseq.settings!.retrieveClearTasks) {
     allTasks.map(async (task) => await api.closeTask(task.id));
