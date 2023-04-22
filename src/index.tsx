@@ -1,7 +1,6 @@
 import "@logseq/libs";
 import handleListeners from "./utils/handleListeners";
 import callSettings from "./services/settings";
-
 import React from "react";
 import ReactDOM from "react-dom";
 import SendTask from "./components/SendTask";
@@ -23,11 +22,26 @@ async function main() {
       logseq.settings!;
     let content: string = (await logseq.Editor.getEditingBlockContent()).trim();
 
+    if (content === "") {
+      logseq.UI.showMsg("Task cannot be empty!", "error");
+      return;
+    }
+
     if (
-      sendDefaultProject !== "--- ---" ||
-      sendDefaultLabel !== "--- ---" ||
+      sendDefaultProject === "--- ---" ||
+      sendDefaultProject === "" ||
+      sendDefaultLabel === "--- ---" ||
+      sendDefaultLabel === "" ||
       sendDefaultDeadline
     ) {
+      ReactDOM.render(
+        <React.StrictMode>
+          <SendTask content={content} uuid={e.uuid} />
+        </React.StrictMode>,
+        document.getElementById("app")
+      );
+      logseq.showMainUI();
+    } else {
       await sendTaskToTodoist(
         e.uuid,
         content,
@@ -35,19 +49,6 @@ async function main() {
         getIdFromString(sendDefaultLabel),
         sendDefaultDeadline ? "today" : ""
       );
-    } else {
-      if (content === "") {
-        logseq.UI.showMsg("Task cannot be empty!", "error");
-        return;
-      } else {
-        ReactDOM.render(
-          <React.StrictMode>
-            <SendTask content={content} uuid={e.uuid} />
-          </React.StrictMode>,
-          document.getElementById("app")
-        );
-        logseq.showMainUI();
-      }
     }
   });
 
