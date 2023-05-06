@@ -120,7 +120,7 @@ async function retrieveTasksHelper(flag: string) {
   let allTasks: Task[] = [];
 
   if (flag === "today") {
-    allTasks = await api.getTasks({ filter: flag });
+    allTasks = await api.getTasks({ filter: `${flag} | overdue` });
   } else {
     allTasks = await api.getTasks({ projectId: flag });
   }
