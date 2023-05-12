@@ -1,13 +1,13 @@
 import "@logseq/libs";
-import handleListeners from "./utils/handleListeners";
-import callSettings from "./services/settings";
 import React from "react";
 import ReactDOM from "react-dom";
-import SendTask from "./components/SendTask";
 import "./App.css";
-import { retrieveTasks, sendTaskToTodoist } from "./services/todoistHelpers";
-import { getIdFromString } from "./utils/parseStrings";
+import SendTask from "./components/SendTask";
+import callSettings from "./services/settings";
+import { executeFilter, retrieveTasks, sendTaskToTodoist } from "./services/todoistHelpers";
 import generateUniqueId from "./utils/generateUniqueId";
+import handleListeners from "./utils/handleListeners";
+import { getIdFromString } from "./utils/parseStrings";
 
 async function main() {
   console.log("logseq-todoist-plugin loaded");
@@ -15,6 +15,18 @@ async function main() {
   handleListeners();
 
   callSettings();
+
+  // EXECUTE INLINE FILTER
+  logseq.Editor.registerSlashCommand("Todoist: Execute inline filter", async function (e) {
+    let content: string = (await logseq.Editor.getEditingBlockContent()).trim();
+
+    if (content === "") {
+      logseq.UI.showMsg("Filter cannot be empty!", "error");
+      return;
+    }
+    logseq.UI.showMsg(`Todoist filter ${content}`)
+    await executeFilter(e.uuid, content);
+  });
 
   // SEND TASK
   logseq.Editor.registerSlashCommand("Todoist: Send Task", async function (e) {
@@ -56,10 +68,8 @@ async function main() {
   logseq.Editor.registerSlashCommand(
     "Todoist: Retrieve Tasks",
     async function (e) {
-      await retrieveTasks(
-        e,
-        getIdFromString(logseq.settings!.retrieveDefaultProject)
-      );
+
+      await retrieveTasks(e, { projectId: getIdFromString(logseq.settings!.retrieveDefaultProject) });
     }
   );
 
@@ -67,7 +77,8 @@ async function main() {
   logseq.Editor.registerSlashCommand(
     "Todoist: Retrieve Today's Tasks",
     async function (e) {
-      await retrieveTasks(e, "today");
+      await retrieveTasks(e, { filter: "today" });
+
     }
   );
 
@@ -92,7 +103,7 @@ async function main() {
       async todoistSync() {
         await retrieveTasks(
           payload,
-          getIdFromString(logseq.settings!.retrieveDefaultProject)
+          { projectId: getIdFromString(logseq.settings!.retrieveDefaultProject) }
         );
       },
     });
