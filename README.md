@@ -50,6 +50,14 @@ or
 
 Instead of pulling tasks from specific projects, you can pull tasks that are due TODAY, by using the command `/pull today`.
 
+
+**Pulling tasks according to a filter**
+
+Active tasks can be queired using a [filter](https://todoist.com/help/articles/introduction-to-filters) invoked by `/execute filter`.
+
+![](/screenshots/inline-filter.gif)
+
+
 **Scheduled Tasks**
 
 ![](/screenshots/scheduled.png)
