@@ -5,7 +5,7 @@
   "description": "Simple Todoist plugin to pull only active tasks from specified project, i.e. Inbox",
   "logseq": {
     "id": "logseq-todoist-plugin",
-    "title": "logseq-todoist-plugin",
+    "title": "Todoist",
     "icon": "./icon.png"
   },
   "main": "dist/index.html",

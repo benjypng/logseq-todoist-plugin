@@ -131,13 +131,18 @@ async function retrieveTasksHelper(flag: string) {
     if (!task.parentId) {
       let obj = {
         content: handleContentWithUrlAndTodo(task.content, task),
-        children: [],
+        children: [] as any[],
         properties: {
           todoistid: task.id,
           attachment: "",
           comments: "",
         },
       };
+      if (task.description.length > 0) {
+        for (const line of task.description.split("\n")) {
+          obj.children.push({ content: line });
+        }
+      }
 
       const finalObj = await handleComments(task.id, obj);
 
@@ -160,13 +165,18 @@ async function retrieveTasksHelper(flag: string) {
         if (t.parentId == u.properties.todoistid) {
           let obj = {
             content: handleContentWithUrlAndTodo(t.content, t),
-            children: [],
+            children: [] as any[],
             properties: {
               todoistid: t.id,
               attachment: "",
               comments: "",
             },
           };
+          if (t.description.length > 0) {
+            for (const line of t.description.split("\n")) {
+              obj.children.push({ content: line });
+            }
+          }
 
           const finalObj = await handleComments(t.id, obj);
 
