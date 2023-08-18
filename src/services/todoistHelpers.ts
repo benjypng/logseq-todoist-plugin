@@ -186,7 +186,8 @@ async function retrieveTasksHelper(flag: string) {
 }
 
 export async function retrieveTasks(event: { uuid: string }, flag: string) {
-  const { retrieveDefaultProject, projectNameAsParentBlk } = logseq.settings!;
+  const { retrieveDefaultProject, projectNameAsParentBlk, enableTodoistSync } =
+    logseq.settings!;
 
   if (retrieveDefaultProject === "--- ---" || !retrieveDefaultProject) {
     logseq.UI.showMsg(
@@ -205,14 +206,15 @@ export async function retrieveTasks(event: { uuid: string }, flag: string) {
       )
     : "";
 
-  if (logseq.settings!.enableTodoistSync) {
-    syncTask(event);
-  } else {
-    await logseq.Editor.insertBatchBlock(event.uuid, tasksArr, {
-      sibling: !projectNameAsParentBlk,
-      before: false,
-    });
-  }
+  //if (logseq.settings!.enableTodoistSync) {
+  //  syncTask(event);
+  //} else {
+  await logseq.Editor.insertBatchBlock(event.uuid, tasksArr, {
+    //sibling: !enableTodoistSync ? false : !projectNameAsParentBlk,
+    sibling: false,
+    before: false,
+  });
+  //}
 }
 
 export async function syncTask(event: { uuid: string }) {

@@ -8,6 +8,8 @@ import "./App.css";
 import { retrieveTasks, sendTaskToTodoist } from "./services/todoistHelpers";
 import { getIdFromString } from "./utils/parseStrings";
 import generateUniqueId from "./utils/generateUniqueId";
+import { BlockEntity } from "@logseq/libs/dist/LSPlugin.user";
+import { TodoistApi } from "@doist/todoist-api-typescript";
 
 async function main() {
   console.log("logseq-todoist-plugin loaded");
@@ -84,22 +86,47 @@ async function main() {
   );
 
   logseq.App.onMacroRendererSlotted(async function ({ slot, payload }) {
+    const api = new TodoistApi(logseq.settings!.apiToken);
     const [type] = payload.arguments;
-
     if (!type.startsWith(":todoistsync_")) return;
+    let blk = await logseq.Editor.getBlock(payload.uuid, {
+      includeChildren: true,
+    });
+    for (const child of blk!.children! as BlockEntity[]) {
+      if (!child.properties!.todoistid) {
+        console.log(child);
+      }
+    }
 
     logseq.provideModel({
       async todoistSync() {
-        await retrieveTasks(
-          payload,
-          getIdFromString(logseq.settings!.retrieveDefaultProject)
-        );
+        if (blk!.children!.length === 0) {
+          await retrieveTasks(payload, "");
+        } else {
+          for (const child of blk!.children! as BlockEntity[]) {
+            await logseq.Editor.removeBlock(child.uuid);
+          }
+          await retrieveTasks(payload, "");
+        }
+
+        blk = await logseq.Editor.getBlock(payload.uuid, {
+          includeChildren: true,
+        });
+        for (const child of blk!.children! as BlockEntity[]) {
+          logseq.DB.onBlockChanged(child.uuid, async function (e) {
+            if (e.marker === "DONE") {
+              await api.closeTask(e.properties!.todoistid.toString());
+            } else if (e.marker === "TODO") {
+              await api.reopenTask(e.properties!.todoistid.toString());
+            }
+          });
+        }
       },
     });
 
     logseq.provideUI({
       key: "logseq-todoist-plugin",
-      reset: false,
+      reset: true,
       slot,
       template: `<button class="px-2 py-0 rounded-md bg-red-600 text-white" data-on-click="todoistSync">Todoist Sync</button>`,
     });
