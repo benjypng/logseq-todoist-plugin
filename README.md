@@ -1,4 +1,4 @@
-> Readme needs to be updated after the great refactoring
+> logseq-todoist-plugin is currently not receiving PRs as the author is not able to review them expeditiously.
 
 [:gift_heart: Sponsor this project on Github](https://github.com/sponsors/hkgnp) or [:coffee: Get me a coffee](https://www.buymeacoffee.com/hkgnp.dev) if you like this plugin!
 
