@@ -78,6 +78,14 @@ export default async function callSettings() {
         "If true, tasks will be added under a parent block with their project name.",
     },
     {
+      key: "retrieveAppendCreationDateTime",
+      type: "boolean",
+      default: false,
+      title: "Append Creation Date and Time",
+      description:
+        "If set to true, all retrieved tasks will have their creation date and time appended.",
+    },
+    {
       key: "retrieveAppendTodo",
       type: "boolean",
       default: true,
