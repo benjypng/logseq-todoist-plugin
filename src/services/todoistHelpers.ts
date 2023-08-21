@@ -1,4 +1,5 @@
 import {
+  GetTasksArgs,
   Label,
   Project,
   Task,
@@ -49,6 +50,22 @@ function removeTaskFlags(content: string) {
   }
 
   return content;
+}
+
+export async function executeFilter(uuid: string, content: string) {
+  try {
+    const tasks = await retrieveTasksHelper({ filter: content })
+    await logseq.Editor.insertBatchBlock(uuid, tasks, {
+      sibling: false,
+      before: false,
+    });
+
+  } catch (e) {
+    logseq.UI.showMsg(
+      `Filter didn't execute! Reason: ${(e as Error).message}`,
+      "error"
+    );
+  }
 }
 
 export async function sendTaskToTodoist(
@@ -115,17 +132,11 @@ async function handleComments(
   return obj;
 }
 
-async function retrieveTasksHelper(flag: string) {
+async function retrieveTasksHelper(taskArgs: GetTasksArgs) {
   const api = new TodoistApi(logseq.settings!.apiToken);
-  let allTasks: Task[] = [];
-
-  if (flag === "today") {
-    allTasks = await api.getTasks({ filter: flag });
-  } else {
-    allTasks = await api.getTasks({ projectId: flag });
-  }
-
   let parentTasks: any[] = [];
+
+  let allTasks: Task[] = await api.getTasks(taskArgs)
 
   for (const task of allTasks) {
     if (!task.parentId) {
@@ -206,14 +217,13 @@ export async function retrieveTasks(event: { uuid: string }, flag: string) {
     );
     return;
   }
-
-  const tasksArr = await retrieveTasksHelper(flag);
+  const tasksArr = await retrieveTasksHelper(taskArgs);
 
   projectNameAsParentBlk
     ? await logseq.Editor.updateBlock(
-        event.uuid,
-        `[[${getNameFromString(retrieveDefaultProject)}]]`
-      )
+      event.uuid,
+      `[[${getNameFromString(retrieveDefaultProject)}]]`
+    )
     : "";
 
   //if (logseq.settings!.enableTodoistSync) {
