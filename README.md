@@ -1,4 +1,4 @@
-> Readme needs to be updated after the great refactoring
+> logseq-todoist-plugin is currently not receiving PRs as the author is not able to review them expeditiously.
 
 [:gift_heart: Sponsor this project on Github](https://github.com/sponsors/hkgnp) or [:coffee: Get me a coffee](https://www.buymeacoffee.com/hkgnp.dev) if you like this plugin!
 
@@ -125,7 +125,7 @@ Please let me know what functionalities you would like to add in Logseq's Discor
 
 ## Manual Updating to a new release
 
-After extracting the new zip file, please run `npm run build` again, and reload the plugin in Logseq.
+After extracting the new zip file, please run `yarn run build` again, and reload the plugin in Logseq.
 
 ## Manual Installation
 
@@ -157,7 +157,25 @@ After extracting the new zip file, please run `npm run build` again, and reload 
    - Tasks in Project 298010283 will not be given any prefix after you import, hence you have the flexibility to add them in Todoist.
      ![image](/screenshots/sample-env.png)
 
-7. **RUN THIS STEP ONLY AFTER YOU CREATED THE `.env` file in Step 6** Using the Terminal, go to the root folder (where you can find package.json), and run `npm install && npm run build`. This will install the necessary packages for the plugin. Please ensure that you already have NodeJS installed, if not, [click here to download](https://nodejs.org/en/download/).
+7. **RUN THIS STEP ONLY AFTER YOU CREATED THE `.env` file in Step 6** Using the Terminal, go to the root folder (where you can find package.json), and run `yarn install && yarn run build`. This will install the necessary packages for the plugin. Please ensure that you already have NodeJS installed, if not, [click here to download](https://nodejs.org/en/download/).
 8. Go to Logseq and ensure that you have Developer mode enabled, before going to the Plugins page.
 9. Click "Load unpacked plugin", and navigate to the folder in (2) and click open.
 10. An icon will appear in the usual plugins bar. Navigate to a journal page, and click the button. There may be a delay as the API needs to call your tasks from Todoist. This plugin will not be able to be used on non-journal pages.
+
+# Development
+
+## First run
+
+1. Clone/fork the repo.
+2. Go to the Plugins page on Logseq (`t p`).
+3. Uninstall the plugin.
+4. Run `yarn run build` to build the project.
+5. Click on "Load unpacked plugin" and choose the root directory (the one that contains the `dist` dir just created).
+
+## Changes
+
+1. Change the code.
+2. Run `yarn run build`.
+3. Go to the Plugins page on Logseq (`t p`).
+4. Click on "Reload".
+5. Test your changes.

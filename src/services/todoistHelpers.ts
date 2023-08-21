@@ -142,13 +142,18 @@ async function retrieveTasksHelper(taskArgs: GetTasksArgs) {
     if (!task.parentId) {
       let obj = {
         content: handleContentWithUrlAndTodo(task.content, task),
-        children: [],
+        children: [] as any[],
         properties: {
           todoistid: task.id,
           attachment: "",
           comments: "",
         },
       };
+      if (task.description.length > 0) {
+        for (const line of task.description.split("\n")) {
+          obj.children.push({ content: line });
+        }
+      }
 
       const finalObj = await handleComments(task.id, obj);
 
@@ -171,13 +176,18 @@ async function retrieveTasksHelper(taskArgs: GetTasksArgs) {
         if (t.parentId == u.properties.todoistid) {
           let obj = {
             content: handleContentWithUrlAndTodo(t.content, t),
-            children: [],
+            children: [] as any[],
             properties: {
               todoistid: t.id,
               attachment: "",
               comments: "",
             },
           };
+          if (t.description.length > 0) {
+            for (const line of t.description.split("\n")) {
+              obj.children.push({ content: line });
+            }
+          }
 
           const finalObj = await handleComments(t.id, obj);
 
@@ -196,8 +206,9 @@ async function retrieveTasksHelper(taskArgs: GetTasksArgs) {
   return parentTasks;
 }
 
-export async function retrieveTasks(event: { uuid: string }, taskArgs: GetTasksArgs) {
-  const { retrieveDefaultProject, projectNameAsParentBlk } = logseq.settings!;
+export async function retrieveTasks(event: { uuid: string }, flag: string) {
+  const { retrieveDefaultProject, projectNameAsParentBlk, enableTodoistSync } =
+    logseq.settings!;
 
   if (retrieveDefaultProject === "--- ---" || !retrieveDefaultProject) {
     logseq.UI.showMsg(
@@ -215,14 +226,15 @@ export async function retrieveTasks(event: { uuid: string }, taskArgs: GetTasksA
     )
     : "";
 
-  if (logseq.settings!.enableTodoistSync) {
-    syncTask(event);
-  } else {
-    await logseq.Editor.insertBatchBlock(event.uuid, tasksArr, {
-      sibling: !projectNameAsParentBlk,
-      before: false,
-    });
-  }
+  //if (logseq.settings!.enableTodoistSync) {
+  //  syncTask(event);
+  //} else {
+  await logseq.Editor.insertBatchBlock(event.uuid, tasksArr, {
+    //sibling: !enableTodoistSync ? false : !projectNameAsParentBlk,
+    sibling: false,
+    before: false,
+  });
+  //}
 }
 
 export async function syncTask(event: { uuid: string }) {
@@ -245,7 +257,7 @@ export async function syncTask(event: { uuid: string }) {
           (block as BlockEntity).uuid,
           (block as BlockEntity).content,
           getIdFromString(sendDefaultProject),
-          getIdFromString(sendDefaultLabel),
+          getNameFromString(sendDefaultLabel),
           sendDefaultDeadline ? "today" : ""
         );
 
