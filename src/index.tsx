@@ -4,7 +4,11 @@ import ReactDOM from "react-dom";
 import "./App.css";
 import SendTask from "./components/SendTask";
 import callSettings from "./services/settings";
-import { executeFilter, retrieveTasks, sendTaskToTodoist } from "./services/todoistHelpers";
+import {
+  executeFilter,
+  retrieveTasks,
+  sendTaskToTodoist,
+} from "./services/todoistHelpers";
 import generateUniqueId from "./utils/generateUniqueId";
 import handleListeners from "./utils/handleListeners";
 import { getIdFromString } from "./utils/parseStrings";
@@ -19,16 +23,21 @@ async function main() {
   callSettings();
 
   // EXECUTE INLINE FILTER
-  logseq.Editor.registerSlashCommand("Todoist: Execute inline filter", async function (e) {
-    let content: string = (await logseq.Editor.getEditingBlockContent()).trim();
+  logseq.Editor.registerSlashCommand(
+    "Todoist: Execute inline filter",
+    async function (e) {
+      let content: string = (
+        await logseq.Editor.getEditingBlockContent()
+      ).trim();
 
-    if (content === "") {
-      logseq.UI.showMsg("Filter cannot be empty!", "error");
-      return;
+      if (content === "") {
+        logseq.UI.showMsg("Filter cannot be empty!", "error");
+        return;
+      }
+      logseq.UI.showMsg(`Todoist filter ${content}`);
+      await executeFilter(e.uuid, content);
     }
-    logseq.UI.showMsg(`Todoist filter ${content}`)
-    await executeFilter(e.uuid, content);
-  });
+  );
 
   // SEND TASK
   logseq.Editor.registerSlashCommand("Todoist: Send Task", async function (e) {
@@ -70,8 +79,9 @@ async function main() {
   logseq.Editor.registerSlashCommand(
     "Todoist: Retrieve Tasks",
     async function (e) {
-
-      await retrieveTasks(e, { projectId: getIdFromString(logseq.settings!.retrieveDefaultProject) });
+      await retrieveTasks(e, {
+        projectId: getIdFromString(logseq.settings!.retrieveDefaultProject),
+      });
     }
   );
 
@@ -80,7 +90,6 @@ async function main() {
     "Todoist: Retrieve Today's Tasks",
     async function (e) {
       await retrieveTasks(e, { filter: "today" });
-
     }
   );
 
@@ -112,12 +121,12 @@ async function main() {
     logseq.provideModel({
       async todoistSync() {
         if (blk!.children!.length === 0) {
-          await retrieveTasks(payload, "");
+          await retrieveTasks(payload, {});
         } else {
           for (const child of blk!.children! as BlockEntity[]) {
             await logseq.Editor.removeBlock(child.uuid);
           }
-          await retrieveTasks(payload, "");
+          await retrieveTasks(payload, {});
         }
 
         blk = await logseq.Editor.getBlock(payload.uuid, {

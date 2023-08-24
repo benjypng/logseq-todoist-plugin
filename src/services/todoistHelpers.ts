@@ -54,12 +54,11 @@ function removeTaskFlags(content: string) {
 
 export async function executeFilter(uuid: string, content: string) {
   try {
-    const tasks = await retrieveTasksHelper({ filter: content })
+    const tasks = await retrieveTasksHelper({ filter: content });
     await logseq.Editor.insertBatchBlock(uuid, tasks, {
       sibling: false,
       before: false,
     });
-
   } catch (e) {
     logseq.UI.showMsg(
       `Filter didn't execute! Reason: ${(e as Error).message}`,
@@ -136,7 +135,7 @@ async function retrieveTasksHelper(taskArgs: GetTasksArgs) {
   const api = new TodoistApi(logseq.settings!.apiToken);
   let parentTasks: any[] = [];
 
-  let allTasks: Task[] = await api.getTasks(taskArgs)
+  let allTasks: Task[] = await api.getTasks(taskArgs);
 
   for (const task of allTasks) {
     if (!task.parentId) {
@@ -206,7 +205,10 @@ async function retrieveTasksHelper(taskArgs: GetTasksArgs) {
   return parentTasks;
 }
 
-export async function retrieveTasks(event: { uuid: string }, flag: string) {
+export async function retrieveTasks(
+  event: { uuid: string },
+  taskArgs: GetTasksArgs
+) {
   const { retrieveDefaultProject, projectNameAsParentBlk, enableTodoistSync } =
     logseq.settings!;
 
@@ -221,9 +223,9 @@ export async function retrieveTasks(event: { uuid: string }, flag: string) {
 
   projectNameAsParentBlk
     ? await logseq.Editor.updateBlock(
-      event.uuid,
-      `[[${getNameFromString(retrieveDefaultProject)}]]`
-    )
+        event.uuid,
+        `[[${getNameFromString(retrieveDefaultProject)}]]`
+      )
     : "";
 
   //if (logseq.settings!.enableTodoistSync) {
