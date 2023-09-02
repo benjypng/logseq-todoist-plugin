@@ -22,7 +22,7 @@ By including a block attribute when composing your task, you are able to send a 
 ```
 Do this task
 priority:: 4
-```
+   ```
 
 _Optional: You can also specify the project that you want all tasks to be sent to, and label that you want attached to these tasks._
 
