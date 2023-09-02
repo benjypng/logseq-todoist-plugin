@@ -26,6 +26,13 @@ const main = async () => {
       await retrieveTasks(e.uuid, "today");
     },
   );
+  logseq.Editor.registerSlashCommand(
+    "Todoist: Retrieve Custom Filter",
+    async (e) => {
+      const content = await logseq.Editor.getEditingBlockContent();
+      await retrieveTasks(e.uuid, content);
+    },
+  );
 
   // // SEND TASKS
   //

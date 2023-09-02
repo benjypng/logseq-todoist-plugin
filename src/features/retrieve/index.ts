@@ -88,7 +88,6 @@ export const retrieveTasks = async (uuid: string, taskParams?: string) => {
     retrieveDefaultProject,
     projectNameAsParentBlk,
   }: PluginSettings = logseq.settings!;
-
   const api = new TodoistApi(apiToken);
   if (retrieveDefaultProject === "--- ---") {
     await logseq.UI.showMsg("Please select a default project", "error");
@@ -104,14 +103,25 @@ export const retrieveTasks = async (uuid: string, taskParams?: string) => {
     await logseq.Editor.updateBlock(uuid, "");
   }
   // Insert blocks
-  // TODO: Need to figure out how to handle multiple get tasks
-  const allTasks: Task[] = await api.getTasks({
-    projectId: getIdFromString(retrieveDefaultProject),
-  });
+  let allTasks: Task[];
+  // Retrieve tasks based on optional filter parameters
+  if (!taskParams) {
+    allTasks = await api.getTasks({
+      projectId: getIdFromString(retrieveDefaultProject),
+    });
+  } else if (taskParams === "today") {
+    allTasks = await api.getTasks({ filter: "today" });
+  } else {
+    allTasks = await api.getTasks({ filter: taskParams });
+  }
+  // Handle no tasks retrieved
+  if (allTasks.length === 0) {
+    await logseq.UI.showMsg("There are no tasks");
+    return;
+  }
   const batchBlock = await insertTasks(uuid, allTasks);
   await logseq.Editor.insertBatchBlock(uuid, batchBlock);
   logseq.UI.closeMsg(msgKey);
-
   // Delete tasks if setting is enabled
   if (retrieveClearTasks) await deleteAllTasks(allTasks);
 };
