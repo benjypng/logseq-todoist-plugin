@@ -12,35 +12,7 @@ import {
   handleContentWithUrlAndTodo,
 } from "../utils/parseStrings";
 
-export async function getAllProjects() {
-  try {
-    const api = new TodoistApi(logseq.settings!.apiToken);
-    const allProjects: Project[] = await api.getProjects();
-    let projArr = allProjects.map(
-      (project) => `${project.name} (${project.id})`
-    );
-    projArr.unshift("--- ---");
-    return projArr;
-  } catch (e) {
-    console.log(e);
-    return ["--- ---"];
-  }
-}
-
-export async function getAllLabels() {
-  try {
-    const api = new TodoistApi(logseq.settings!.apiToken);
-    const allLabels: Label[] = await api.getLabels();
-    let labelArr = allLabels.map((label) => `${label.name} (${label.id})`);
-    labelArr.unshift("--- ---");
-    return labelArr;
-  } catch (e) {
-    console.log(e);
-    return ["--- ---"];
-  }
-}
-
-function removeTaskFlags(content: string) {
+const removeTaskFlags = (content: string) => {
   const taskFlags = ["TODO", "DOING", "NOW", "LATER", "DONE"];
 
   for (const flag of taskFlags) {
@@ -50,7 +22,36 @@ function removeTaskFlags(content: string) {
   }
 
   return content;
-}
+};
+export const getAllProjects = async () => {
+  const api: TodoistApi = new TodoistApi(logseq.settings!.apiToken);
+  try {
+    const allProjects: Project[] = await api.getProjects();
+    const projArr = allProjects.map(
+      (project) => `${project.name} (${project.id})`,
+    );
+    projArr.unshift("--- ---");
+    return projArr;
+  } catch (e) {
+    console.log(e);
+    await logseq.UI.showMsg("Error retrieving projects from Todoist", "error");
+    return ["--- ---"];
+  }
+};
+
+export const getAllLabels = async () => {
+  const api: TodoistApi = new TodoistApi(logseq.settings!.apiToken);
+  try {
+    const allLabels: Label[] = await api.getLabels();
+    const labelArr = allLabels.map((label) => `${label.name} (${label.id})`);
+    labelArr.unshift("--- ---");
+    return labelArr;
+  } catch (e) {
+    console.log(e);
+    await logseq.UI.showMsg("Error retrieving labels from Todoist", "error");
+    return ["--- ---"];
+  }
+};
 
 export async function executeFilter(uuid: string, content: string) {
   try {
@@ -62,7 +63,7 @@ export async function executeFilter(uuid: string, content: string) {
   } catch (e) {
     logseq.UI.showMsg(
       `Filter didn't execute! Reason: ${(e as Error).message}`,
-      "error"
+      "error",
     );
   }
 }
@@ -72,7 +73,7 @@ export async function sendTaskToTodoist(
   content: string,
   projectId: string,
   label: string,
-  deadline: string
+  deadline: string,
 ) {
   const api = new TodoistApi(logseq.settings!.apiToken);
 
@@ -89,12 +90,11 @@ export async function sendTaskToTodoist(
       // Below is to handle empty projectIds since Todoist does not accept a blank string if no projectId exists
       ...(projectId && { projectId: projectId }),
     });
-
     logseq.UI.showMsg("Task sent!", "success");
   } catch (e) {
     logseq.UI.showMsg(
       `Task not sent! Reason: ${(e as Error).message}`,
-      "error"
+      "error",
     );
   }
 }
@@ -105,7 +105,7 @@ async function handleComments(
     content: string;
     children: any[];
     properties: { attachment: string; comments: string; todoistid: string };
-  }
+  },
 ) {
   const api = new TodoistApi(logseq.settings!.apiToken);
 
@@ -119,7 +119,7 @@ async function handleComments(
         ].attachment = `[${comment.attachment.fileName}](${comment.attachment.fileUrl})`;
       }
       if (comment.content) {
-        let content = obj["properties"].comments;
+        const content = obj["properties"].comments;
         obj["properties"].comments = (
           content +
           ", " +
@@ -133,13 +133,13 @@ async function handleComments(
 
 async function retrieveTasksHelper(taskArgs: GetTasksArgs) {
   const api = new TodoistApi(logseq.settings!.apiToken);
-  let parentTasks: any[] = [];
+  const parentTasks: any[] = [];
 
-  let allTasks: Task[] = await api.getTasks(taskArgs);
+  const allTasks: Task[] = await api.getTasks(taskArgs);
 
   for (const task of allTasks) {
     if (!task.parentId) {
-      let obj = {
+      const obj = {
         content: handleContentWithUrlAndTodo(task.content, task),
         children: [] as any[],
         properties: {
@@ -168,12 +168,12 @@ async function retrieveTasksHelper(taskArgs: GetTasksArgs) {
       children: any[];
       properties: { todoistid: string; attachments: any; comments: any };
     }[],
-    allTasks: Task[]
+    allTasks: Task[],
   ) {
     for (const t of allTasks) {
       for (const u of parentTasks) {
         if (t.parentId == u.properties.todoistid) {
-          let obj = {
+          const obj = {
             content: handleContentWithUrlAndTodo(t.content, t),
             children: [] as any[],
             properties: {
@@ -207,7 +207,7 @@ async function retrieveTasksHelper(taskArgs: GetTasksArgs) {
 
 export async function retrieveTasks(
   event: { uuid: string },
-  taskArgs: GetTasksArgs
+  taskArgs: GetTasksArgs,
 ) {
   const { retrieveDefaultProject, projectNameAsParentBlk, enableTodoistSync } =
     logseq.settings!;
@@ -215,7 +215,7 @@ export async function retrieveTasks(
   if (retrieveDefaultProject === "--- ---" || !retrieveDefaultProject) {
     logseq.UI.showMsg(
       "Please select a default project in the plugin settings!",
-      "error"
+      "error",
     );
     return;
   }
@@ -224,7 +224,7 @@ export async function retrieveTasks(
   projectNameAsParentBlk
     ? await logseq.Editor.updateBlock(
         event.uuid,
-        `[[${getNameFromString(retrieveDefaultProject)}]]`
+        `[[${getNameFromString(retrieveDefaultProject)}]]`,
       )
     : "";
 
@@ -260,7 +260,7 @@ export async function syncTask(event: { uuid: string }) {
           (block as BlockEntity).content,
           getIdFromString(sendDefaultProject),
           getNameFromString(sendDefaultLabel),
-          sendDefaultDeadline ? "today" : ""
+          sendDefaultDeadline ? "today" : "",
         );
 
         await logseq.Editor.removeBlock((block as BlockEntity).uuid);
@@ -271,7 +271,7 @@ export async function syncTask(event: { uuid: string }) {
   }
 
   const tasksArr = await retrieveTasksHelper(
-    getIdFromString(logseq.settings!.retrieveDefaultProject)
+    getIdFromString(logseq.settings!.retrieveDefaultProject),
   );
 
   // insert blocks retrieved

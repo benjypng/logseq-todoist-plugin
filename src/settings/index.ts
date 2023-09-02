@@ -1,13 +1,12 @@
-import "@logseq/libs";
 import { SettingSchemaDesc } from "@logseq/libs/dist/LSPlugin.user";
-import { getAllProjects, getAllLabels } from "./todoistHelpers";
+import { getAllProjects, getAllLabels } from "../services/todoistHelpers";
 
-export default async function callSettings() {
+export const callSettings = async () => {
   const settings: SettingSchemaDesc[] = [
     {
       key: "apiToken",
       type: "string",
-      default: "KtE71bDUeY2OpDBr3LQEgWEHUZPFN1yi",
+      default: "",
       title: "API Token",
       description:
         "Please enter your API token and restart Logseq. You can retrieve your API token from your Todoist developer dashboard.",
@@ -125,6 +124,5 @@ export default async function callSettings() {
         "If set to true, Todoist Sync will be enabled. The default retrieve project identified above will be used as the synchronising project",
     },
   ];
-
   logseq.useSettingsSchema(settings);
-}
+};
