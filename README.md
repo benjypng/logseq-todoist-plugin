@@ -1,8 +1,8 @@
-> logseq-todoist-plugin is currently not receiving PRs as the author is not able to review them expeditiously.
-
 [:gift_heart: Sponsor this project on Github](https://github.com/sponsors/hkgnp) or [:coffee: Get me a coffee](https://www.buymeacoffee.com/hkgnp.dev) if you like this plugin!
 
-> README below needs to be updated. Please ignore the below.
+> logseq-todoist-plugin is currently not receiving PRs as there is an ongoing re-factor.
+
+> README below is very outdated. It will be updated as part of the ongoing re-factor.
 
 # Overview
 
