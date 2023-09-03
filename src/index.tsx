@@ -45,7 +45,7 @@ const main = async () => {
 
   // SEND TASKS
   const { sendDefaultProject } = logseq.settings! as Partial<PluginSettings>;
-  logseq.Editor.registerSlashCommand("Todoist: Send task", async (e) => {
+  logseq.Editor.registerSlashCommand("Todoist: Send Task", async (e) => {
     const content: string = await logseq.Editor.getEditingBlockContent();
     if (!content || content.length === 0) {
       await logseq.UI.showMsg("Cannot send empty task", "error");
