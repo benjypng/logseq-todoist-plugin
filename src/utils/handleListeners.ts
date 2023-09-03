@@ -8,7 +8,7 @@ export default function handleListeners() {
       }
       e.stopPropagation();
     },
-    false
+    false,
   );
 
   // Click

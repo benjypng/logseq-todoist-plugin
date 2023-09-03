@@ -1,6 +1,13 @@
-import { getIdFromString, getNameFromString } from "../../utils/parseStrings";
-import { Comment, Task, TodoistApi } from "@doist/todoist-api-typescript";
+// TODO: Rewrite function getNameFromString
+import { getIdFromString } from "../helpers";
+import {
+  Comment,
+  DueDate,
+  Task,
+  TodoistApi,
+} from "@doist/todoist-api-typescript";
 import { BlockToInsert } from "./types";
+import { getScheduledDeadlineDateDay } from "logseq-dateutils";
 
 const handleComments = async (taskId: string, obj: BlockToInsert) => {
   const api = new TodoistApi(logseq.settings!.apiToken);
@@ -27,7 +34,11 @@ const handleComments = async (taskId: string, obj: BlockToInsert) => {
   }
 };
 
-const handleAppendTodoAndAppendUrl = (content: string, url: string) => {
+const handleAppendTodoAndAppendUrlAndDeadline = (
+  content: string,
+  url: string,
+  due?: DueDate,
+) => {
   let treatedContent = content;
   if (logseq.settings!.retrieveAppendUrl) {
     treatedContent = `[${treatedContent}](${url})`;
@@ -35,13 +46,21 @@ const handleAppendTodoAndAppendUrl = (content: string, url: string) => {
   if (logseq.settings!.retrieveAppendTodo) {
     treatedContent = `TODO ${treatedContent}`;
   }
+  if (due?.date) {
+    treatedContent = `${treatedContent}
+DEADLINE: <${getScheduledDeadlineDateDay(new Date(due.date))}>`;
+  }
   return treatedContent;
 };
 
 const createTasksArr = async (task: Task, parentTasks: BlockToInsert[]) => {
   let obj: BlockToInsert = {
     children: [] as BlockToInsert[],
-    content: handleAppendTodoAndAppendUrl(task.content, task.url),
+    content: handleAppendTodoAndAppendUrlAndDeadline(
+      task.content,
+      task.url,
+      task.due!,
+    ),
     properties: { attachments: "", comments: "", todoistid: task.id },
   };
   if (task.description.length > 0) {
