@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
   content: ["./src/**/*.{vue,js,ts,jsx,tsx,hbs,html}"],
   darkMode: "media", // or 'media' or 'class'
   theme: {
@@ -8,8 +8,7 @@ module.exports = {
       },
     },
   },
-  daisyui: {
-    base: false,
-  },
-  plugins: [require("daisyui")],
+  plugins: ["@tailwindcss/forms"],
 };
+
+module.exports = config;

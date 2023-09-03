@@ -6,13 +6,14 @@ import { retrieveTasks } from "./features/retrieve";
 import { PluginSettings } from "./settings/types";
 import { render } from "preact";
 import { SendTask } from "./features/send/components/SendTask";
-import { sendTask } from "./features/send";
-import { getAllLabels, getAllProjects } from "./services/todoistHelpers";
+import { removeTaskFlags, sendTask } from "./features/send";
+import { getAllProjects, getAllLabels } from "./features/helpers";
 
 const main = async () => {
   console.log("logseq-todoist-plugin loaded");
   handleListeners();
-  await callSettings();
+  // TODO: Handle what happens when there is no API token at first
+  callSettings();
 
   // RETRIEVE TASKS
   logseq.Editor.registerSlashCommand("Todoist: Retrieve Tasks", async (e) => {
@@ -33,9 +34,8 @@ const main = async () => {
   );
 
   // SEND TASKS
-  // @ts-ignore
-  const { sendDefaultProject, sendDefaultLabel }: PluginSettings =
-    logseq.settings!;
+  const { sendDefaultProject, sendDefaultLabel } =
+    logseq.settings! as Partial<PluginSettings>;
   logseq.Editor.registerSlashCommand("Todoist: Send task", async (e) => {
     const content: string = await logseq.Editor.getEditingBlockContent();
     if (!content || content.length === 0) {
@@ -52,14 +52,13 @@ const main = async () => {
         <SendTask
           projects={projects}
           labels={labels}
-          content={content}
+          content={removeTaskFlags(content).trim()}
           uuid={e.uuid}
         />,
         document.getElementById("app") as HTMLElement,
       );
       logseq.showMainUI();
     } else {
-      // TODO: Insert send task here
       await sendTask(e.uuid, content);
     }
   });

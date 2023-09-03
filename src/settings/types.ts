@@ -4,8 +4,8 @@ export type PluginSettings = {
   sendDefaultLabel: string;
   sendDefaultDeadline: boolean;
   sendAppendUri: boolean;
-  retrieveDefaultProject: string;
   projectNameAsParentBlk: boolean;
+  retrieveDefaultProject: string;
   retrieveAppendCreationDateTime: boolean;
   retrieveAppendTodo: boolean;
   retrieveAppendUrl: boolean;

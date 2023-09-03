@@ -1,5 +1,5 @@
 import { SettingSchemaDesc } from "@logseq/libs/dist/LSPlugin.user";
-import { getAllProjects, getAllLabels } from "../services/todoistHelpers";
+import { getAllProjects, getAllLabels } from "../features/helpers";
 
 export const callSettings = async () => {
   const settings: SettingSchemaDesc[] = [

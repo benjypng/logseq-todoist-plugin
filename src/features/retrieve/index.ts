@@ -1,7 +1,6 @@
 import { getIdFromString, getNameFromString } from "../../utils/parseStrings";
 import { Comment, Task, TodoistApi } from "@doist/todoist-api-typescript";
 import { BlockToInsert } from "./types";
-import { PluginSettings } from "../../settings/types";
 
 const handleComments = async (taskId: string, obj: BlockToInsert) => {
   const api = new TodoistApi(logseq.settings!.apiToken);
@@ -81,21 +80,24 @@ const insertTasks = async (
 
 const deleteAllTasks = async (tasksArr: Task[]) => {
   const api = new TodoistApi(logseq.settings!.apiToken);
-  for (const t of tasksArr) {
-    await api.deleteTask(t.id);
+  try {
+    for (const t of tasksArr) {
+      await api.deleteTask(t.id);
+    }
+  } catch (e) {
+    await logseq.UI.showMsg(`Error deleting tasks: ${(e as Error).message}`);
+    return;
   }
 };
 
 export const retrieveTasks = async (uuid: string, taskParams?: string) => {
   const msgKey = await logseq.UI.showMsg("Loading tasks...");
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   const {
     apiToken,
     retrieveClearTasks,
     retrieveDefaultProject,
     projectNameAsParentBlk,
-  }: PluginSettings = logseq.settings!;
+  } = logseq.settings!;
   const api = new TodoistApi(apiToken);
   if (retrieveDefaultProject === "--- ---") {
     await logseq.UI.showMsg("Please select a default project", "error");

@@ -1,9 +1,9 @@
 import { TodoistApi } from "@doist/todoist-api-typescript";
-import { PluginSettings } from "../../settings/types";
-import { getAllProjects } from "../../services/todoistHelpers";
+import { getAllProjects } from "../helpers";
 import { getIdFromString } from "../../utils/parseStrings";
+import { PluginSettings } from "~/settings/types";
 
-const removeTaskFlags = (content: string): string => {
+export const removeTaskFlags = (content: string): string => {
   const taskFlags = ["TODO", "DOING", "NOW", "LATER", "DONE"];
   for (const f of taskFlags) {
     if (content.includes(f)) {
@@ -16,17 +16,16 @@ const removeTaskFlags = (content: string): string => {
 export const sendTask = async (
   uuid: string,
   content: string,
+  projectId?: string,
   deadline?: string,
-  _label?: string,
-) => {
-  // @ts-ignore
-  const {
-    apiToken,
-    sendAppendUri,
-    sendDefaultProject,
-    sendDefaultDeadline,
-    sendDefaultLabel,
-  }: PluginSettings = logseq.settings;
+  label?: string,
+): Promise<void> => {
+  const { apiToken, sendAppendUri, sendDefaultDeadline, sendDefaultLabel } =
+    logseq.settings! as Partial<PluginSettings>;
+  if (!apiToken) {
+    await logseq.UI.showMsg("Ensure API token is correct", "error");
+    return;
+  }
   const api = new TodoistApi(apiToken);
   const graphName = (await logseq.App.getCurrentGraph())!.name;
   content = removeTaskFlags(content);
@@ -35,17 +34,12 @@ export const sendTask = async (
     content = `[${content}](logseq://graph/${graphName}?block-id=${uuid})`;
   }
   // Send tasks
-  const defaultProject = async () => {
-    const project = await getAllProjects();
-    if (!project || !project[0]) throw new Error();
-    return getIdFromString(project[0]);
-  };
   try {
     await api.addTask({
-      content: content,
-      dueString: sendDefaultDeadline ? "today" : deadline,
-      labels: [sendDefaultLabel === "--- ---" ? "" : sendDefaultLabel],
-      projectId: await defaultProject(),
+      content,
+      ...(projectId && { projectId: projectId }),
+      ...(deadline && { dueString: deadline ?? sendDefaultDeadline }),
+      ...(label && { labels: [label ?? sendDefaultLabel] }),
     });
   } catch (e) {
     console.error(e);

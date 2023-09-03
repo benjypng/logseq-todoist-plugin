@@ -1,6 +1,7 @@
-import { getAllLabels, getAllProjects } from "../../services/todoistHelpers";
-
+import { sendTask } from "..";
 import "./send-task.css";
+import { useState } from "preact/hooks";
+import { getIdFromString } from "../../helpers";
 
 export const SendTask = ({
   projects,
@@ -13,40 +14,68 @@ export const SendTask = ({
   content: string;
   uuid: string;
 }) => {
-  const handleSubmit = async () => {
-    await logseq.Editor.updateBlock(uuid, "HELLO WORLD");
+  const [projectId, setProjectId] = useState<string>("");
+  const [label, setLabel] = useState<string>("");
+  const [deadline, setDeadline] = useState<string>("");
+
+  //@ts-expect-error
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    await sendTask(uuid, content, getIdFromString(projectId), deadline, label);
   };
 
   return (
-    <div className="flex justify-end p-3" tabIndex={-1}>
-      <div className="absolute top-10 card w-96 bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title">Sending {content}</h2>
-          <form className="form-control w-full max-w-xs">
-            <label className="label">
-              <span className="label-text">Select a project</span>
-            </label>
-            <select className="select select-bordered">
-              {projects && projects.map((p) => <option>{p}</option>)}
+    <div className="flex h-screen justify-end" tabIndex={-1}>
+      <div className="flex px-3 w-80 items-center bg-gray-50">
+        <form className="w-full" onSubmit={handleSubmit}>
+          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Select a Project
+            <select
+              //@ts-expect-error
+              onChange={(ev) => setProjectId(ev.target.value)}
+              name="projectId"
+              className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            >
+              {projects.map((p) => (
+                <option>{p}</option>
+              ))}
             </select>
+          </label>
 
-            <label className="label">
-              <span className="label-text">Select a label</span>
-            </label>
-            <select className="select select-bordered">
-              {labels && labels.map((p) => <option>{p}</option>)}
+          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Select a Label
+            <select
+              //@ts-expect-error
+              onChange={(ev) => setLabel(ev.target.value)}
+              name="label"
+              className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            >
+              {labels.map((l) => (
+                <option>{l}</option>
+              ))}
             </select>
+          </label>
 
-            <label className="label">
-              <span className="label-text">Set a deadline</span>
-            </label>
+          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Set a Deadline
             <input
+              //@ts-expect-error
+              onChange={(ev) => setDeadline(ev.target.value)}
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
               type="text"
-              placeholder="Set a deadline"
-              className="input input-bordered w-full max-w-xs"
+              name="deadline"
             />
-          </form>
-        </div>
+          </label>
+
+          <div className="flex justify-end">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              type="submit"
+            >
+              Send Task
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
