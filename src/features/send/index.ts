@@ -16,7 +16,7 @@ export const sendTask = async (
   uuid: string,
   content: string,
   deadline?: string,
-  label?: string
+  _label?: string,
 ) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

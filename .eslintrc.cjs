@@ -29,5 +29,12 @@ module.exports = {
     "@typescript-eslint/ban-ts-ignore": "off",
     "prettier/prettier": "error",
     "comma-dangle": ["error", "always-multiline"],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+      },
+    ],
   },
 };
