@@ -1,6 +1,6 @@
 {
   "name": "logseq-todoist-plugin",
-  "version": "6.0.2",
+  "version": "6.0.3",
   "author": "hkgnp",
   "description": "Simple Todoist plugin to pull only active tasks from specified project, i.e. Inbox",
   "logseq": {
@@ -13,7 +13,7 @@
     "main": false
   },
   "scripts": {
-    "build": "rm -R dist && echo 'dist folder removed'; postcss src/tailwind.css -o src/features/send/components/send-task.css && parcel build --no-source-maps --no-cache src/index.html --public-url ./"
+    "build": "rm -R dist && echo 'dist folder removed'; postcss src/tailwind.css -o src/features/send/components/send-task.css && parcel build --no-source-maps src/index.html --public-url ./"
   },
   "license": "MIT",
   "dependencies": {
@@ -27,8 +27,6 @@
     "tailwindcss": "^3.3.3"
   },
   "devDependencies": {
-    "@parcel/watcher": "^2.3.0",
-    "@parcel/transformer-css": "^2.9.3",
     "@types/eslint": "^8.44.2",
     "@types/node": "^18.17.13",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
@@ -39,6 +37,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "parcel": "^2.9.3",
+    "postcss": "^8.4.29",
     "postcss-cli": "^10.1.0",
     "prettier": "3.0.3"
   }
