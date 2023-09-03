@@ -1,6 +1,6 @@
 {
   "name": "logseq-todoist-plugin",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "author": "hkgnp",
   "description": "Simple Todoist plugin to pull only active tasks from specified project, i.e. Inbox",
   "logseq": {
@@ -27,6 +27,7 @@
     "tailwindcss": "^3.3.3"
   },
   "devDependencies": {
+    "@parcel/watcher": "^2.3.0",
     "@types/eslint": "^8.44.2",
     "@types/node": "^18.17.13",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
