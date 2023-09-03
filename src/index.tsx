@@ -50,8 +50,10 @@ const main = async () => {
       return;
     }
     if (sendDefaultProject === "--- ---" || sendDefaultLabel === "--- ---") {
+      const msg = await logseq.UI.showMsg("Loading projects and tasks");
       const projects = await getAllProjects();
       const labels = await getAllLabels();
+      logseq.UI.closeMsg(msg);
       // Render popup
       render(
         <SendTask
@@ -65,7 +67,7 @@ const main = async () => {
       logseq.showMainUI();
     } else {
       // TODO: Insert send task here
-      sendTask(e.uuid, content);
+      await sendTask(e.uuid, content);
     }
   });
 

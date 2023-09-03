@@ -22,7 +22,7 @@ export const SendTask = ({
       <div className="absolute top-10 card w-96 bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="card-title">Sending {content}</h2>
-          <div className="form-control w-full max-w-xs">
+          <form className="form-control w-full max-w-xs">
             <label className="label">
               <span className="label-text">Select a project</span>
             </label>
@@ -36,7 +36,16 @@ export const SendTask = ({
             <select className="select select-bordered">
               {labels && labels.map((p) => <option>{p}</option>)}
             </select>
-          </div>
+
+            <label className="label">
+              <span className="label-text">Set a deadline</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Set a deadline"
+              className="input input-bordered w-full max-w-xs"
+            />
+          </form>
         </div>
       </div>
     </div>
