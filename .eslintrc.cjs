@@ -26,7 +26,7 @@ module.exports = {
   },
   plugins: ["@typescript-eslint", "prettier"],
   rules: {
-    "@typescript-eslint/ban-ts-ignore": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
     "prettier/prettier": "error",
     "comma-dangle": ["error", "always-multiline"],
     "@typescript-eslint/no-unused-vars": [

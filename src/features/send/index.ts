@@ -12,13 +12,13 @@ const removeTaskFlags = (content: string): string => {
   }
   return content;
 };
+
 export const sendTask = async (
   uuid: string,
   content: string,
   deadline?: string,
   _label?: string,
 ) => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const {
     apiToken,
@@ -35,16 +35,17 @@ export const sendTask = async (
     content = `[${content}](logseq://graph/${graphName}?block-id=${uuid})`;
   }
   // Send tasks
-  const defaultProject =
-    sendDefaultProject !== "--- ---"
-      ? getIdFromString(sendDefaultProject)
-      : getIdFromString((await getAllProjects())[0]); // Todoist does not accept blank projectIds
+  const defaultProject = async () => {
+    const project = await getAllProjects();
+    if (!project || !project[0]) throw new Error();
+    return getIdFromString(project[0]);
+  };
   try {
     await api.addTask({
       content: content,
       dueString: sendDefaultDeadline ? "today" : deadline,
       labels: [sendDefaultLabel === "--- ---" ? "" : sendDefaultLabel],
-      projectId: defaultProject,
+      projectId: await defaultProject(),
     });
   } catch (e) {
     console.error(e);
