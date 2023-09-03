@@ -5,19 +5,27 @@ import { PluginSettings } from "../../settings/types";
 
 const handleComments = async (taskId: string, obj: BlockToInsert) => {
   const api = new TodoistApi(logseq.settings!.apiToken);
-  const comments: Comment[] = await api.getComments({ taskId: taskId });
-  if (comments.length > 0) {
-    for (const c of comments) {
-      if (c.attachment) {
-        obj.properties.attachments = `[${c.attachment.fileName}](${c.attachment.fileUrl})`;
-      }
-      if (c.content) {
-        const content = obj.properties.comments;
-        obj.properties.comments = (content + ", " + c.content).substring(1);
+  try {
+    const comments: Comment[] = await api.getComments({ taskId: taskId });
+    if (comments.length > 0) {
+      for (const c of comments) {
+        if (c.attachment) {
+          obj.properties.attachments = `[${c.attachment.fileName}](${c.attachment.fileUrl})`;
+        }
+        if (c.content) {
+          const content = obj.properties.comments;
+          obj.properties.comments = (content + ", " + c.content).substring(1);
+        }
       }
     }
+    return obj;
+  } catch (e) {
+    console.error(e);
+    await logseq.UI.showMsg(
+      `Unable to retrieve comments: ${(e as Error).message}`,
+      "error",
+    );
   }
-  return obj;
 };
 
 const handleAppendTodoAndAppendUrl = (content: string, url: string) => {
@@ -40,7 +48,7 @@ const createTasksArr = async (task: Task, parentTasks: BlockToInsert[]) => {
   if (task.description.length > 0) {
     obj.content += `: ${task.description}`;
   }
-  obj = await handleComments(task.id, obj);
+  obj = (await handleComments(task.id, obj)) as BlockToInsert;
   parentTasks.push(obj);
 };
 

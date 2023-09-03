@@ -13,30 +13,29 @@
     "main": false
   },
   "scripts": {
-    "build": "rm -R dist && echo 'dist folder removed'; postcss src/tailwind.css -o src/App.css && parcel build --no-source-maps --no-cache src/index.html --public-url ./"
+    "build": "rm -R dist && echo 'dist folder removed'; postcss src/tailwind.css -o src/features/send/send-task.css && parcel build --no-source-maps --no-cache src/index.html --public-url ./"
   },
   "license": "MIT",
   "dependencies": {
     "@doist/todoist-api-typescript": "^2.1.2",
     "@logseq/libs": "^0.0.14",
     "logseq-dateutils": "^0.0.26",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "preact": "^10.17.1",
+    "react": "npm:@preact/compat",
+    "react-dom": "npm:@preact/compat",
     "tailwindcss": "^3.3.3"
   },
   "devDependencies": {
     "@types/node": "^18.17.13",
-    "@types/react": "^18.0.35",
-    "@types/react-dom": "^18.0.11",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
     "buffer": "^6.0.3",
     "cssnano": "^6.0.1",
+    "daisyui": "^3.6.4",
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "parcel": "^2.9.3",
-    "postcss": "^8.4.29",
     "postcss-cli": "^10.1.0",
     "prettier": "3.0.3"
   }

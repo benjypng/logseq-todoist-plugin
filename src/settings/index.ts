@@ -25,7 +25,8 @@ export const callSettings = async () => {
       enumChoices: await getAllProjects(),
       enumPicker: "select",
       title: "Default Project",
-      description: "Default project to send tasks to",
+      description:
+        "Default project to send tasks to. If this is set, tasks will be sent automatically without the popup.",
     },
     {
       key: "sendDefaultLabel",
@@ -34,15 +35,15 @@ export const callSettings = async () => {
       enumChoices: await getAllLabels(),
       enumPicker: "select",
       title: "Default Label",
-      description: "Default label to label tasks",
+      description:
+        "Default label to label tasks. If this is set, tasks will be sent automatically without the popup.",
     },
     {
       key: "sendDefaultDeadline",
       type: "boolean",
       default: false,
       title: "Default Deadline",
-      description:
-        "If set to true, all tasks sent to Todoist will have the deadline set as TODAY",
+      description: "If set to true, default deadline will be set to today.",
     },
     {
       key: "sendAppendUri",

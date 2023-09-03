@@ -2,7 +2,6 @@ import "@logseq/libs";
 import React from "react";
 import ReactDOM from "react-dom";
 import "./App.css";
-import SendTask from "./components/SendTask";
 import generateUniqueId from "./utils/generateUniqueId";
 import handleListeners from "./utils/handleListeners";
 import { getIdFromString } from "./utils/parseStrings";
@@ -10,6 +9,11 @@ import { BlockEntity } from "@logseq/libs/dist/LSPlugin.user";
 import { TodoistApi } from "@doist/todoist-api-typescript";
 import { callSettings } from "./settings";
 import { retrieveTasks } from "./features/retrieve";
+import { PluginSettings } from "./settings/types";
+import { render } from "preact";
+import { SendTask } from "./features/send/SendTask";
+import { sendTask } from "./features/send";
+import { getAllLabels, getAllProjects } from "./services/todoistHelpers";
 
 const main = async () => {
   console.log("logseq-todoist-plugin loaded");
@@ -24,15 +28,46 @@ const main = async () => {
     "Todoist: Retrieve Today's Tasks",
     async (e) => {
       await retrieveTasks(e.uuid, "today");
-    },
+    }
   );
   logseq.Editor.registerSlashCommand(
     "Todoist: Retrieve Custom Filter",
     async (e) => {
       const content = await logseq.Editor.getEditingBlockContent();
       await retrieveTasks(e.uuid, content);
-    },
+    }
   );
+
+  // SEND TASKS
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const { sendDefaultProject, sendDefaultLabel }: PluginSettings =
+    logseq.settings!;
+  logseq.Editor.registerSlashCommand("Todoist: Send task", async (e) => {
+    const content: string = await logseq.Editor.getEditingBlockContent();
+    if (!content || content.length === 0) {
+      await logseq.UI.showMsg("Cannot send empty task", "error");
+      return;
+    }
+    if (sendDefaultProject === "--- ---" || sendDefaultLabel === "--- ---") {
+      const projects = await getAllProjects();
+      const labels = await getAllLabels();
+      // Render popup
+      render(
+        <SendTask
+          projects={projects}
+          labels={labels}
+          content={content}
+          uuid={e.uuid}
+        />,
+        document.getElementById("app") as HTMLElement
+      );
+      logseq.showMainUI();
+    } else {
+      // TODO: Insert send task here
+      sendTask(e.uuid, content);
+    }
+  });
 
   // // SEND TASKS
   //

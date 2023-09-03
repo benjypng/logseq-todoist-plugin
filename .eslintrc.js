@@ -26,6 +26,7 @@ module.exports = {
   },
   plugins: ["@typescript-eslint", "prettier"],
   rules: {
+    "@typescript-eslint/ban-ts-ignore": "off",
     "prettier/prettier": "error",
   },
 };
