@@ -6,14 +6,13 @@
   "logseq": {
     "id": "logseq-todoist-plugin",
     "title": "logseq-todoist-plugin",
-    "icon": "./icon.png"
-  },
-  "main": "dist/index.html",
-  "targets": {
-    "main": false
+    "icon": "./icon.png",
+    "main": "dist/index.html"
   },
   "scripts": {
-    "build": "rm -R dist && echo 'dist folder removed'; postcss src/tailwind.css -o src/features/send/components/send-task.css && parcel build --no-source-maps src/index.html --public-url ./"
+    "dev": "npx vite",
+    "build": "npx tsc && npx vite build",
+    "preview": "npx vite preview"
   },
   "license": "MIT",
   "dependencies": {
@@ -23,22 +22,21 @@
     "logseq-dateutils": "^0.0.26",
     "preact": "^10.17.1",
     "react": "npm:@preact/compat",
-    "react-dom": "npm:@preact/compat",
-    "tailwindcss": "^3.3.3"
+    "react-dom": "npm:@preact/compat"
   },
   "devDependencies": {
     "@types/eslint": "^8.44.2",
-    "@parcel/optimizer-htmlnano": "^2.9.3",
     "@types/node": "^18.17.13",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
-    "buffer": "^6.0.3",
+    "autoprefixer": "^10.4.15",
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "parcel": "^2.9.3",
     "postcss": "^8.4.29",
-    "postcss-cli": "^10.1.0",
-    "prettier": "3.0.3"
+    "prettier": "3.0.3",
+    "tailwindcss": "^3.3.3",
+    "vite": "^4.4.9",
+    "vite-plugin-logseq": "^1.1.2"
   }
 }

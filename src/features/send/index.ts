@@ -1,6 +1,4 @@
 import { TodoistApi } from "@doist/todoist-api-typescript";
-import { getAllProjects } from "../helpers";
-import { getIdFromString } from "../../utils/parseStrings";
 import { PluginSettings } from "~/settings/types";
 
 export const removeTaskFlags = (content: string): string => {

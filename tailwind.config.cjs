@@ -1,13 +1,7 @@
 const config = {
-  content: ["./src/**/*.{vue,js,ts,jsx,tsx,hbs,html}"],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "media", // or 'media' or 'class'
-  theme: {
-    extend: {
-      spacing: {
-        100: "55rem",
-      },
-    },
-  },
+  theme: {},
   plugins: ["@tailwindcss/forms"],
 };
 
