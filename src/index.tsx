@@ -12,7 +12,15 @@ import { getAllProjects, getAllLabels } from "./features/helpers";
 const main = async () => {
   console.log("logseq-todoist-plugin loaded");
   handleListeners();
-  // TODO: Handle what happens when there is no API token at first
+  const { apiToken } = logseq.settings!;
+  if (!apiToken || apiToken === "") {
+    // Check if it's a new install
+    await logseq.UI.showMsg(
+      "Please key in your API key before using the plugin",
+      "error",
+    );
+    return;
+  }
   callSettings();
 
   // RETRIEVE TASKS

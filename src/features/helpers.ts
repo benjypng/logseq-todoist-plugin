@@ -1,7 +1,9 @@
 import { Project, Label, TodoistApi } from "@doist/todoist-api-typescript";
 
 export const getAllProjects = async (): Promise<string[]> => {
-  const api: TodoistApi = new TodoistApi(logseq.settings!.apiToken);
+  const { apiToken } = logseq.settings!;
+  if (!apiToken || apiToken === "") return ["--- ---"];
+  const api: TodoistApi = new TodoistApi(apiToken);
   try {
     const allProjects: Project[] = await api.getProjects();
     const projArr = allProjects.map(
@@ -20,7 +22,9 @@ export const getAllProjects = async (): Promise<string[]> => {
 };
 
 export const getAllLabels = async (): Promise<string[]> => {
-  const api: TodoistApi = new TodoistApi(logseq.settings!.apiToken);
+  const { apiToken } = logseq.settings!;
+  if (!apiToken || apiToken === "") return ["--- ---"];
+  const api: TodoistApi = new TodoistApi(apiToken);
   try {
     const allLabels: Label[] = await api.getLabels();
     const labelArr = allLabels.map((label) => `${label.name} (${label.id})`);
