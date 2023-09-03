@@ -6,8 +6,8 @@ export type PluginSettings = {
   sendAppendUri: boolean;
   projectNameAsParentBlk: boolean;
   retrieveDefaultProject: string;
-  retrieveAppendCreationDateTime: boolean;
   retrieveAppendTodo: boolean;
   retrieveAppendUrl: boolean;
   retrieveClearTasks: boolean;
+  retrieveAppendCreationDateTime: boolean;
 };

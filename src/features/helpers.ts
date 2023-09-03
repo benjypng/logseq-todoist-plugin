@@ -49,3 +49,7 @@ export const getIdFromString = (content: string): string => {
     return "";
   }
 };
+
+export const getNameFromString = (content: string): string => {
+  return content.substring(0, content.indexOf("(")).trim();
+};

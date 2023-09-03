@@ -12,7 +12,7 @@ import { getAllProjects, getAllLabels } from "./features/helpers";
 const main = async () => {
   console.log("logseq-todoist-plugin loaded");
   handleListeners();
-  const { apiToken } = logseq.settings!;
+  const { apiToken } = logseq.settings! as Partial<PluginSettings>;
   if (!apiToken || apiToken === "") {
     // Check if it's a new install
     await logseq.UI.showMsg(
@@ -21,7 +21,9 @@ const main = async () => {
     );
     return;
   }
-  callSettings();
+  const projects = await getAllProjects();
+  const labels = await getAllLabels();
+  callSettings(projects, labels);
 
   // RETRIEVE TASKS
   logseq.Editor.registerSlashCommand("Todoist: Retrieve Tasks", async (e) => {
@@ -42,18 +44,19 @@ const main = async () => {
   );
 
   // SEND TASKS
-  const { sendDefaultProject, sendDefaultLabel } =
-    logseq.settings! as Partial<PluginSettings>;
+  const { sendDefaultProject } = logseq.settings! as Partial<PluginSettings>;
   logseq.Editor.registerSlashCommand("Todoist: Send task", async (e) => {
     const content: string = await logseq.Editor.getEditingBlockContent();
     if (!content || content.length === 0) {
       await logseq.UI.showMsg("Cannot send empty task", "error");
       return;
     }
-    if (sendDefaultProject === "--- ---" || sendDefaultLabel === "--- ---") {
+    if (
+      sendDefaultProject === "--- ---" ||
+      !sendDefaultProject ||
+      sendDefaultProject === ""
+    ) {
       const msg = await logseq.UI.showMsg("Loading projects and tasks");
-      const projects = await getAllProjects();
-      const labels = await getAllLabels();
       logseq.UI.closeMsg(msg);
       // Render popup
       render(

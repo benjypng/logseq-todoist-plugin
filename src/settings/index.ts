@@ -1,7 +1,6 @@
 import { SettingSchemaDesc } from "@logseq/libs/dist/LSPlugin.user";
-import { getAllProjects, getAllLabels } from "../features/helpers";
 
-export const callSettings = async () => {
+export const callSettings = async (projects: string[], labels: string[]) => {
   const settings: SettingSchemaDesc[] = [
     {
       key: "apiToken",
@@ -21,8 +20,8 @@ export const callSettings = async () => {
     {
       key: "sendDefaultProject",
       type: "enum",
-      default: "",
-      enumChoices: await getAllProjects(),
+      default: "--- ---",
+      enumChoices: projects,
       enumPicker: "select",
       title: "Default Project",
       description:
@@ -31,12 +30,11 @@ export const callSettings = async () => {
     {
       key: "sendDefaultLabel",
       type: "enum",
-      default: "",
-      enumChoices: await getAllLabels(),
+      default: "--- ---",
+      enumChoices: labels,
       enumPicker: "select",
       title: "Default Label",
-      description:
-        "Default label to label tasks. If this is set, tasks will be sent automatically without the popup.",
+      description: "Default label to label tasks.",
     },
     {
       key: "sendDefaultDeadline",
@@ -63,8 +61,8 @@ export const callSettings = async () => {
     {
       key: "retrieveDefaultProject",
       type: "enum",
-      default: "",
-      enumChoices: await getAllProjects(),
+      default: "--- ---",
+      enumChoices: projects,
       enumPicker: "select",
       title: "Default Project",
       description: "Default project to retrieve tasks from",
@@ -110,19 +108,12 @@ export const callSettings = async () => {
         "If set to true, retrieved tasks will be deleted in Todoist.",
     },
     {
-      key: "",
-      type: "heading",
-      default: "",
-      title: "Todoist Sync",
-      description: "",
-    },
-    {
-      key: "enableTodoistSync",
+      key: "retrieveAppendCreationDateTime",
       type: "boolean",
       default: false,
-      title: "Enable Todoist Sync",
+      title: "Append Creation Date and Time",
       description:
-        "If set to true, Todoist Sync will be enabled. The default retrieve project identified above will be used as the synchronising project",
+        "If set to true, all retrieved tasks will have their creation date and time appended.",
     },
   ];
   logseq.useSettingsSchema(settings);

@@ -1,5 +1,4 @@
-// TODO: Rewrite function getNameFromString
-import { getIdFromString } from "../helpers";
+import { getIdFromString, getNameFromString } from "../helpers";
 import {
   Comment,
   DueDate,
@@ -7,7 +6,11 @@ import {
   TodoistApi,
 } from "@doist/todoist-api-typescript";
 import { BlockToInsert } from "./types";
-import { getScheduledDeadlineDateDay } from "logseq-dateutils";
+import {
+  getScheduledDeadlineDateDay,
+  getYYMMDDTHHMMFormat,
+} from "logseq-dateutils";
+import { PluginSettings } from "~/settings/types";
 
 const handleComments = async (taskId: string, obj: BlockToInsert) => {
   const api = new TodoistApi(logseq.settings!.apiToken);
@@ -37,18 +40,29 @@ const handleComments = async (taskId: string, obj: BlockToInsert) => {
 const handleAppendTodoAndAppendUrlAndDeadline = (
   content: string,
   url: string,
-  due?: DueDate,
+  due: DueDate,
+  createdAt: string,
 ) => {
+  const {
+    retrieveAppendUrl,
+    retrieveAppendTodo,
+    retrieveAppendCreationDateTime,
+  } = logseq.settings! as Partial<PluginSettings>;
   let treatedContent = content;
-  if (logseq.settings!.retrieveAppendUrl) {
+  if (retrieveAppendUrl) {
     treatedContent = `[${treatedContent}](${url})`;
   }
-  if (logseq.settings!.retrieveAppendTodo) {
+  if (retrieveAppendTodo) {
     treatedContent = `TODO ${treatedContent}`;
   }
   if (due?.date) {
     treatedContent = `${treatedContent}
 DEADLINE: <${getScheduledDeadlineDateDay(new Date(due.date))}>`;
+  }
+  if (retrieveAppendCreationDateTime) {
+    const isoDate = getYYMMDDTHHMMFormat(new Date(createdAt));
+    const [datePart, timePart] = isoDate.split("T");
+    treatedContent = `@${datePart} **${timePart}** ${treatedContent}`;
   }
   return treatedContent;
 };
@@ -60,6 +74,7 @@ const createTasksArr = async (task: Task, parentTasks: BlockToInsert[]) => {
       task.content,
       task.url,
       task.due!,
+      task.createdAt,
     ),
     properties: { attachments: "", comments: "", todoistid: task.id },
   };
@@ -82,10 +97,7 @@ const recursion = async (parentTasks: BlockToInsert[], tasksArr: Task[]) => {
   }
 };
 
-const insertTasks = async (
-  uuid: string,
-  tasksArr: Task[],
-): Promise<BlockToInsert[]> => {
+const insertTasks = async (tasksArr: Task[]): Promise<BlockToInsert[]> => {
   // 1. Create tree.
   const parentTasks: BlockToInsert[] = [];
   for (const task of tasksArr) {
@@ -148,7 +160,7 @@ export const retrieveTasks = async (uuid: string, taskParams?: string) => {
     await logseq.UI.showMsg("There are no tasks");
     return;
   }
-  const batchBlock = await insertTasks(uuid, allTasks);
+  const batchBlock = await insertTasks(allTasks);
   await logseq.Editor.insertBatchBlock(uuid, batchBlock);
   logseq.UI.closeMsg(msgKey);
   // Delete tasks if setting is enabled
