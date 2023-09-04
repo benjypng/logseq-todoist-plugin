@@ -26,6 +26,16 @@ You can send tasks in 2 ways:
 
 The plugin settings page contains other preferences to customise how you want tasks to be retrieved or sent to Todoist.
 
+# Hiding block properties
+
+The plugin automatically creates the following block properties: `todoistid`, `comments`, `atttachments`. If you wish to hide them, you can find the below flag in `config.edn` and make the changes:
+
+```
+ ;; hide specific properties for blocks
+ ;; E.g. :block-hidden-properties #{:created-at :updated-at}
+ :block-hidden-properties #{:todoistid :comments :attachments}
+```
+
 # Installation
 
 1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 3.
