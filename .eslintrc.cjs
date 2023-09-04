@@ -25,6 +25,7 @@ module.exports = {
     sourceType: "module",
   },
   plugins: ["@typescript-eslint", "prettier"],
+  ignorePatterns: ["!.*", "dist", "node_modules"],
   rules: {
     "@typescript-eslint/ban-ts-comment": "off",
     "prettier/prettier": "error",
