@@ -1,7 +1,7 @@
 import { sendTask } from "..";
 import "./send-task.css";
 import { useState } from "preact/hooks";
-import { getIdFromString } from "../../helpers";
+import { getIdFromString, getNameFromString } from "../../helpers";
 
 export const SendTask = ({
   projects,
@@ -21,7 +21,14 @@ export const SendTask = ({
   //@ts-expect-error
   const handleSubmit = async (event) => {
     event.preventDefault();
-    await sendTask(uuid, content, getIdFromString(projectId), deadline, label);
+    await sendTask(
+      uuid,
+      content,
+      getIdFromString(projectId),
+      deadline,
+      getNameFromString(label),
+    );
+    logseq.hideMainUI();
   };
 
   return (

@@ -19,7 +19,6 @@ const main = async () => {
       "Please key in your API key before using the plugin",
       "error",
     );
-    return;
   }
   const projects = await getAllProjects();
   const labels = await getAllLabels();
