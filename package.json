@@ -1,6 +1,5 @@
 {
   "name": "logseq-todoist-plugin",
-  "version": "6.0.11",
   "author": "hkgnp",
   "description": "Simple Todoist plugin to pull only active tasks from specified project, i.e. Inbox",
   "logseq": {
@@ -14,22 +13,38 @@
     "build": "npx tsc && npx vite build",
     "preview": "npx vite preview"
   },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      [
+        "@semantic-release/github",
+        {
+          "assets": [
+            "logseq-todoist-plugin.zip"
+          ]
+        }
+      ]
+    ]
+  },
   "license": "MIT",
   "dependencies": {
     "@doist/todoist-api-typescript": "^2.1.2",
     "@logseq/libs": "^0.0.14",
-    "@tailwindcss/forms": "^0.5.6",
     "logseq-dateutils": "^0.0.26",
     "preact": "^10.17.1",
     "react": "npm:@preact/compat",
     "react-dom": "npm:@preact/compat"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.6",
     "@types/eslint": "^8.44.2",
     "@types/node": "^18.17.13",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
     "autoprefixer": "^10.4.15",
+    "cssnano": "^6.0.1",
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
