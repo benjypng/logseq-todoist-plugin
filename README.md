@@ -1,7 +1,8 @@
 [:gift_heart: Sponsor this project on Github](https://github.com/sponsors/hkgnp) or [:coffee: Get me a coffee](https://www.buymeacoffee.com/hkgnp.dev) if you like this plugin!
 
 > This plugin is currently not receiving PRs.
-> 2023-09-04: This plugin has just been refactored with breaking changes. Todoist Sync has been removed due to feature instability. A new set of videos for the README will be added at a later date.
+
+> 2023-09-04: This plugin has just been refactored with breaking changes. Versioning for releases has been revamped in favour of `sematic-release`. Todoist Sync has been removed due to feature instability. A new set of videos for the README will be added at a later date.
 
 # Overview
 
