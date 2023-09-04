@@ -1,5 +1,4 @@
 import { sendTask } from "..";
-import "./send-task.css";
 import { useState } from "preact/hooks";
 import { getIdFromString, getNameFromString } from "../../helpers";
 
