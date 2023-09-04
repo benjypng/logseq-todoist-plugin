@@ -1,5 +1,4 @@
 import "@logseq/libs";
-import "./App.css";
 import handleListeners from "./utils/handleListeners";
 import { callSettings } from "./settings";
 import { retrieveTasks } from "./features/retrieve";
