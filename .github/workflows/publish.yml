@@ -1,4 +1,4 @@
-name: Build plugin
+name: Build Logseq Plugin
 
 on:
   push:
