@@ -1,5 +1,6 @@
 .DS_Store
 archive
+.idea
 
 # Logs
 logs
