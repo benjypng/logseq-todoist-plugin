@@ -2,6 +2,7 @@
   "name": "logseq-todoist-plugin",
   "author": "hkgnp",
   "description": "Simple Todoist plugin to pull only active tasks from specified project, i.e. Inbox",
+  "license": "MIT",
   "logseq": {
     "id": "logseq-todoist-plugin",
     "title": "logseq-todoist-plugin",
@@ -9,6 +10,7 @@
     "main": "dist/index.html"
   },
   "scripts": {
+    "start:dev": "npm i @logseq/libs -S && npm i @types/eslint @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint eslint-config-prettier eslint-plugin-prettier prettier vite vite-plugin-logseq -D",
     "dev": "npx vite",
     "build": "npx tsc && npx vite build",
     "preview": "npx vite preview"
@@ -28,7 +30,6 @@
       ]
     ]
   },
-  "license": "MIT",
   "dependencies": {
     "@doist/todoist-api-typescript": "^2.1.2",
     "@logseq/libs": "^0.0.14",
