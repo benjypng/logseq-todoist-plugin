@@ -11,6 +11,13 @@ export const removeTaskFlags = (content: string): string => {
   return content;
 };
 
+const parseBlkDeadline = (deadline: number): string => {
+  let year = deadline.toString().substring(0, 4);
+  let month = deadline.toString().substring(5, 6);
+  let day = deadline.toString().substring(6);
+  return `${year}-${month}-${day}`;
+};
+
 export const sendTask = async (
   uuid: string,
   content: string,
@@ -31,14 +38,23 @@ export const sendTask = async (
   if (sendAppendUri) {
     content = `[${content}](logseq://graph/${graphName}?block-id=${uuid})`;
   }
+  const blk = await logseq.Editor.getBlock(uuid);
+  if (!blk) return;
+  if (blk.deadline)
+    content = content.substring(1, content.indexOf("DEADLINE:"));
+  const sendDeadline = !sendDefaultDeadline
+    ? parseBlkDeadline(blk.deadline)
+    : "today";
+
   // Send tasks
   try {
     await api.addTask({
       content,
+      dueString: sendDeadline,
       ...(projectId && { projectId: projectId }),
-      ...(deadline && { dueString: deadline ?? sendDefaultDeadline }),
       ...(label && { labels: [label ?? sendDefaultLabel] }),
     });
+    await logseq.UI.showMsg(`Task sent`);
   } catch (e) {
     console.error(e);
     await logseq.UI.showMsg(`Task was not sent: ${(e as Error).message}`);
