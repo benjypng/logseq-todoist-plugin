@@ -40,11 +40,16 @@ export const sendTask = async (
   }
   const blk = await logseq.Editor.getBlock(uuid);
   if (!blk) return;
-  if (blk.deadline)
+
+  let sendDeadline: string = "";
+  if (blk.deadline) {
     content = content.substring(1, content.indexOf("DEADLINE:"));
-  const sendDeadline = !sendDefaultDeadline
-    ? parseBlkDeadline(blk.deadline)
-    : "today";
+    sendDeadline = parseBlkDeadline(blk.deadline);
+  } else if (deadline) {
+    sendDeadline = deadline;
+  } else {
+    sendDeadline = "today";
+  }
 
   // Send tasks
   try {
