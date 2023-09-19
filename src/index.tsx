@@ -6,7 +6,11 @@ import { PluginSettings } from "./settings/types";
 import { render } from "preact";
 import { SendTask } from "./features/send/components/SendTask";
 import { removeTaskFlags, sendTask } from "./features/send";
-import { getAllProjects, getAllLabels } from "./features/helpers";
+import {
+  getAllProjects,
+  getAllLabels,
+  getIdFromString,
+} from "./features/helpers";
 
 const main = async () => {
   console.log("logseq-todoist-plugin loaded");
@@ -42,8 +46,8 @@ const main = async () => {
   );
 
   // SEND TASKS
-  const { sendDefaultProject } = logseq.settings! as Partial<PluginSettings>;
   logseq.Editor.registerSlashCommand("Todoist: Send Task", async (e) => {
+    const { sendDefaultProject } = logseq.settings! as Partial<PluginSettings>;
     const content: string = await logseq.Editor.getEditingBlockContent();
     if (!content || content.length === 0) {
       await logseq.UI.showMsg("Cannot send empty task", "error");
@@ -68,7 +72,7 @@ const main = async () => {
       );
       logseq.showMainUI();
     } else {
-      await sendTask(e.uuid, content);
+      await sendTask(e.uuid, content, getIdFromString(sendDefaultProject));
     }
   });
 };

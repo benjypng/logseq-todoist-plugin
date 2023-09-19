@@ -47,14 +47,16 @@ export const sendTask = async (
     sendDeadline = parseBlkDeadline(blk.deadline);
   } else if (deadline) {
     sendDeadline = deadline;
-  } else {
+  } else if (sendDefaultDeadline) {
     sendDeadline = "today";
+  } else {
+    sendDeadline = "";
   }
 
   // Send tasks
   try {
     await api.addTask({
-      content,
+      content: content.trim(),
       dueString: sendDeadline,
       ...(projectId && { projectId: projectId }),
       ...(label && { labels: [label ?? sendDefaultLabel] }),
