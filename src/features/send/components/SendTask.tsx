@@ -33,7 +33,7 @@ export const SendTask = ({
 
   return (
     <div className="flex h-screen justify-end" tabIndex={-1}>
-      <div className="flex px-3 w-80 items-center bg-gray-50">
+      <div className="sendPopup flex px-3 w-80 items-center bg-gray-50">
         <form className="w-full" onSubmit={handleSubmit}>
           <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             Select a Project

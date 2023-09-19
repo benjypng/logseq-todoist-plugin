@@ -13,7 +13,7 @@ export default function handleListeners() {
 
   // Click
   document.addEventListener("click", (e) => {
-    if (!(e.target as HTMLElement).closest("body")) {
+    if (!(e.target as HTMLElement).closest(".sendPopup")) {
       logseq.hideMainUI({ restoreEditingCursor: true });
     }
     e.stopPropagation();
