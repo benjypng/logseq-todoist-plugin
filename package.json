@@ -10,7 +10,7 @@
     "main": "dist/index.html"
   },
   "scripts": {
-    "start:dev": "npm i @logseq/libs -S && npm i @types/eslint @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint eslint-config-prettier eslint-plugin-prettier prettier vite vite-plugin-logseq -D",
+    "start:dev": "pnpm add @logseq/libs -S && pnpm add @types/eslint @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint eslint-config-prettier eslint-plugin-prettier prettier vite vite-plugin-logseq -D",
     "dev": "npx vite",
     "build": "npx tsc && npx vite build",
     "preview": "npx vite preview"

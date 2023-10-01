@@ -21,16 +21,20 @@ jobs:
         with:
           node-version: "20.x" # You might need to adjust this value to your own version
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 6.0.2
+
       - name: Build
         id: build
         run: |
-          npm ci && npm run build
+          pnpm i && pnpm run build
           mkdir ${{ env.PLUGIN_NAME }}
-          cp README.md package.json icon.png ${{ env.PLUGIN_NAME }}
+          cp README.md package.json icon.svg ${{ env.PLUGIN_NAME }}
           mv dist ${{ env.PLUGIN_NAME }}
           zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
           ls
-          echo "::set-output name=tag_name::$(git tag --sort version:refname | tail -n 1)"
+          echo "tag_name=git tag --sort version:refname | tail -n 1" >> $GITHUB_OUTPUT
 
       - name: Release
         run: npx semantic-release
