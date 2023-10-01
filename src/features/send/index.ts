@@ -13,7 +13,7 @@ export const removeTaskFlags = (content: string): string => {
 
 const parseBlkDeadline = (deadline: number): string => {
   let year = deadline.toString().substring(0, 4);
-  let month = deadline.toString().substring(5, 6);
+  let month = deadline.toString().substring(4, 6);
   let day = deadline.toString().substring(6);
   return `${year}-${month}-${day}`;
 };
