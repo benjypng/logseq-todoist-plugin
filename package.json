@@ -33,6 +33,7 @@
   "dependencies": {
     "@doist/todoist-api-typescript": "^2.1.2",
     "@logseq/libs": "^0.0.14",
+    "axios": "^1.5.1",
     "logseq-dateutils": "^2.1.1",
     "preact": "^10.17.1",
     "react": "npm:@preact/compat",

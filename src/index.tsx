@@ -11,11 +11,15 @@ import {
   getAllLabels,
   getIdFromString,
 } from "./features/helpers";
+import { handleSyncPage } from "./features/sync";
 
 const main = async () => {
   console.log("logseq-todoist-plugin loaded");
+
   handleListeners();
-  const { apiToken } = logseq.settings! as Partial<PluginSettings>;
+
+  const { apiToken, syncToken, syncPage } =
+    logseq.settings! as Partial<PluginSettings>;
   if (!apiToken || apiToken === "") {
     // Check if it's a new install
     await logseq.UI.showMsg(
@@ -23,6 +27,16 @@ const main = async () => {
       "error",
     );
   }
+
+  if (!syncToken || syncToken === "") {
+    logseq.updateSettings({
+      syncToken: "*",
+    });
+  }
+  if (syncPage) {
+    handleSyncPage();
+  }
+
   const projects = await getAllProjects();
   const labels = await getAllLabels();
   callSettings(projects, labels);

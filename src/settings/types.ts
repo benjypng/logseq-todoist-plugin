@@ -10,4 +10,6 @@ export type PluginSettings = {
   retrieveAppendUrl: boolean;
   retrieveClearTasks: boolean;
   retrieveAppendCreationDateTime: boolean;
+  syncToken: string;
+  syncPage: string;
 };

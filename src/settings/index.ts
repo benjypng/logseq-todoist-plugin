@@ -107,6 +107,27 @@ export const callSettings = async (projects: string[], labels: string[]) => {
       description:
         "If set to true, all retrieved tasks will have their creation date and time appended.",
     },
+    {
+      key: "",
+      type: "heading",
+      default: "",
+      title: "Sync (Experimental)",
+      description: "",
+    },
+    {
+      key: "syncPage",
+      type: "string",
+      default: "Todoist Sync",
+      title: "Sync Page",
+      description: "Define the page that you want tasks to be synchronised to.",
+    },
+    {
+      key: "syncToken",
+      type: "string",
+      default: "",
+      title: "Sync Token",
+      description: "Do not edit.",
+    },
   ];
   logseq.useSettingsSchema(settings);
 };

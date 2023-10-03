@@ -94,7 +94,9 @@ const recursion = async (parentTasks: BlockToInsert[], tasksArr: Task[]) => {
   }
 };
 
-const insertTasks = async (tasksArr: Task[]): Promise<BlockToInsert[]> => {
+export const insertTasks = async (
+  tasksArr: Task[],
+): Promise<BlockToInsert[]> => {
   // 1. Create tree.
   const parentTasks: BlockToInsert[] = [];
   for (const task of tasksArr) {
