@@ -6,10 +6,7 @@ import {
   TodoistApi,
 } from "@doist/todoist-api-typescript";
 import { BlockToInsert } from "./types";
-import {
-  getScheduledDeadlineDateDay,
-  getYYMMDDTHHMMFormat,
-} from "logseq-dateutils";
+import { getScheduledDateDay, getYYMMDDTHHMMFormat } from "logseq-dateutils";
 import { PluginSettings } from "~/settings/types";
 
 const handleComments = async (taskId: string, obj: BlockToInsert) => {
@@ -57,7 +54,7 @@ const handleAppendTodoAndAppendUrlAndDeadline = (
   }
   if (due?.date) {
     treatedContent = `${treatedContent}
-DEADLINE: <${getScheduledDeadlineDateDay(new Date(due.date))}>`;
+${getScheduledDateDay(new Date(due.date))}`;
   }
   if (retrieveAppendCreationDateTime) {
     const isoDate = getYYMMDDTHHMMFormat(new Date(createdAt));

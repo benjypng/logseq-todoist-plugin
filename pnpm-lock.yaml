@@ -12,8 +12,8 @@ dependencies:
     specifier: ^0.0.14
     version: 0.0.14
   logseq-dateutils:
-    specifier: ^0.0.26
-    version: 0.0.26
+    specifier: ^2.1.1
+    version: 2.1.1
   preact:
     specifier: ^10.17.1
     version: 10.18.1
@@ -1001,6 +1001,13 @@ packages:
     resolution: {integrity: sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==}
     dev: false
 
+  /date-fns@2.30.0:
+    resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
+    engines: {node: '>=0.11'}
+    dependencies:
+      '@babel/runtime': 7.23.1
+    dev: false
+
   /debug@4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
     engines: {node: '>=6.0'}
@@ -1693,8 +1700,11 @@ packages:
     resolution: {integrity: sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==}
     dev: true
 
-  /logseq-dateutils@0.0.26:
-    resolution: {integrity: sha512-HUipF4ZqIq5ecrR53Rp7sstMgEQc3lkrVZ8u0uZXm5MMBTeipzFSLwifD+VE1c0Kl6G2B4JFMux360qj1JI6rg==}
+  /logseq-dateutils@2.1.1:
+    resolution: {integrity: sha512-oobLdkxthobm9+C1ThmhbBB8xVDnuK5zLAxlgNVsp6kjPsC2AIV4JDHbNQpAAOciMGc01IlZBBkF3OQTuMLugQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      date-fns: 2.30.0
     dev: false
 
   /lower-case@2.0.2:
