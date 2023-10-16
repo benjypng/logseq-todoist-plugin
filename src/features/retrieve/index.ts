@@ -127,23 +127,14 @@ export const retrieveTasks = async (uuid: string, taskParams?: string) => {
     projectNameAsParentBlk,
   } = logseq.settings!;
   const api = new TodoistApi(apiToken);
-  if (retrieveDefaultProject === "--- ---") {
-    await logseq.UI.showMsg("Please select a default project", "error");
-    return;
-  }
-  // Insert parent block if projectNameAsParentBlk is true
-  if (projectNameAsParentBlk) {
-    await logseq.Editor.updateBlock(
-      uuid,
-      `[[${getNameFromString(retrieveDefaultProject)}]]`,
-    );
-  } else {
-    await logseq.Editor.updateBlock(uuid, "");
-  }
   // Insert blocks
   let allTasks: Task[];
   // Retrieve tasks based on optional filter parameters
   if (!taskParams) {
+    if (retrieveDefaultProject === "--- ---") {
+      await logseq.UI.showMsg("Please select a default project", "error");
+      return;
+    }
     allTasks = await api.getTasks({
       projectId: getIdFromString(retrieveDefaultProject),
     });
@@ -158,7 +149,19 @@ export const retrieveTasks = async (uuid: string, taskParams?: string) => {
     return;
   }
   const batchBlock = await insertTasks(allTasks);
-  await logseq.Editor.insertBatchBlock(uuid, batchBlock);
+  // Insert batch block based on whether projectNameAsParentBlk is true
+  if (projectNameAsParentBlk) {
+    await logseq.Editor.updateBlock(
+      uuid,
+      `[[${getNameFromString(retrieveDefaultProject)}]]`,
+    );
+    await logseq.Editor.insertBatchBlock(uuid, batchBlock, { sibling: false });
+    await logseq.Editor.exitEditingMode(true)
+  } else {
+    await logseq.Editor.insertBatchBlock(uuid, batchBlock);
+    await logseq.Editor.removeBlock(uuid)
+    await logseq.Editor.exitEditingMode(true)
+  }
   logseq.UI.closeMsg(msgKey);
   // Delete tasks if setting is enabled
   if (retrieveClearTasks) await deleteAllTasks(allTasks);
