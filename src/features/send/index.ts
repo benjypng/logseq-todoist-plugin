@@ -12,9 +12,9 @@ export const removeTaskFlags = (content: string): string => {
 };
 
 const parseBlkDeadline = (deadline: number): string => {
-  let year = deadline.toString().substring(0, 4);
-  let month = deadline.toString().substring(4, 6);
-  let day = deadline.toString().substring(6);
+  const year = deadline.toString().substring(0, 4);
+  const month = deadline.toString().substring(4, 6);
+  const day = deadline.toString().substring(6);
   return `${year}-${month}-${day}`;
 };
 
@@ -36,7 +36,7 @@ export const sendTask = async (
   content = removeTaskFlags(content);
   // Add URI if sendAppendUri is true
   if (sendAppendUri) {
-    content = `[${content}](logseq://graph/${graphName}?block-id=${uuid})`;
+    content = `${content} [↗️](logseq://graph/${graphName}?block-id=${uuid})`;
   }
   const blk = await logseq.Editor.getBlock(uuid);
   if (!blk) return;

@@ -2,6 +2,7 @@ import { sendTask } from "..";
 import { useState } from "preact/hooks";
 import { getIdFromString, getNameFromString } from "../../helpers";
 import "./tailwind.css";
+import { ChangeEvent } from "react";
 
 export const SendTask = ({
   projects,
@@ -18,8 +19,7 @@ export const SendTask = ({
   const [label, setLabel] = useState<string>("");
   const [deadline, setDeadline] = useState<string>("");
 
-  //@ts-expect-error
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
     await sendTask(
       uuid,
@@ -28,6 +28,9 @@ export const SendTask = ({
       deadline,
       getNameFromString(label),
     );
+    setProjectId("");
+    setLabel("");
+    setDeadline("");
     logseq.hideMainUI();
   };
 
