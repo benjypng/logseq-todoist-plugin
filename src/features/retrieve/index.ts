@@ -156,11 +156,11 @@ export const retrieveTasks = async (uuid: string, taskParams?: string) => {
       `[[${getNameFromString(retrieveDefaultProject)}]]`,
     );
     await logseq.Editor.insertBatchBlock(uuid, batchBlock, { sibling: false });
-    await logseq.Editor.exitEditingMode(true)
+    await logseq.Editor.exitEditingMode(true);
   } else {
     await logseq.Editor.insertBatchBlock(uuid, batchBlock);
-    await logseq.Editor.removeBlock(uuid)
-    await logseq.Editor.exitEditingMode(true)
+    await logseq.Editor.removeBlock(uuid);
+    await logseq.Editor.exitEditingMode(true);
   }
   logseq.UI.closeMsg(msgKey);
   // Delete tasks if setting is enabled
