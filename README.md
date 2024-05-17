@@ -52,15 +52,18 @@ The plugin automatically creates the following block properties: `todoistid`, `c
 ## First run
 
 1. Clone/fork the repo.
-2. Go to the Plugins page on Logseq (`t p`).
-3. Uninstall the plugin.
-4. Run `npm run build` to build the project.
-5. Click on "Load unpacked plugin" and choose the root directory (the one that contains the `dist` dir just created).
+2. Open a terminal. Run `pnpm --version` and make sure you have version 7 installed (e.g. `7.33.7`).
+3. Run `pnpm run build` to build the project.
+4. Open Logseq, go to "Settings / Advanced", turn on "Developer mode".
+5. Go to the Plugins page (press `t` and `p`).
+6. Uninstall `logseq-todoist-plugin`.
+7. Click on the "Load unpacked plugin" button and choose the root directory (the one that contains the `dist` dir just created).
+8. Go to the plugin settings, paste your Todoist API token and configure other settings as you wish.
 
 ## Changes
 
 1. Change the code.
-2. Run `npm run build`.
-3. Go to the Plugins page on Logseq (`t p`).
+2. Run `pnpm run build`.
+3. Go to the Plugins page on Logseq (press `t` and `p`).
 4. Click on "Reload".
 5. Test your changes.

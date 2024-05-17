@@ -6,7 +6,12 @@ import {
   TodoistApi,
 } from "@doist/todoist-api-typescript";
 import { BlockToInsert } from "./types";
-import { getScheduledDateDay, getYYMMDDTHHMMFormat } from "logseq-dateutils";
+import {
+  getDateForPage,
+  getDateForPageWithoutBrackets,
+  getScheduledDateDay,
+  getYYMMDDTHHMMFormat,
+} from "logseq-dateutils";
 import { PluginSettings } from "~/settings/types";
 
 const handleComments = async (taskId: string, obj: BlockToInsert) => {
@@ -49,17 +54,20 @@ const handleAppendTodoAndAppendUrlAndDeadline = (
   if (retrieveAppendUrl) {
     treatedContent = `[${treatedContent}](${url})`;
   }
-  if (retrieveAppendTodo) {
-    treatedContent = `TODO ${treatedContent}`;
-  }
   if (due?.date) {
     treatedContent = `${treatedContent}
 ${getScheduledDateDay(new Date(due.date))}`;
   }
   if (retrieveAppendCreationDateTime) {
-    const isoDate = getYYMMDDTHHMMFormat(new Date(createdAt));
-    const [datePart, timePart] = isoDate.split("T");
-    treatedContent = `@${datePart} **${timePart}** ${treatedContent}`;
+    const creationDate = new Date(createdAt);
+    // TODO how to get the date format directly from Logseq's config.edn (instead of hardcoding it here)?
+    const datePart = getDateForPage(creationDate, "EEEE, dd.MM.yyyy");
+    const timePart = getDateForPageWithoutBrackets(creationDate, "HH:mm");
+    treatedContent = `${datePart} **${timePart}** ${treatedContent}`;
+  }
+  if (retrieveAppendTodo) {
+    // The TODO should be the last thing because it has to be at the beginning of each line
+    treatedContent = `TODO ${treatedContent}`;
   }
   return treatedContent;
 };
