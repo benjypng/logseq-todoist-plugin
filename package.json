@@ -1,19 +1,19 @@
 {
   "name": "logseq-todoist-plugin",
-  "author": "hkgnp",
-  "description": "Simple Todoist plugin to pull only active tasks from specified project, i.e. Inbox",
+  "author": "benjypng",
+  "description": "Send and retrieve tasks from Todoist.",
   "license": "MIT",
   "logseq": {
     "id": "logseq-todoist-plugin",
     "title": "logseq-todoist-plugin",
-    "icon": "./icon.png",
+    "icon": "./icon.svg",
     "main": "dist/index.html"
   },
   "scripts": {
-    "start:dev": "pnpm add @logseq/libs -S && pnpm add @types/eslint @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint eslint-config-prettier eslint-plugin-prettier prettier vite vite-plugin-logseq -D",
     "dev": "npx vite",
-    "build": "npx tsc && npx vite build",
-    "preview": "npx vite preview"
+    "build": "npx eslint . --fix && npx tsc && npx vite build",
+    "preview": "npx vite preview",
+    "prepare": "husky"
   },
   "release": {
     "branches": [
@@ -31,29 +31,31 @@
     ]
   },
   "dependencies": {
-    "@doist/todoist-api-typescript": "^2.1.2",
-    "@logseq/libs": "^0.0.14",
-    "logseq-dateutils": "^2.1.1",
-    "preact": "^10.17.1",
-    "react": "npm:@preact/compat",
-    "react-dom": "npm:@preact/compat"
+    "@doist/todoist-api-typescript": "^3.0.3",
+    "@logseq/libs": "^0.0.17",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@tailwindcss/forms": "^0.5.6",
-    "@types/eslint": "^8.44.2",
-    "@types/node": "^18.17.13",
-    "@typescript-eslint/eslint-plugin": "^6.5.0",
-    "@typescript-eslint/parser": "^6.5.0",
-    "autoprefixer": "^10.4.15",
-    "cssnano": "^6.0.1",
-    "eslint": "^8.48.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "postcss": "^8.4.29",
-    "prettier": "3.0.3",
-    "tailwindcss": "^3.3.3",
-    "typescript": "^5.2.2",
-    "vite": "^4.4.9",
-    "vite-plugin-logseq": "^1.1.2"
+    "@eslint/js": "^9.9.1",
+    "@types/eslint": "^9.6.1",
+    "@types/eslint-config-prettier": "^6.11.3",
+    "@types/eslint__js": "^8.42.3",
+    "@types/node": "^22.5.4",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.4.0",
+    "@typescript-eslint/parser": "^8.4.0",
+    "eslint": "^9.9.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "husky": "^9.1.5",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.4.0",
+    "vite": "^5.4.3",
+    "vite-plugin-logseq": "^1.1.2",
+    "vite-tsconfig-paths": "^5.0.1"
   }
 }

@@ -1,4 +1,5 @@
 import { TodoistApi } from "@doist/todoist-api-typescript";
+
 import { PluginSettings } from "~/settings/types";
 
 export const removeTaskFlags = (content: string): string => {
@@ -41,7 +42,7 @@ export const sendTask = async (
   const blk = await logseq.Editor.getBlock(uuid);
   if (!blk) return;
 
-  let sendDeadline: string = "";
+  let sendDeadline = "";
   if (blk.deadline) {
     content = content.substring(1, content.indexOf("DEADLINE:"));
     sendDeadline = parseBlkDeadline(blk.deadline);

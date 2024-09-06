@@ -1,8 +1,10 @@
-import { sendTask } from "..";
-import { useState } from "preact/hooks";
-import { getIdFromString, getNameFromString } from "../../helpers";
 import "./tailwind.css";
+
+import { useState } from "preact/hooks";
 import { ChangeEvent } from "react";
+
+import { getIdFromString, getNameFromString } from "../../helpers";
+import { sendTask } from "..";
 
 export const SendTask = ({
   projects,

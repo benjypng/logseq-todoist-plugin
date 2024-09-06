@@ -1,4 +1,4 @@
-import { Project, Label, TodoistApi } from "@doist/todoist-api-typescript";
+import { Label, Project, TodoistApi } from "@doist/todoist-api-typescript";
 
 export const getAllProjects = async (): Promise<string[]> => {
   const { apiToken } = logseq.settings!;

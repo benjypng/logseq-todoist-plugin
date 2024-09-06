@@ -1,16 +1,18 @@
 import "@logseq/libs";
-import handleListeners from "./utils/handleListeners";
-import { callSettings } from "./settings";
-import { retrieveTasks } from "./features/retrieve";
-import { PluginSettings } from "./settings/types";
+
 import { render } from "preact";
-import { SendTask } from "./features/send/components/SendTask";
-import { removeTaskFlags, sendTask } from "./features/send";
+
 import {
-  getAllProjects,
   getAllLabels,
+  getAllProjects,
   getIdFromString,
 } from "./features/helpers";
+import { retrieveTasks } from "./features/retrieve";
+import { removeTaskFlags, sendTask } from "./features/send";
+import { SendTask } from "./features/send/components/SendTask";
+import { callSettings } from "./settings";
+import { PluginSettings } from "./settings/types";
+import handleListeners from "./utils/handleListeners";
 
 const main = async () => {
   console.log("logseq-todoist-plugin loaded");

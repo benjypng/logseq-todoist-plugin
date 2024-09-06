@@ -1,4 +1,4 @@
-export type PluginSettings = {
+export interface PluginSettings {
   apiToken: string;
   sendDefaultProject: string;
   sendDefaultLabel: string;
@@ -10,4 +10,4 @@ export type PluginSettings = {
   retrieveAppendUrl: boolean;
   retrieveClearTasks: boolean;
   retrieveAppendCreationDateTime: boolean;
-};
+}

@@ -1,13 +1,15 @@
-import { getIdFromString, getNameFromString } from "../helpers";
 import {
   Comment,
   DueDate,
   Task,
   TodoistApi,
 } from "@doist/todoist-api-typescript";
-import { BlockToInsert } from "./types";
 import { getScheduledDateDay, getYYMMDDTHHMMFormat } from "logseq-dateutils";
+
 import { PluginSettings } from "~/settings/types";
+
+import { getIdFromString, getNameFromString } from "../helpers";
+import { BlockToInsert } from "./types";
 
 const handleComments = async (taskId: string, obj: BlockToInsert) => {
   const api = new TodoistApi(logseq.settings!.apiToken);

@@ -1,4 +1,4 @@
-export type BlockToInsert = {
+export interface BlockToInsert {
   children: BlockToInsert[];
   content: string;
   properties: {
@@ -6,4 +6,4 @@ export type BlockToInsert = {
     attachments: string;
     comments: string;
   };
-};
+}

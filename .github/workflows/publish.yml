@@ -1,9 +1,12 @@
+
 name: Build Logseq Plugin
 
 on:
   push:
     branches:
       - "main"
+    paths-ignore:
+      - 'README.md'
   workflow_dispatch:
 
 env:
@@ -21,16 +24,16 @@ jobs:
         with:
           node-version: "20.x" # You might need to adjust this value to your own version
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
         with:
-          version: 6.0.2
+          version: 9.4.0
 
       - name: Build
         id: build
         run: |
           pnpm i && pnpm run build
           mkdir ${{ env.PLUGIN_NAME }}
-          cp README.md package.json icon.png ${{ env.PLUGIN_NAME }}
+          cp README.md package.json icon.svg ${{ env.PLUGIN_NAME }}
           mv dist ${{ env.PLUGIN_NAME }}
           zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
           ls
