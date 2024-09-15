@@ -5,6 +5,7 @@ import {
   Button,
   Flex,
   MantineProvider,
+  MultiSelect,
   Pill,
   Select,
   Space,
@@ -16,6 +17,7 @@ import { useCallback } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 import { THEME } from '../../../constants'
+import { sendTask } from '..'
 
 interface SendTaskProps {
   content: string
@@ -24,12 +26,13 @@ interface SendTaskProps {
   uuid: string
 }
 
-interface FormInput {
+export interface FormInput {
   task: string
   project: string
-  label: string
+  label: string[]
   priority: string
   due: string
+  uuid: string
 }
 
 export const SendTask = ({
@@ -38,18 +41,22 @@ export const SendTask = ({
   labels,
   uuid,
 }: SendTaskProps) => {
-  const { control, watch, handleSubmit } = useForm<FormInput>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormInput>({
     defaultValues: {
       task: content.trim(),
-      project: '',
-      label: '',
-      due: '',
+      uuid: uuid,
     },
   })
 
   const submitTask = useCallback(
     (data: FormInput) => {
-      console.log(data)
+      sendTask(data)
+      logseq.UI.showMsg('Task sent to Todoist', 'success', { timeout: 3000 })
+      logseq.hideMainUI()
     },
     [uuid],
   )
@@ -66,7 +73,7 @@ export const SendTask = ({
           id="send-task-container"
         >
           <Title fz="md">Todoist: Send Task</Title>
-          <Pill size="xl" color="darkteal">
+          <Pill size="xl" color="darkteal" my="0.5rem">
             {content}
           </Pill>
           <Space h="1rem" />
@@ -75,12 +82,14 @@ export const SendTask = ({
               <Controller
                 control={control}
                 name="project"
+                rules={{ required: 'Please select a project' }}
                 render={({ field }) => (
                   <Select
                     {...field}
                     label="Project"
-                    placeholder="Project"
+                    placeholder="Select Project"
                     data={projects}
+                    error={errors?.project?.message}
                   />
                 )}
               />
@@ -88,7 +97,12 @@ export const SendTask = ({
                 control={control}
                 name="label"
                 render={({ field }) => (
-                  <Select {...field} label="Label" data={labels} />
+                  <MultiSelect
+                    {...field}
+                    label="Label"
+                    placeholder="Select Label"
+                    data={labels}
+                  />
                 )}
               />
               <Controller
@@ -98,6 +112,7 @@ export const SendTask = ({
                   <Select
                     {...field}
                     label="Priority (1: normal, 4: urgent)"
+                    placeholder="Select Priority"
                     data={['1', '2', '3', '4']}
                   />
                 )}
