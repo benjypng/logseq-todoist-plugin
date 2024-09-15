@@ -1,94 +1,126 @@
-import "./tailwind.css";
+import './style.css'
+import '@mantine/core/styles.css'
 
-import { useState } from "preact/hooks";
-import { ChangeEvent } from "react";
+import {
+  Button,
+  Flex,
+  MantineProvider,
+  Pill,
+  Select,
+  Space,
+  Stack,
+  TextInput,
+  Title,
+} from '@mantine/core'
+import { useCallback } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
-import { getIdFromString, getNameFromString } from "../../helpers";
-import { sendTask } from "..";
+import { THEME } from '../../../constants'
+
+interface SendTaskProps {
+  content: string
+  projects: string[]
+  labels: string[]
+  uuid: string
+}
+
+interface FormInput {
+  task: string
+  project: string
+  label: string
+  priority: string
+  due: string
+}
 
 export const SendTask = ({
+  content,
   projects,
   labels,
-  content,
   uuid,
-}: {
-  projects: string[];
-  labels: string[];
-  content: string;
-  uuid: string;
-}) => {
-  const [projectId, setProjectId] = useState<string>("");
-  const [label, setLabel] = useState<string>("");
-  const [deadline, setDeadline] = useState<string>("");
+}: SendTaskProps) => {
+  const { control, watch, handleSubmit } = useForm<FormInput>({
+    defaultValues: {
+      task: content.trim(),
+      project: '',
+      label: '',
+      due: '',
+    },
+  })
 
-  const handleSubmit = async (event: ChangeEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    await sendTask(
-      uuid,
-      content,
-      getIdFromString(projectId),
-      deadline,
-      getNameFromString(label),
-    );
-    setProjectId("");
-    setLabel("");
-    setDeadline("");
-    logseq.hideMainUI();
-  };
+  const submitTask = useCallback(
+    (data: FormInput) => {
+      console.log(data)
+    },
+    [uuid],
+  )
 
   return (
-    <div className="flex h-screen justify-end" tabIndex={-1}>
-      <div className="sendPopup flex px-3 w-80 items-center bg-gray-50">
-        <form className="w-full" onSubmit={handleSubmit}>
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-            Select a Project
-            <select
-              //@ts-expect-error
-              onChange={(ev) => setProjectId(ev.target.value)}
-              name="projectId"
-              className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            >
-              {projects.map((p) => (
-                <option>{p}</option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-            Select a Label
-            <select
-              //@ts-expect-error
-              onChange={(ev) => setLabel(ev.target.value)}
-              name="label"
-              className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            >
-              {labels.map((l) => (
-                <option>{l}</option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-            Set a Deadline
-            <input
-              //@ts-expect-error
-              onChange={(ev) => setDeadline(ev.target.value)}
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-              type="text"
-              name="deadline"
-            />
-          </label>
-
-          <div className="flex justify-end">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-            >
+    <MantineProvider theme={THEME}>
+      <Flex bg="none" justify="right" p="md">
+        <Flex
+          p="md"
+          mt="xl"
+          bg="white"
+          w="20rem"
+          direction="column"
+          id="send-task-container"
+        >
+          <Title fz="md">Todoist: Send Task</Title>
+          <Pill size="xl" color="darkteal">
+            {content}
+          </Pill>
+          <Space h="1rem" />
+          <form onSubmit={handleSubmit(submitTask)}>
+            <Stack gap="1rem">
+              <Controller
+                control={control}
+                name="project"
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label="Project"
+                    placeholder="Project"
+                    data={projects}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="label"
+                render={({ field }) => (
+                  <Select {...field} label="Label" data={labels} />
+                )}
+              />
+              <Controller
+                control={control}
+                name="priority"
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label="Priority (1: normal, 4: urgent)"
+                    data={['1', '2', '3', '4']}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="due"
+                render={({ field }) => (
+                  <TextInput
+                    {...field}
+                    label="Deadline"
+                    placeholder="Enter deadline (e.g. Next Monday)"
+                  />
+                )}
+              />
+            </Stack>
+            <Space h="1rem" />
+            <Button type="submit" size="xs">
               Send Task
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
+            </Button>
+          </form>
+        </Flex>
+      </Flex>
+    </MantineProvider>
+  )
+}

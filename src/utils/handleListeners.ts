@@ -1,21 +1,21 @@
 export default function handleListeners() {
   //ESC
   document.addEventListener(
-    "keydown",
+    'keydown',
     function (e) {
-      if (e.key === "Escape") {
-        logseq.hideMainUI({ restoreEditingCursor: true });
+      if (e.key === 'Escape') {
+        logseq.hideMainUI({ restoreEditingCursor: true })
       }
-      e.stopPropagation();
+      e.stopPropagation()
     },
     false,
-  );
+  )
 
   // Click
-  document.addEventListener("click", (e) => {
-    if (!(e.target as HTMLElement).closest(".sendPopup")) {
-      logseq.hideMainUI({ restoreEditingCursor: true });
-    }
-    e.stopPropagation();
-  });
+  // document.addEventListener("click", (e) => {
+  //   if (!(e.target as HTMLElement).closest(".sendPopup")) {
+  //     logseq.hideMainUI({ restoreEditingCursor: true });
+  //   }
+  //   e.stopPropagation();
+  // });
 }
