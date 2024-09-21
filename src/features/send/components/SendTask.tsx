@@ -29,9 +29,9 @@ interface SendTaskProps {
 export interface FormInput {
   task: string
   project: string
-  label: string[]
-  priority: string
-  due: string
+  label?: string[]
+  priority?: string
+  due?: string
   uuid: string
 }
 
