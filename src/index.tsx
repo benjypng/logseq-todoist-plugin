@@ -49,6 +49,12 @@ const main = async () => {
 
   // SEND TASKS
   logseq.Editor.registerSlashCommand('Todoist: Send Task', async (e) => {
+    const content = await logseq.Editor.getEditingBlockContent()
+    if (content.length === 0) {
+      logseq.UI.showMsg('Unable to send empty task', 'error')
+      return
+    }
+
     // If default project set, don't show popup
     if (logseq.settings!.sendDefaultProject !== '--- ---') {
       return
@@ -64,7 +70,6 @@ const main = async () => {
       'success',
     )
     // If no default project set, show popup
-    const content = await logseq.Editor.getEditingBlockContent()
     const allProjects = await getAllProjects()
     const allLabels = await getAllLabels()
     logseq.UI.closeMsg(msgKey)

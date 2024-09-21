@@ -49,6 +49,7 @@ export const SendTask = ({
     defaultValues: {
       task: content.trim(),
       uuid: uuid,
+      due: '',
     },
   })
 
