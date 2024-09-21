@@ -44,6 +44,7 @@ export const SendTask = ({
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormInput>({
     defaultValues: {
@@ -57,6 +58,7 @@ export const SendTask = ({
     (data: FormInput) => {
       sendTask(data)
       logseq.UI.showMsg('Task sent to Todoist', 'success', { timeout: 3000 })
+      reset()
       logseq.hideMainUI()
     },
     [uuid],

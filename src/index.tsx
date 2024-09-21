@@ -2,17 +2,13 @@ import '@logseq/libs'
 
 import { createRoot } from 'react-dom/client'
 
-import {
-  getAllLabels,
-  getAllProjects,
-  getIdFromString,
-} from './features/helpers'
+import { getAllLabels, getAllProjects } from './features/helpers'
 import { retrieveTasks } from './features/retrieve'
+import { sendTask } from './features/send'
 import { SendTask } from './features/send/components/SendTask'
 import { callSettings } from './settings'
 import { PluginSettings } from './settings/types'
 import handleListeners from './utils/handleListeners'
-import { sendTask } from './features/send'
 
 const main = async () => {
   console.log('logseq-todoist-plugin loaded')
@@ -48,6 +44,7 @@ const main = async () => {
       await retrieveTasks(e.uuid, content)
     },
   )
+
   const el = document.getElementById('app')
   if (!el) return
   const root = createRoot(el)

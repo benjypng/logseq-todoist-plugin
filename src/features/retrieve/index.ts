@@ -3,38 +3,37 @@ import {
   DueDate,
   Task,
   TodoistApi,
-} from "@doist/todoist-api-typescript";
-import { getScheduledDateDay, getYYMMDDTHHMMFormat } from "logseq-dateutils";
+} from '@doist/todoist-api-typescript'
+import { getScheduledDateDay, getYYMMDDTHHMMFormat } from 'logseq-dateutils'
 
-import { PluginSettings } from "~/settings/types";
-
-import { getIdFromString, getNameFromString } from "../helpers";
-import { BlockToInsert } from "./types";
+import { PluginSettings } from '../../settings/types'
+import { getIdFromString, getNameFromString } from '../helpers'
+import { BlockToInsert } from './types'
 
 const handleComments = async (taskId: string, obj: BlockToInsert) => {
-  const api = new TodoistApi(logseq.settings!.apiToken);
+  const api = new TodoistApi(logseq.settings!.apiToken as string)
   try {
-    const comments: Comment[] = await api.getComments({ taskId: taskId });
+    const comments: Comment[] = await api.getComments({ taskId: taskId })
     if (comments.length > 0) {
       for (const c of comments) {
         if (c.attachment) {
-          obj.properties.attachments = `[${c.attachment.fileName}](${c.attachment.fileUrl})`;
+          obj.properties.attachments = `[${c.attachment.fileName}](${c.attachment.fileUrl})`
         }
         if (c.content) {
-          const content = obj.properties.comments;
-          obj.properties.comments = (content + ", " + c.content).substring(1);
+          const content = obj.properties.comments
+          obj.properties.comments = (content + ', ' + c.content).substring(1)
         }
       }
     }
-    return obj;
+    return obj
   } catch (e) {
-    console.error(e);
+    console.error(e)
     await logseq.UI.showMsg(
       `Unable to retrieve comments: ${(e as Error).message}`,
-      "error",
-    );
+      'error',
+    )
   }
-};
+}
 
 const handleAppendTodoAndAppendUrlAndDeadline = (
   content: string,
@@ -46,25 +45,25 @@ const handleAppendTodoAndAppendUrlAndDeadline = (
     retrieveAppendUrl,
     retrieveAppendTodo,
     retrieveAppendCreationDateTime,
-  } = logseq.settings! as Partial<PluginSettings>;
-  let treatedContent = content;
+  } = logseq.settings! as Partial<PluginSettings>
+  let treatedContent = content
   if (retrieveAppendUrl) {
-    treatedContent = `[${treatedContent}](${url})`;
+    treatedContent = `[${treatedContent}](${url})`
   }
   if (retrieveAppendTodo) {
-    treatedContent = `TODO ${treatedContent}`;
+    treatedContent = `TODO ${treatedContent}`
   }
   if (due?.date) {
     treatedContent = `${treatedContent}
-${getScheduledDateDay(new Date(due.date))}`;
+${getScheduledDateDay(new Date(due.date))}`
   }
   if (retrieveAppendCreationDateTime) {
-    const isoDate = getYYMMDDTHHMMFormat(new Date(createdAt));
-    const [datePart, timePart] = isoDate.split("T");
-    treatedContent = `@${datePart} **${timePart}** ${treatedContent}`;
+    const isoDate = getYYMMDDTHHMMFormat(new Date(createdAt))
+    const [datePart, timePart] = isoDate.split('T')
+    treatedContent = `@${datePart} **${timePart}** ${treatedContent}`
   }
-  return treatedContent;
-};
+  return treatedContent
+}
 
 const createTasksArr = async (task: Task, parentTasks: BlockToInsert[]) => {
   let obj: BlockToInsert = {
@@ -75,96 +74,96 @@ const createTasksArr = async (task: Task, parentTasks: BlockToInsert[]) => {
       task.due!,
       task.createdAt,
     ),
-    properties: { attachments: "", comments: "", todoistid: task.id },
-  };
-  if (task.description.length > 0) {
-    obj.content += `: ${task.description}`;
+    properties: { attachments: '', comments: '', todoistid: task.id },
   }
-  obj = (await handleComments(task.id, obj)) as BlockToInsert;
-  parentTasks.push(obj);
-};
+  if (task.description.length > 0) {
+    obj.content += `: ${task.description}`
+  }
+  obj = (await handleComments(task.id, obj)) as BlockToInsert
+  parentTasks.push(obj)
+}
 
 const recursion = async (parentTasks: BlockToInsert[], tasksArr: Task[]) => {
   // 2. Populate tree with branches.
   for (const t of tasksArr) {
     for (const p of parentTasks) {
       if (t.parentId === p.properties.todoistid) {
-        await createTasksArr(t, p.children);
-        await recursion(p.children, tasksArr);
+        await createTasksArr(t, p.children)
+        await recursion(p.children, tasksArr)
       }
     }
   }
-};
+}
 
 const insertTasks = async (tasksArr: Task[]): Promise<BlockToInsert[]> => {
   // 1. Create tree.
-  const parentTasks: BlockToInsert[] = [];
+  const parentTasks: BlockToInsert[] = []
   for (const task of tasksArr) {
     if (!task.parentId) {
-      await createTasksArr(task, parentTasks);
+      await createTasksArr(task, parentTasks)
     }
   }
-  await recursion(parentTasks, tasksArr);
-  return parentTasks;
-};
+  await recursion(parentTasks, tasksArr)
+  return parentTasks
+}
 
 const deleteAllTasks = async (tasksArr: Task[]) => {
-  const api = new TodoistApi(logseq.settings!.apiToken);
+  const api = new TodoistApi(logseq.settings!.apiToken as string)
   try {
     for (const t of tasksArr) {
-      await api.deleteTask(t.id);
+      await api.deleteTask(t.id)
     }
   } catch (e) {
-    await logseq.UI.showMsg(`Error deleting tasks: ${(e as Error).message}`);
-    return;
+    await logseq.UI.showMsg(`Error deleting tasks: ${(e as Error).message}`)
+    return
   }
-};
+}
 
 export const retrieveTasks = async (uuid: string, taskParams?: string) => {
-  const msgKey = await logseq.UI.showMsg("Loading tasks...");
+  const msgKey = await logseq.UI.showMsg('Loading tasks...')
   const {
     apiToken,
     retrieveClearTasks,
     retrieveDefaultProject,
     projectNameAsParentBlk,
-  } = logseq.settings!;
-  const api = new TodoistApi(apiToken);
+  } = logseq.settings!
+  const api = new TodoistApi(apiToken as string)
   // Insert blocks
-  let allTasks: Task[];
+  let allTasks: Task[]
   // Retrieve tasks based on optional filter parameters
   if (!taskParams) {
-    if (retrieveDefaultProject === "--- ---") {
-      await logseq.UI.showMsg("Please select a default project", "error");
-      return;
+    if (retrieveDefaultProject === '--- ---') {
+      await logseq.UI.showMsg('Please select a default project', 'error')
+      return
     }
     allTasks = await api.getTasks({
-      projectId: getIdFromString(retrieveDefaultProject),
-    });
-  } else if (taskParams === "today") {
-    allTasks = await api.getTasks({ filter: "today" });
+      projectId: getIdFromString(retrieveDefaultProject as string),
+    })
+  } else if (taskParams === 'today') {
+    allTasks = await api.getTasks({ filter: 'today' })
   } else {
-    allTasks = await api.getTasks({ filter: taskParams });
+    allTasks = await api.getTasks({ filter: taskParams })
   }
   // Handle no tasks retrieved
   if (allTasks.length === 0) {
-    await logseq.UI.showMsg("There are no tasks");
-    return;
+    await logseq.UI.showMsg('There are no tasks')
+    return
   }
-  const batchBlock = await insertTasks(allTasks);
+  const batchBlock = await insertTasks(allTasks)
   // Insert batch block based on whether projectNameAsParentBlk is true
   if (projectNameAsParentBlk) {
     await logseq.Editor.updateBlock(
       uuid,
-      `[[${getNameFromString(retrieveDefaultProject)}]]`,
-    );
-    await logseq.Editor.insertBatchBlock(uuid, batchBlock, { sibling: false });
-    await logseq.Editor.exitEditingMode(true);
+      `[[${getNameFromString(retrieveDefaultProject as string)}]]`,
+    )
+    await logseq.Editor.insertBatchBlock(uuid, batchBlock, { sibling: false })
+    await logseq.Editor.exitEditingMode(true)
   } else {
-    await logseq.Editor.insertBatchBlock(uuid, batchBlock);
-    await logseq.Editor.removeBlock(uuid);
-    await logseq.Editor.exitEditingMode(true);
+    await logseq.Editor.insertBatchBlock(uuid, batchBlock)
+    await logseq.Editor.removeBlock(uuid)
+    await logseq.Editor.exitEditingMode(true)
   }
-  logseq.UI.closeMsg(msgKey);
+  logseq.UI.closeMsg(msgKey)
   // Delete tasks if setting is enabled
-  if (retrieveClearTasks) await deleteAllTasks(allTasks);
-};
+  if (retrieveClearTasks) await deleteAllTasks(allTasks)
+}
