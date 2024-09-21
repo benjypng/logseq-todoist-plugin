@@ -31,17 +31,21 @@ export const sendTask = async ({
   const currGraph = await logseq.App.getCurrentGraph()
   const currGraphName = currGraph?.name
 
+  const sendObj = {
+    content: removeTaskFlags(task),
+    description: logseq.settings!.sendAppendUri
+      ? `[Link to Logseq](logseq://graph/${currGraphName}?block-id=${uuid})`
+      : '',
+    ...(project !== '--- ---' && { projectId: getIdFromString(project) }),
+    ...(label[0] !== '--- ---' && {
+      labels: label.map((l) => getNameFromString(l)),
+    }),
+    ...(priority && { priority: parseInt(priority) }),
+    ...(due !== '' && { dueString: due }),
+  }
+
   try {
-    await api.addTask({
-      content: removeTaskFlags(task),
-      description: logseq.settings!.sendAppendUri
-        ? `[Link to Logseq](logseq://graph/${currGraphName}?block-id=${uuid})`
-        : '',
-      ...(project && { projectId: getIdFromString(project) }),
-      ...(label && { labels: label.map((l) => getNameFromString(l)) }),
-      ...(priority && { priority: parseInt(priority) }),
-      ...(due && { dueString: due }),
-    })
+    await api.addTask(sendObj)
   } catch (error) {
     console.error(error)
     await logseq.UI.showMsg(`Task was not sent: ${(error as Error).message}`)

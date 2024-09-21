@@ -62,6 +62,9 @@ const main = async () => {
       await sendTask({
         task: content,
         project: logseq.settings!.sendDefaultProject as string,
+        label: [logseq.settings!.sendDefaultLabel as string],
+        due: logseq.settings!.sendDefaultDeadline ? 'today' : '',
+        priority: '1',
         uuid: e.uuid,
       })
     } else {
