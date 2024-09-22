@@ -1,39 +1,51 @@
+import { DueDate, Task, TodoistApi } from '@doist/todoist-api-typescript'
 import {
-  Comment,
-  DueDate,
-  Task,
-  TodoistApi,
-} from '@doist/todoist-api-typescript'
-import { getScheduledDateDay, getYYMMDDTHHMMFormat } from 'logseq-dateutils'
+  getDeadlineDateDay,
+  getScheduledDateDay,
+  getYYMMDDTHHMMFormat,
+} from 'logseq-dateutils'
 
-import { PluginSettings } from '../../settings/types'
-import { getIdFromString, getNameFromString } from '../helpers'
-import { BlockToInsert } from './types'
+import { getIdFromString } from '../helpers'
 
-const handleComments = async (taskId: string, obj: BlockToInsert) => {
-  const api = new TodoistApi(logseq.settings!.apiToken as string)
-  try {
-    const comments: Comment[] = await api.getComments({ taskId: taskId })
-    if (comments.length > 0) {
-      for (const c of comments) {
-        if (c.attachment) {
-          obj.properties.attachments = `[${c.attachment.fileName}](${c.attachment.fileUrl})`
-        }
-        if (c.content) {
-          const content = obj.properties.comments
-          obj.properties.comments = (content + ', ' + c.content).substring(1)
-        }
-      }
-    }
-    return obj
-  } catch (e) {
-    console.error(e)
-    await logseq.UI.showMsg(
-      `Unable to retrieve comments: ${(e as Error).message}`,
-      'error',
-    )
+interface TaskBlock {
+  content: string
+  children: TaskBlock[]
+  properties: {
+    todoistid?: string
+    comments?: string
+    attachments?: string
+    due?: string
   }
 }
+
+// const handleComments = async (taskId: string, obj: BlockToInsert) => {
+//   const api = new TodoistApi(logseq.settings!.apiToken as string)
+//   try {
+//     const comments: Comment[] = await api.getComments({ taskId: taskId })
+//     if (comments.length > 0) {
+//       for (const comment of comments) {
+//         if (comment.attachment) {
+//           obj.properties.attachments = `[${comment.attachment.fileName}](${comment.attachment.fileUrl})`
+//         }
+//         if (comment.content) {
+//           const content = obj.properties.comments
+//           obj.properties.comments = (
+//             content +
+//             ', ' +
+//             comment.content
+//           ).substring(1)
+//         }
+//       }
+//     }
+//     return obj
+//   } catch (e) {
+//     console.error(e)
+//     await logseq.UI.showMsg(
+//       `Unable to retrieve comments: ${(e as Error).message}`,
+//       'error',
+//     )
+//   }
+// }
 
 const handleAppendTodoAndAppendUrlAndDeadline = (
   content: string,
@@ -65,105 +77,138 @@ ${getScheduledDateDay(new Date(due.date))}`
   return treatedContent
 }
 
-const createTasksArr = async (task: Task, parentTasks: BlockToInsert[]) => {
-  let obj: BlockToInsert = {
-    children: [] as BlockToInsert[],
-    content: handleAppendTodoAndAppendUrlAndDeadline(
-      task.content,
-      task.url,
-      task.due!,
-      task.createdAt,
-    ),
-    properties: { attachments: '', comments: '', todoistid: task.id },
+export const handleComments = async (id: string) => {
+  const api = new TodoistApi(logseq.settings!.apiToken as string)
+  const comments = await api.getComments({ taskId: id })
+
+  if (comments.length === 0) return {}
+
+  const textComments = comments
+    .filter((comment) => !comment.attachment)
+    .map((comment) => comment.content)
+    .join(', ')
+  const attachments = comments
+    .filter((comment) => comment.attachment)
+    .map((comment) => {
+      const { fileUrl, fileName } = comment.attachment!
+      // Todoist implements a redirect behind cloudflare, hence no point supporting image markdown
+      return `[${fileName}](${fileUrl})`
+    })
+    .join(', ')
+
+  return {
+    comments: textComments,
+    attachments,
   }
-  if (task.description.length > 0) {
-    obj.content += `: ${task.description}`
-  }
-  obj = (await handleComments(task.id, obj)) as BlockToInsert
-  parentTasks.push(obj)
 }
 
-const recursion = async (parentTasks: BlockToInsert[], tasksArr: Task[]) => {
-  // 2. Populate tree with branches.
-  for (const t of tasksArr) {
-    for (const p of parentTasks) {
-      if (t.parentId === p.properties.todoistid) {
-        await createTasksArr(t, p.children)
-        await recursion(p.children, tasksArr)
+export const buildRootTasks = async (tasks: Task[]) => {
+  const taskMap: Record<string, TaskBlock> = {}
+
+  try {
+    await Promise.all(
+      tasks.map(async (task) => {
+        const comments = await handleComments(task.id)
+        const content = task.due
+          ? `${task.content}
+${getDeadlineDateDay(new Date(task.due.date))}`
+          : task.content
+
+        taskMap[task.id] = {
+          content: content,
+          children: [],
+          properties: {
+            todoistid: task.id,
+            ...(comments.comments && { comments: comments.comments }),
+            ...(comments.attachments && { attachments: comments.attachments }),
+          },
+        }
+      }),
+    )
+
+    const rootTasks: TaskBlock[] = []
+    tasks.forEach((task) => {
+      const taskBlock = taskMap[task.id]
+      if (task.parentId === null) {
+        if (!taskBlock) return
+        rootTasks.push(taskBlock)
+      } else {
+        const parentTask = taskMap[task.parentId!]
+        if (parentTask) {
+          if (!taskBlock) return
+          parentTask.children.push(taskBlock)
+        }
       }
-    }
+    })
+
+    return rootTasks
+  } catch (error) {
+    console.error(error)
+    logseq.UI.showMsg('Unable to build root tasks', 'error')
+    return []
   }
 }
 
-const insertTasks = async (tasksArr: Task[]): Promise<BlockToInsert[]> => {
-  // 1. Create tree.
-  const parentTasks: BlockToInsert[] = []
-  for (const task of tasksArr) {
-    if (!task.parentId) {
-      await createTasksArr(task, parentTasks)
-    }
-  }
-  await recursion(parentTasks, tasksArr)
-  return parentTasks
-}
-
-const deleteAllTasks = async (tasksArr: Task[]) => {
+export const deleteAllTasks = async (tasksArr: Task[]) => {
   const api = new TodoistApi(logseq.settings!.apiToken as string)
   try {
-    for (const t of tasksArr) {
-      await api.deleteTask(t.id)
+    for (const task of tasksArr) {
+      await api.deleteTask(task.id)
     }
   } catch (e) {
-    await logseq.UI.showMsg(`Error deleting tasks: ${(e as Error).message}`)
+    logseq.UI.showMsg(`Error deleting tasks: ${(e as Error).message}`, 'error')
     return
   }
 }
 
-export const retrieveTasks = async (uuid: string, taskParams?: string) => {
-  const msgKey = await logseq.UI.showMsg('Loading tasks...')
-  const {
-    apiToken,
-    retrieveClearTasks,
-    retrieveDefaultProject,
-    projectNameAsParentBlk,
-  } = logseq.settings!
-  const api = new TodoistApi(apiToken as string)
+export const retrieveTasks = async (
+  taskParams: 'default' | 'today' | 'custom',
+  customFilter?: string,
+) => {
+  const msgKey = await logseq.UI.showMsg('Getting tasks...')
+
+  const api = new TodoistApi(logseq.settings!.apiToken as string)
+
   // Insert blocks
-  let allTasks: Task[]
-  // Retrieve tasks based on optional filter parameters
-  if (!taskParams) {
-    if (retrieveDefaultProject === '--- ---') {
-      await logseq.UI.showMsg('Please select a default project', 'error')
-      return
+  let allTasks: Task[] = []
+
+  try {
+    switch (taskParams) {
+      case 'default': {
+        if (logseq.settings!.retrieveDefaultProject === '--- ---') {
+          await logseq.UI.showMsg('Please select a default project', 'error')
+          return []
+        }
+        const tasks = await api.getTasks({
+          projectId: getIdFromString(
+            logseq.settings!.retrieveDefaultProject as string,
+          ),
+        })
+        allTasks = [...allTasks, ...tasks]
+        break
+      }
+
+      case 'today': {
+        const tasks = await api.getTasks({ filter: 'today' })
+        allTasks = [...allTasks, ...tasks]
+        break
+      }
+
+      case 'custom': {
+        const tasks = await api.getTasks({ filter: customFilter })
+        allTasks = [...allTasks, ...tasks]
+        break
+      }
+
+      default:
+        break
     }
-    allTasks = await api.getTasks({
-      projectId: getIdFromString(retrieveDefaultProject as string),
-    })
-  } else if (taskParams === 'today') {
-    allTasks = await api.getTasks({ filter: 'today' })
-  } else {
-    allTasks = await api.getTasks({ filter: taskParams })
+    logseq.UI.closeMsg(msgKey)
+
+    return allTasks
+  } catch (error) {
+    console.log(error)
+    logseq.UI.showMsg(`Error: ${(error as Error).message}`, 'error')
+    return []
   }
-  // Handle no tasks retrieved
-  if (allTasks.length === 0) {
-    await logseq.UI.showMsg('There are no tasks')
-    return
-  }
-  const batchBlock = await insertTasks(allTasks)
-  // Insert batch block based on whether projectNameAsParentBlk is true
-  if (projectNameAsParentBlk) {
-    await logseq.Editor.updateBlock(
-      uuid,
-      `[[${getNameFromString(retrieveDefaultProject as string)}]]`,
-    )
-    await logseq.Editor.insertBatchBlock(uuid, batchBlock, { sibling: false })
-    await logseq.Editor.exitEditingMode(true)
-  } else {
-    await logseq.Editor.insertBatchBlock(uuid, batchBlock)
-    await logseq.Editor.removeBlock(uuid)
-    await logseq.Editor.exitEditingMode(true)
-  }
-  logseq.UI.closeMsg(msgKey)
-  // Delete tasks if setting is enabled
-  if (retrieveClearTasks) await deleteAllTasks(allTasks)
 }

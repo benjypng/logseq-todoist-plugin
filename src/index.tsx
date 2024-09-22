@@ -4,19 +4,17 @@ import { createRoot } from 'react-dom/client'
 
 import { getAllLabels, getAllProjects } from './features/helpers'
 import { retrieveTasks } from './features/retrieve'
+import { insertTasksIntoGraph } from './features/retrieve/insert-tasks-into-graph'
 import { sendTask } from './features/send'
 import { SendTask } from './features/send/components/SendTask'
+import handleListeners from './handleListeners'
 import { callSettings } from './settings'
-import { PluginSettings } from './settings/types'
-import handleListeners from './utils/handleListeners'
 
 const main = async () => {
   console.log('logseq-todoist-plugin loaded')
   handleListeners()
 
-  const { apiToken } = logseq.settings! as Partial<PluginSettings>
-
-  if (!apiToken || apiToken === '') {
+  if (logseq.settings!.apiToken === '') {
     // Check if it's a new install
     await logseq.UI.showMsg(
       'Please key in your API key before using the plugin',
@@ -27,29 +25,40 @@ const main = async () => {
   const labels = await getAllLabels()
   callSettings(projects, labels)
 
+  // const templates = await logseq.App.getCurrentGraphTemplates()
+  // console.log('Templates', templates)
+
   // RETRIEVE TASKS
   logseq.Editor.registerSlashCommand('Todoist: Retrieve Tasks', async (e) => {
-    await retrieveTasks(e.uuid)
+    const tasks = await retrieveTasks('default')
+    if (tasks.length > 0) await insertTasksIntoGraph(tasks, e.uuid)
   })
+
   logseq.Editor.registerSlashCommand(
     "Todoist: Retrieve Today's Tasks",
     async (e) => {
-      await retrieveTasks(e.uuid, 'today')
+      const tasks = await retrieveTasks('today')
     },
   )
+
   logseq.Editor.registerSlashCommand(
     'Todoist: Retrieve Custom Filter',
     async (e) => {
       const content = await logseq.Editor.getEditingBlockContent()
-      await retrieveTasks(e.uuid, content)
+      if (content.length === 0) {
+        logseq.UI.showMsg('Cannot retrieve with empty filter', 'error')
+        return
+      }
+      const tasks = await retrieveTasks('custom', content)
+      console.log(tasks)
     },
   )
 
+  // SEND TASKS
   const el = document.getElementById('app')
   if (!el) return
   const root = createRoot(el)
 
-  // SEND TASKS
   logseq.Editor.registerSlashCommand('Todoist: Send Task', async (e) => {
     const content = await logseq.Editor.getEditingBlockContent()
     if (content.length === 0) {

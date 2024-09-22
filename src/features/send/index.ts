@@ -45,8 +45,9 @@ export const sendTask = async ({
   }
 
   try {
-    await api.addTask(sendObj)
+    const res = await api.addTask(sendObj)
     logseq.UI.showMsg('Task sent successfully', 'success', { timeout: 3000 })
+    return res
   } catch (error) {
     console.error(error)
     await logseq.UI.showMsg(`Task was not sent: ${(error as Error).message}`)
