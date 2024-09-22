@@ -1,9 +1,5 @@
-import { DueDate, Task, TodoistApi } from '@doist/todoist-api-typescript'
-import {
-  getDeadlineDateDay,
-  getScheduledDateDay,
-  getYYMMDDTHHMMFormat,
-} from 'logseq-dateutils'
+import { Task, TodoistApi } from '@doist/todoist-api-typescript'
+import { getDeadlineDateDay } from 'logseq-dateutils'
 
 import { getIdFromString } from '../helpers'
 
@@ -16,65 +12,6 @@ interface TaskBlock {
     attachments?: string
     due?: string
   }
-}
-
-// const handleComments = async (taskId: string, obj: BlockToInsert) => {
-//   const api = new TodoistApi(logseq.settings!.apiToken as string)
-//   try {
-//     const comments: Comment[] = await api.getComments({ taskId: taskId })
-//     if (comments.length > 0) {
-//       for (const comment of comments) {
-//         if (comment.attachment) {
-//           obj.properties.attachments = `[${comment.attachment.fileName}](${comment.attachment.fileUrl})`
-//         }
-//         if (comment.content) {
-//           const content = obj.properties.comments
-//           obj.properties.comments = (
-//             content +
-//             ', ' +
-//             comment.content
-//           ).substring(1)
-//         }
-//       }
-//     }
-//     return obj
-//   } catch (e) {
-//     console.error(e)
-//     await logseq.UI.showMsg(
-//       `Unable to retrieve comments: ${(e as Error).message}`,
-//       'error',
-//     )
-//   }
-// }
-
-const handleAppendTodoAndAppendUrlAndDeadline = (
-  content: string,
-  url: string,
-  due: DueDate,
-  createdAt: string,
-) => {
-  const {
-    retrieveAppendUrl,
-    retrieveAppendTodo,
-    retrieveAppendCreationDateTime,
-  } = logseq.settings! as Partial<PluginSettings>
-  let treatedContent = content
-  if (retrieveAppendUrl) {
-    treatedContent = `[${treatedContent}](${url})`
-  }
-  if (retrieveAppendTodo) {
-    treatedContent = `TODO ${treatedContent}`
-  }
-  if (due?.date) {
-    treatedContent = `${treatedContent}
-${getScheduledDateDay(new Date(due.date))}`
-  }
-  if (retrieveAppendCreationDateTime) {
-    const isoDate = getYYMMDDTHHMMFormat(new Date(createdAt))
-    const [datePart, timePart] = isoDate.split('T')
-    treatedContent = `@${datePart} **${timePart}** ${treatedContent}`
-  }
-  return treatedContent
 }
 
 export const handleComments = async (id: string) => {
