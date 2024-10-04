@@ -100,6 +100,14 @@ export const callSettings = async (projects: string[], labels: string[]) => {
         'If set to true, all retrieved tasks will have a Todoist URL appended.',
     },
     {
+      key: 'retrieveAppendTodoistId',
+      type: 'boolean',
+      default: false,
+      title: 'Append Todoist ID',
+      description:
+        'If set to true, all retrieved tasks will have a Todoist ID appended.',
+    },
+    {
       key: 'retrieveClearTasks',
       type: 'boolean',
       default: false,

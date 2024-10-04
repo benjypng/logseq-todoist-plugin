@@ -55,7 +55,7 @@ ${getDeadlineDateDay(new Date(task.due.date))}`
           content: content,
           children: [],
           properties: {
-            todoistid: task.id,
+            ...(logseq.settings!.appendTodoistId! && { todoistid: task.id }),
             ...(comments.comments && { comments: comments.comments }),
             ...(comments.attachments && { attachments: comments.attachments }),
           },
