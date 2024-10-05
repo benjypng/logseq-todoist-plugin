@@ -46,10 +46,17 @@ export const buildRootTasks = async (tasks: Task[]) => {
     await Promise.all(
       tasks.map(async (task) => {
         const comments = await handleComments(task.id)
-        const content = task.due
+
+        // Handle due date
+        let content = task.due
           ? `${task.content}
 ${getDeadlineDateDay(new Date(task.due.date))}`
           : task.content
+
+        // Handle append todo
+        content = logseq.settings!.retrieveAppendTodo
+          ? `TODO ${content}`
+          : content
 
         taskMap[task.id] = {
           content: content,
