@@ -1,0 +1,2 @@
+npx eslint . --fix
+npx tsc
