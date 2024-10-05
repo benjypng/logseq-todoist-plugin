@@ -34,25 +34,29 @@ const main = async () => {
     if (tasks.length > 0) await insertTasksIntoGraph(tasks, e.uuid)
   })
 
-  // logseq.Editor.registerSlashCommand(
-  //   "Todoist: Retrieve Today's Tasks",
-  //   async (e) => {
-  //     const tasks = await retrieveTasks('today')
-  //   },
-  // )
-  //
-  // logseq.Editor.registerSlashCommand(
-  //   'Todoist: Retrieve Custom Filter',
-  //   async (e) => {
-  //     const content = await logseq.Editor.getEditingBlockContent()
-  //     if (content.length === 0) {
-  //       logseq.UI.showMsg('Cannot retrieve with empty filter', 'error')
-  //       return
-  //     }
-  //     const tasks = await retrieveTasks('custom', content)
-  //     console.log(tasks)
-  //   },
-  // )
+  logseq.Editor.registerSlashCommand(
+    "Todoist: Retrieve Today's Tasks",
+    async (e) => {
+      const tasks = await retrieveTasks('today')
+      if (tasks.length > 0) await insertTasksIntoGraph(tasks, e.uuid)
+    },
+  )
+
+  logseq.Editor.registerSlashCommand(
+    'Todoist: Retrieve Custom Filter',
+    async (e) => {
+      const content = await logseq.Editor.getEditingBlockContent()
+      if (content.length === 0) {
+        logseq.UI.showMsg('Cannot retrieve with empty filter', 'error')
+        return
+      }
+      const tasks = await retrieveTasks('custom', content)
+      if (tasks.length > 0) {
+        await logseq.Editor.updateBlock(e.uuid, '') // Clear block first since it contains the filter
+        await insertTasksIntoGraph(tasks, e.uuid)
+      }
+    },
+  )
 
   // SEND TASKS
   const el = document.getElementById('app')
