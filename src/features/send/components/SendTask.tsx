@@ -49,6 +49,8 @@ export const SendTask = ({
   } = useForm<FormInput>({
     defaultValues: {
       task: content.trim(),
+      project: '--- ---',
+      priority: '',
       uuid: uuid,
       due: '',
     },

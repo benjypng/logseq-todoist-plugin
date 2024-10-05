@@ -63,6 +63,34 @@ const main = async () => {
   if (!el) return
   const root = createRoot(el)
 
+  logseq.Editor.registerSlashCommand(
+    'Todoist: Send Task (manual)',
+    async (e) => {
+      const content = await logseq.Editor.getEditingBlockContent()
+      if (content.length === 0) {
+        logseq.UI.showMsg('Unable to send empty task', 'error')
+        return
+      }
+      const msgKey = await logseq.UI.showMsg(
+        'Getting projects and labels',
+        'success',
+      )
+      const allProjects = await getAllProjects()
+      const allLabels = await getAllLabels()
+      logseq.UI.closeMsg(msgKey)
+
+      root.render(
+        <SendTask
+          content={content}
+          projects={allProjects}
+          labels={allLabels}
+          uuid={e.uuid}
+        />,
+      )
+      logseq.showMainUI()
+    },
+  )
+
   logseq.Editor.registerSlashCommand('Todoist: Send Task', async (e) => {
     const content = await logseq.Editor.getEditingBlockContent()
     if (content.length === 0) {
