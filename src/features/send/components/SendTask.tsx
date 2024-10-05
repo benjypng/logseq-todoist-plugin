@@ -1,92 +1,146 @@
-import { sendTask } from "..";
-import { useState } from "preact/hooks";
-import { getIdFromString, getNameFromString } from "../../helpers";
-import "./tailwind.css";
-import { ChangeEvent } from "react";
+import './style.css'
+import '@mantine/core/styles.css'
+
+import {
+  Button,
+  Flex,
+  MantineProvider,
+  MultiSelect,
+  Pill,
+  Select,
+  Space,
+  Stack,
+  TextInput,
+  Title,
+} from '@mantine/core'
+import { useCallback } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+
+import { THEME } from '../../../constants'
+import { sendTask } from '..'
+
+interface SendTaskProps {
+  content: string
+  projects: string[]
+  labels: string[]
+  uuid: string
+}
+
+export interface FormInput {
+  task: string
+  project: string
+  label: string[]
+  priority: string
+  due: string
+  uuid: string
+}
 
 export const SendTask = ({
+  content,
   projects,
   labels,
-  content,
   uuid,
-}: {
-  projects: string[];
-  labels: string[];
-  content: string;
-  uuid: string;
-}) => {
-  const [projectId, setProjectId] = useState<string>("");
-  const [label, setLabel] = useState<string>("");
-  const [deadline, setDeadline] = useState<string>("");
+}: SendTaskProps) => {
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormInput>({
+    defaultValues: {
+      task: content.trim(),
+      project: '--- ---',
+      priority: '',
+      uuid: uuid,
+      due: '',
+    },
+  })
 
-  const handleSubmit = async (event: ChangeEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    await sendTask(
-      uuid,
-      content,
-      getIdFromString(projectId),
-      deadline,
-      getNameFromString(label),
-    );
-    setProjectId("");
-    setLabel("");
-    setDeadline("");
-    logseq.hideMainUI();
-  };
+  const submitTask = useCallback(
+    (data: FormInput) => {
+      sendTask(data)
+      logseq.UI.showMsg('Task sent to Todoist', 'success', { timeout: 3000 })
+      reset()
+      logseq.hideMainUI()
+    },
+    [uuid],
+  )
 
   return (
-    <div className="flex h-screen justify-end" tabIndex={-1}>
-      <div className="sendPopup flex px-3 w-80 items-center bg-gray-50">
-        <form className="w-full" onSubmit={handleSubmit}>
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-            Select a Project
-            <select
-              //@ts-expect-error
-              onChange={(ev) => setProjectId(ev.target.value)}
-              name="projectId"
-              className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            >
-              {projects.map((p) => (
-                <option>{p}</option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-            Select a Label
-            <select
-              //@ts-expect-error
-              onChange={(ev) => setLabel(ev.target.value)}
-              name="label"
-              className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            >
-              {labels.map((l) => (
-                <option>{l}</option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-            Set a Deadline
-            <input
-              //@ts-expect-error
-              onChange={(ev) => setDeadline(ev.target.value)}
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-              type="text"
-              name="deadline"
-            />
-          </label>
-
-          <div className="flex justify-end">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-            >
+    <MantineProvider theme={THEME}>
+      <Flex bg="none" justify="right" p="md">
+        <Flex
+          p="md"
+          mt="xl"
+          bg="white"
+          w="20rem"
+          direction="column"
+          id="send-task-container"
+        >
+          <Title fz="md">Todoist: Send Task</Title>
+          <Pill size="xl" color="darkteal" my="0.5rem">
+            {content}
+          </Pill>
+          <Space h="1rem" />
+          <form onSubmit={handleSubmit(submitTask)}>
+            <Stack gap="1rem">
+              <Controller
+                control={control}
+                name="project"
+                rules={{ required: 'Please select a project' }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label="Project"
+                    placeholder="Select Project"
+                    data={projects}
+                    error={errors?.project?.message}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="label"
+                render={({ field }) => (
+                  <MultiSelect
+                    {...field}
+                    label="Label"
+                    placeholder="Select Label"
+                    data={labels}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="priority"
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label="Priority (1: normal, 4: urgent)"
+                    placeholder="Select Priority"
+                    data={['1', '2', '3', '4']}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="due"
+                render={({ field }) => (
+                  <TextInput
+                    {...field}
+                    label="Deadline"
+                    placeholder="Enter deadline (e.g. Next Monday)"
+                  />
+                )}
+              />
+            </Stack>
+            <Space h="1rem" />
+            <Button type="submit" size="xs">
               Send Task
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
+            </Button>
+          </form>
+        </Flex>
+      </Flex>
+    </MantineProvider>
+  )
+}
