@@ -1,5 +1,5 @@
 import { Task, TodoistApi } from '@doist/todoist-api-typescript'
-import { getDeadlineDateDay } from 'logseq-dateutils'
+import { getDateForPage, getDeadlineDateDay } from 'logseq-dateutils'
 
 import { getIdFromString } from '../helpers'
 
@@ -58,10 +58,21 @@ ${getDeadlineDateDay(new Date(task.due.date))}`
           ? `TODO ${content}`
           : content
 
+        // Handle created at
+        const preferredDateFormat = (await logseq.App.getUserConfigs())
+          .preferredDateFormat
+        const createdDate = getDateForPage(
+          new Date(task.createdAt),
+          preferredDateFormat,
+        )
+
         taskMap[task.id] = {
           content: content,
           children: [],
           properties: {
+            ...(logseq.settings!.retrieveAppendCreationDateTime! && {
+              created: createdDate,
+            }),
             ...(logseq.settings!.appendTodoistId! && { todoistid: task.id }),
             ...(comments.comments && { comments: comments.comments }),
             ...(comments.attachments && { attachments: comments.attachments }),
