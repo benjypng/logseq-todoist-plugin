@@ -25,10 +25,9 @@ const main = async () => {
   const labels = await getAllLabels()
   callSettings(projects, labels)
 
-  // const templates = await logseq.App.getCurrentGraphTemplates()
-  // console.log('Templates', templates)
-
+  // ====================================================
   // RETRIEVE TASKS
+  // ====================================================
   logseq.Editor.registerSlashCommand('Todoist: Retrieve Tasks', async (e) => {
     const tasks = await retrieveTasks('default')
     if (tasks.length > 0) await insertTasksIntoGraph(tasks, e.uuid)
@@ -58,7 +57,9 @@ const main = async () => {
     },
   )
 
+  // ====================================================
   // SEND TASKS
+  // ====================================================
   const el = document.getElementById('app')
   if (!el) return
   const root = createRoot(el)
@@ -129,6 +130,17 @@ const main = async () => {
       logseq.showMainUI()
     }
   })
+
+  // ====================================================
+  // GET COMPLETED TASKS
+  // ====================================================
+  logseq.Editor.registerSlashCommand(
+    'Todoist: Retrieve completed tasks',
+    async (e) => {
+      // Get completed tasks here
+      console.log(e)
+    },
+  )
 }
 
 logseq.ready(main).catch(console.error)
