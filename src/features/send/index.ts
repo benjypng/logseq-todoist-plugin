@@ -37,7 +37,7 @@ export const sendTask = async ({
       ? `[Link to Logseq](logseq://graph/${currGraphName}?block-id=${uuid})`
       : '',
     ...(project !== '--- ---' && { projectId: getIdFromString(project) }),
-    ...(label[0] !== '--- ---' && {
+    ...(label && label[0] !== '--- ---' && {
       labels: label.map((l) => getNameFromString(l)),
     }),
     ...(priority && { priority: parseInt(priority) }),
