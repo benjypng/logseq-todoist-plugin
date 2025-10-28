@@ -123,6 +123,28 @@ export const callSettings = async (projects: string[], labels: string[]) => {
       description:
         'If set to true, all retrieved tasks will have their tags appended.',
     },
+    {
+      key: 'enableAutoImport',
+      type: 'boolean',
+      default: false,
+      title: 'Enable Auto Import',
+      description: 'Automatically retrieve tasks at regular intervals',
+    },
+    {
+      key: 'autoImportInterval',
+      type: 'number',
+      default: 2,
+      title: 'Auto Import Interval (minutes)',
+      description: 'How often to automatically import tasks (in minutes)',
+    },
+    {
+      key: 'autoImportPage',
+      type: 'string',
+      default: 'todolist',
+      title: 'Auto Import Page Name',
+      description: 'The page where tasks will be automatically imported',
+    },
+
   ]
 
   logseq.useSettingsSchema(settings)
