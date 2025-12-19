@@ -7,20 +7,23 @@ import { retrieveTasks } from './features/retrieve'
 import { insertTasksIntoGraph } from './features/retrieve/insert-tasks-into-graph'
 import { sendTask } from './features/send'
 import { SendTask } from './features/send/components/SendTask'
-import handleListeners from './handleListeners'
-import { callSettings } from './settings'
 import { addTodoistIdPropToTaskTag } from './utils/add-property-to-task'
+import { handlePopups } from './utils/handle-popups'
+import { handleSettings } from './utils/handle-settings'
 
 const main = async () => {
   await logseq.UI.showMsg(
     'logseq-todoist-plugin loaded. Proceed to plugin settings for further setup',
     'warning',
   )
-  handleListeners()
 
+  /*
+  Scaffolding
+  */
+  handlePopups()
   const projects = await getAllProjects()
   const labels = await getAllLabels()
-  await callSettings(projects, labels)
+  await handleSettings(projects, labels)
   await addTodoistIdPropToTaskTag()
 
   // SYNC TASKS

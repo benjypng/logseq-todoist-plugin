@@ -1,6 +1,6 @@
 import { SettingSchemaDesc } from '@logseq/libs/dist/LSPlugin.user'
 
-export const callSettings = async (projects: string[], labels: string[]) => {
+export const handleSettings = async (projects: string[], labels: string[]) => {
   const settings: SettingSchemaDesc[] = [
     {
       key: 'apiToken',
