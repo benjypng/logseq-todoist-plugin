@@ -7,6 +7,8 @@ import { retrieveTasks } from './features/retrieve'
 import { insertTasksIntoGraph } from './features/retrieve/insert-tasks-into-graph'
 import { sendTask } from './features/send'
 import { SendTask } from './features/send/components/SendTask'
+import { handleSync } from './features/sync'
+import { todoistCache } from './features/sync/cache'
 import { addTodoistIdPropToTaskTag } from './utils/add-property-to-task'
 import { handlePopups } from './utils/handle-popups'
 import { handleSettings } from './utils/handle-settings'
@@ -25,6 +27,9 @@ const main = async () => {
   const labels = await getAllLabels()
   await handleSettings(projects, labels)
   await addTodoistIdPropToTaskTag()
+
+  todoistCache.load()
+  handleSync()
 
   // SYNC TASKS
   logseq.App.registerCommandPalette(
