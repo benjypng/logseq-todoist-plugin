@@ -1,6 +1,7 @@
 import { PLUGIN_PROPERTY_KEY } from '../../constants'
 import { findTaskTagId } from '../../utils/add-property-to-task'
 import { api } from '../../utils/api'
+import { appendBlockWithTagAndProp } from '../../utils/append-block-with-tag'
 import { setTaskStatus } from '../../utils/set-task-status'
 import { todoistCache } from './cache'
 
@@ -26,20 +27,13 @@ export const handleSync = () => {
             setTaskStatus(existingUuid, 'Todo')
           }
         } else {
-          const blk = await logseq.Editor.appendBlockInPage(
-            'todoist',
+          const createdBlk = await appendBlockWithTagAndProp(
+            item.id,
             item.content,
           )
-          if (!blk) return
-          const taskTagId = await findTaskTagId()
-          if (!taskTagId) return
-          await logseq.Editor.addBlockTag(blk.uuid, taskTagId)
-          await logseq.Editor.upsertBlockProperty(
-            blk.uuid,
-            PLUGIN_PROPERTY_KEY,
-            item.id,
-          )
-          todoistCache.set(item.id, blk.uuid)
+          if (createdBlk) {
+            todoistCache.set(item.id, createdBlk.uuid)
+          }
         }
       })
     },
