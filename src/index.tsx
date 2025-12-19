@@ -9,24 +9,45 @@ import { sendTask } from './features/send'
 import { SendTask } from './features/send/components/SendTask'
 import handleListeners from './handleListeners'
 import { callSettings } from './settings'
+import { addTodoistIdPropToTaskTag } from './utils/add-property-to-task'
 
 const main = async () => {
-  console.log('logseq-todoist-plugin loaded')
+  await logseq.UI.showMsg(
+    'logseq-todoist-plugin loaded. Proceed to plugin settings for further setup',
+    'warning',
+  )
   handleListeners()
 
-  if (logseq.settings!.apiToken === '') {
-    // Check if it's a new install
-    await logseq.UI.showMsg(
-      'Please key in your API key before using the plugin',
-      'error',
-    )
-  }
   const projects = await getAllProjects()
   const labels = await getAllLabels()
-  callSettings(projects, labels)
+  await callSettings(projects, labels)
+  await addTodoistIdPropToTaskTag()
 
-  // const templates = await logseq.App.getCurrentGraphTemplates()
-  // console.log('Templates', templates)
+  // SYNC TASKS
+  logseq.App.registerCommandPalette(
+    {
+      key: 'todoist-plugin-start-todoist-sync',
+      label: 'logseq-todoist-plugin: Start Todoist Sync',
+    },
+    async () => {
+      logseq.updateSettings({
+        sync: true,
+      })
+      logseq.UI.showMsg(String(logseq.settings?.sync), 'success')
+    },
+  )
+  logseq.App.registerCommandPalette(
+    {
+      key: 'todoist-plugin-stop-todoist-sync',
+      label: 'logseq-todoist-plugin: Stop Todoist Sync',
+    },
+    async () => {
+      logseq.updateSettings({
+        sync: false,
+      })
+      logseq.UI.showMsg(String(logseq.settings?.sync), 'success')
+    },
+  )
 
   // RETRIEVE TASKS
   logseq.Editor.registerSlashCommand('Todoist: Retrieve Tasks', async (e) => {
