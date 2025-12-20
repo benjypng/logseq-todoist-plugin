@@ -1,34 +1,36 @@
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 
 import { PLUGIN_PROPERTY_KEY } from '../../constants'
-import {
-  appendBlockWithTagAndProp,
-  getTaskStatusFromId,
-  getTaskTagId,
-  setTaskStatus,
-} from '../../utils'
+import { getSyncPageId, getTaskStatusFromId, getTaskTagId } from '../../utils'
 import { api } from './api'
 import { todoistCache } from './cache'
+import { triggerSync } from './trigger-sync'
 
 /*
 Below is needed to track whether a new task is initiated from Logseq 
 or from when it's synced from Todoist
 */
 let isInternalSync = false
+let triggerSyncCronJob: NodeJS.Timeout
 
 export const handleSync = () => {
   logseq.DB.onChanged(async ({ blocks }) => {
     if (isInternalSync) return
     if (!blocks || !blocks[0] || !blocks[0].tags) return
 
+    const taskBlk = blocks[0]
+
+    // Only check for changed blocks on sync page
+    const syncPageId = await getSyncPageId()
+    if (!syncPageId) return
+    if (!taskBlk || !taskBlk.title || taskBlk.page.id !== syncPageId) return
+
+    // Check for #Task tag
     const taskTagId = await getTaskTagId()
     if (!taskTagId) return
 
     // @ts-expect-error cater for BlockEntity missing tags
     if (blocks[0].tags[0].id !== taskTagId) return
-
-    const taskBlk = blocks[0]
-    if (!taskBlk || !taskBlk.title) return
 
     const todoistId = (await logseq.Editor.getBlockProperty(
       taskBlk.uuid,
@@ -73,38 +75,47 @@ export const handleSync = () => {
       label: 'logseq-todoist-plugin: Trigger Todoist Sync',
     },
     async () => {
-      isInternalSync = true
+      await triggerSync(isInternalSync)
+    },
+  )
 
+  logseq.App.registerCommandPalette(
+    {
+      key: 'todoist-plugin-start-todoist-sync',
+      label: 'logseq-todoist-plugin: Start Todoist Sync Cronjob',
+    },
+    async () => {
       try {
-        const data = await api.sync()
-        if (data.items.length === 0) {
-          logseq.UI.showMsg('No new changes')
-          return
-        }
-
-        for (const item of data.items) {
-          const existingUuid = todoistCache.get(item.id)
-
-          if (existingUuid) {
-            if (item.checked) {
-              await setTaskStatus(existingUuid, 'Done')
-            } else {
-              await setTaskStatus(existingUuid, 'Todo')
-            }
-          } else {
-            const createdBlk = await appendBlockWithTagAndProp(
-              item.id,
-              item.content,
-            )
-            if (createdBlk) {
-              todoistCache.set(item.id, createdBlk.uuid)
-            }
-          }
-        }
-      } catch (e) {
-        console.error('Sync failed', e)
+        triggerSyncCronJob = setInterval(
+          async () => await triggerSync(isInternalSync),
+          1000 * 60 * 10, // 10 minutes
+        )
+      } catch {
+        logseq.UI.showMsg('Unable to start Todoist Sync Crobjob', 'error')
       } finally {
-        isInternalSync = false
+        logseq.updateSettings({
+          sync: true,
+        })
+        logseq.UI.showMsg('Started: Todoist Sync Cronjob', 'success')
+      }
+    },
+  )
+
+  logseq.App.registerCommandPalette(
+    {
+      key: 'todoist-plugin-stop-todoist-sync',
+      label: 'logseq-todoist-plugin: Stop Todoist Sync Cronjob',
+    },
+    async () => {
+      try {
+        clearInterval(triggerSyncCronJob)
+      } catch {
+        logseq.UI.showMsg('Unable to stop Todoist Sync Cronjob', 'error')
+      } finally {
+        logseq.updateSettings({
+          sync: false,
+        })
+        logseq.UI.showMsg('Stopped: Todoist Sync Cronjob', 'success')
       }
     },
   )

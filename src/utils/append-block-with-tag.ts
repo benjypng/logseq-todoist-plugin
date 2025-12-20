@@ -5,7 +5,10 @@ export const appendBlockWithTagAndProp = async (
   todoistId: string,
   task: string,
 ) => {
-  const blk = await logseq.Editor.appendBlockInPage('todoist', task)
+  const blk = await logseq.Editor.appendBlockInPage(
+    logseq.settings?.syncPage as string,
+    task,
+  )
   if (!blk) return
 
   const taskTagId = await findTaskTagUuid()

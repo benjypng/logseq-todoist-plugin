@@ -28,34 +28,9 @@ const main = async () => {
   await handleSettings(projects, labels)
   await addTodoistIdPropToTaskTag()
 
+  // SYNC TASKS
   todoistCache.load()
   handleSync()
-
-  // SYNC TASKS
-  logseq.App.registerCommandPalette(
-    {
-      key: 'todoist-plugin-start-todoist-sync',
-      label: 'logseq-todoist-plugin: Start Todoist Sync',
-    },
-    async () => {
-      logseq.updateSettings({
-        sync: true,
-      })
-      logseq.UI.showMsg(String(logseq.settings?.sync), 'success')
-    },
-  )
-  logseq.App.registerCommandPalette(
-    {
-      key: 'todoist-plugin-stop-todoist-sync',
-      label: 'logseq-todoist-plugin: Stop Todoist Sync',
-    },
-    async () => {
-      logseq.updateSettings({
-        sync: false,
-      })
-      logseq.UI.showMsg(String(logseq.settings?.sync), 'success')
-    },
-  )
 
   // RETRIEVE TASKS
   logseq.Editor.registerSlashCommand('Todoist: Retrieve Tasks', async (e) => {

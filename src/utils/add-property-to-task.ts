@@ -7,6 +7,7 @@ export const addTodoistIdPropToTaskTag = async () => {
       type: 'default',
       cardinality: 'one',
       hide: true,
+      public: false,
     })
     const taskTagId = await findTaskTagUuid()
     if (!taskTagId) return
