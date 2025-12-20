@@ -10,12 +10,12 @@ import { triggerSync } from './trigger-sync'
 Below is needed to track whether a new task is initiated from Logseq 
 or from when it's synced from Todoist
 */
-let isInternalSync = false
+const syncLock = { isInternalSync: false }
 let triggerSyncCronJob: NodeJS.Timeout
 
 export const handleSync = () => {
   logseq.DB.onChanged(async ({ blocks }) => {
-    if (isInternalSync) return
+    if (syncLock.isInternalSync) return
     if (!blocks || !blocks[0] || !blocks[0].tags) return
 
     const taskBlk = blocks[0]
@@ -55,14 +55,14 @@ export const handleSync = () => {
       const newTodoistId = response.temp_id_mapping[taskBlk.uuid] as string
 
       try {
-        isInternalSync = true
+        syncLock.isInternalSync = true
         await logseq.Editor.upsertBlockProperty(
           taskBlk.uuid,
           PLUGIN_PROPERTY_KEY,
           newTodoistId,
         )
       } finally {
-        isInternalSync = false
+        syncLock.isInternalSync = false
       }
 
       todoistCache.set(newTodoistId, taskBlk.uuid)
@@ -75,7 +75,7 @@ export const handleSync = () => {
       label: 'logseq-todoist-plugin: Trigger Todoist Sync',
     },
     async () => {
-      await triggerSync(isInternalSync)
+      await triggerSync(syncLock)
     },
   )
 
@@ -87,7 +87,7 @@ export const handleSync = () => {
     async () => {
       try {
         triggerSyncCronJob = setInterval(
-          async () => await triggerSync(isInternalSync),
+          async () => await triggerSync(syncLock),
           1000 * 60 * 10, // 10 minutes
         )
       } catch {

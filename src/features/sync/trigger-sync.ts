@@ -2,10 +2,10 @@ import { appendBlockWithTagAndProp, setTaskStatus } from '../../utils'
 import { api } from './api'
 import { todoistCache } from './cache'
 
-export const triggerSync = async (isInternalSync: boolean) => {
-  if (isInternalSync) return // Handle race condition
+export const triggerSync = async (syncLock: { isInternalSync: boolean }) => {
+  if (syncLock.isInternalSync) return // Handle race condition
 
-  isInternalSync = true
+  syncLock.isInternalSync = true
   try {
     const data = await api.sync()
     if (data.items.length === 0) {
@@ -35,6 +35,6 @@ export const triggerSync = async (isInternalSync: boolean) => {
   } catch (e) {
     console.error('Sync failed', e)
   } finally {
-    isInternalSync = false
+    syncLock.isInternalSync = false
   }
 }
