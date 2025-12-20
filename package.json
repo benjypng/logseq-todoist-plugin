@@ -6,7 +6,7 @@
   "logseq": {
     "id": "logseq-todoist-plugin",
     "title": "logseq-todoist-plugin",
-    "icon": "./icon.png",
+    "icon": "./icon.svg",
     "main": "dist/index.html"
   },
   "scripts": {
