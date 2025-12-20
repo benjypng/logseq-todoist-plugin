@@ -8,8 +8,15 @@ import { getTaskTagId } from '../../utils/get-tasktag-id'
 import { setTaskStatus } from '../../utils/set-task-status'
 import { todoistCache } from './cache'
 
+/*
+Below is needed to track whether a new task is initiated from Logseq 
+or from when it's synced from Todoist
+*/
+let isInternalSync = false
+
 export const handleSync = () => {
   logseq.DB.onChanged(async ({ blocks }) => {
+    if (isInternalSync) return
     if (!blocks || !blocks[0] || !blocks[0].tags) return
 
     const taskTagId = await getTaskTagId()
@@ -21,34 +28,40 @@ export const handleSync = () => {
     const taskBlk = blocks[0]
     if (!taskBlk || !taskBlk.title) return
 
-    // Check if task block was created by a sync
-    const pluginPropertyObj = (await logseq.Editor.getBlockProperty(
+    const todoistId = (await logseq.Editor.getBlockProperty(
       taskBlk.uuid,
       PLUGIN_PROPERTY_KEY,
     )) as BlockEntity
-    if (pluginPropertyObj) {
-      // TODO: Handle if page is not 'todoist',
+
+    if (todoistId) {
       // @ts-expect-error BlockEntity has not been updated yet
       const taskStatusId = taskBlk.status.id as number
       const taskStatus = await getTaskStatusFromId(taskStatusId)
 
+      // Use the todoistId we just fetched from the property
       if (taskStatus === 'Done') {
-        api.setComplete(pluginPropertyObj.title)
+        api.setComplete(todoistId.title)
       } else {
-        api.setInComplete(pluginPropertyObj.title)
+        api.setInComplete(todoistId.title)
       }
     } else {
       const response = await api.send(taskBlk.uuid, taskBlk.title)
       if (!response || !response.temp_id_mapping[taskBlk.uuid]) return
 
-      const todoistId = response.temp_id_mapping[taskBlk.uuid] as string
-      await logseq.Editor.upsertBlockProperty(
-        taskBlk.uuid,
-        PLUGIN_PROPERTY_KEY,
-        todoistId,
-      )
+      const newTodoistId = response.temp_id_mapping[taskBlk.uuid] as string
 
-      todoistCache.set(todoistId, taskBlk.uuid)
+      try {
+        isInternalSync = true
+        await logseq.Editor.upsertBlockProperty(
+          taskBlk.uuid,
+          PLUGIN_PROPERTY_KEY,
+          newTodoistId,
+        )
+      } finally {
+        isInternalSync = false
+      }
+
+      todoistCache.set(newTodoistId, taskBlk.uuid)
     }
   })
 
@@ -58,30 +71,39 @@ export const handleSync = () => {
       label: 'logseq-todoist-plugin: Trigger Todoist Sync',
     },
     async () => {
-      const data = await api.sync()
-      if (data.items.length === 0) {
-        logseq.UI.showMsg('No new changes')
-        return
-      }
+      isInternalSync = true
 
-      data.items.forEach(async (item) => {
-        const existingUuid = todoistCache.get(item.id)
-        if (existingUuid) {
-          if (item.checked) {
-            setTaskStatus(existingUuid, 'Done')
+      try {
+        const data = await api.sync()
+        if (data.items.length === 0) {
+          logseq.UI.showMsg('No new changes')
+          return
+        }
+
+        for (const item of data.items) {
+          const existingUuid = todoistCache.get(item.id)
+
+          if (existingUuid) {
+            if (item.checked) {
+              await setTaskStatus(existingUuid, 'Done')
+            } else {
+              await setTaskStatus(existingUuid, 'Todo')
+            }
           } else {
-            setTaskStatus(existingUuid, 'Todo')
-          }
-        } else {
-          const createdBlk = await appendBlockWithTagAndProp(
-            item.id,
-            item.content,
-          )
-          if (createdBlk) {
-            todoistCache.set(item.id, createdBlk.uuid)
+            const createdBlk = await appendBlockWithTagAndProp(
+              item.id,
+              item.content,
+            )
+            if (createdBlk) {
+              todoistCache.set(item.id, createdBlk.uuid)
+            }
           }
         }
-      })
+      } catch (e) {
+        console.error('Sync failed', e)
+      } finally {
+        isInternalSync = false
+      }
     },
   )
 }

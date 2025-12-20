@@ -20,15 +20,14 @@ export const todoistCache = {
       logseq.UI.showMsg('Unable to load Todoist cache')
     }
   },
-
-  get: (todoistId: string) => {
-    return todoistIdLogseqUuidMap.get(todoistId)
+  get: (id: string) => {
+    return todoistIdLogseqUuidMap.get(id)
   },
   set: (todoistId: string, logseqUuid: string) => {
     todoistIdLogseqUuidMap.set(String(todoistId), logseqUuid)
     logseq.UI.showMsg('Updated Todoist cache')
   },
-  has: (todoistId: string) => {
-    return todoistIdLogseqUuidMap.has(todoistId)
+  has: (id: string) => {
+    return todoistIdLogseqUuidMap.has(id)
   },
 }
