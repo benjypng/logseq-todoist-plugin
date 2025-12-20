@@ -94,7 +94,7 @@ export const handleSync = () => {
       try {
         triggerSyncCronJob = setInterval(
           async () => await triggerSync(syncLock),
-          1000 * 60 * 10, // 10 minutes
+          1000 * 10, // 10 seconds
         )
       } catch {
         logseq.UI.showMsg('Unable to start Todoist Sync Crobjob', 'error')
