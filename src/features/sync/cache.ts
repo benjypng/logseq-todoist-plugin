@@ -16,6 +16,7 @@ export const todoistCache = {
         todoistIdLogseqUuidMap.set(String(blk.content), logseqUuid)
       }
       logseq.UI.showMsg('Loaded Todoist cache')
+      console.info(todoistIdLogseqUuidMap)
     } catch {
       logseq.UI.showMsg('Unable to load Todoist cache')
     }

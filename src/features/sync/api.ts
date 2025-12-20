@@ -1,7 +1,7 @@
 import { v4 as genUUID } from 'uuid'
 import wretch from 'wretch'
 
-import { TodoistSendResponse, TodoistSyncResponse } from '../interfaces'
+import { TodoistSendResponse,TodoistSyncResponse } from '../../interfaces'
 
 const client = () =>
   wretch('https://api.todoist.com/api/v1/sync')
