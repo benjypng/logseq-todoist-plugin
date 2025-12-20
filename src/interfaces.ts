@@ -49,3 +49,11 @@ export interface TodoistDuration {
   amount: number
   unit: 'minute' | 'hour' // Common Todoist units
 }
+
+export interface TodoistSendResponse {
+  full_sync: boolean
+  full_sync_date_utc: string
+  sync_status: Record<string, string>
+  sync_token: string
+  temp_id_mapping: Record<string, string>
+}
