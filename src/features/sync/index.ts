@@ -1,11 +1,13 @@
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 
 import { PLUGIN_PROPERTY_KEY } from '../../constants'
-import { api } from '../../utils/api'
-import { appendBlockWithTagAndProp } from '../../utils/append-block-with-tag'
-import { getTaskStatusFromId } from '../../utils/get-task-status-from-id'
-import { getTaskTagId } from '../../utils/get-tasktag-id'
-import { setTaskStatus } from '../../utils/set-task-status'
+import {
+  api,
+  appendBlockWithTagAndProp,
+  getTaskStatusFromId,
+  getTaskTagId,
+  setTaskStatus,
+} from '../../utils'
 import { todoistCache } from './cache'
 
 /*

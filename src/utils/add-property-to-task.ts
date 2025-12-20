@@ -1,10 +1,4 @@
-import { TASK_TAG_KEY } from '../constants'
-
-export const findTaskTagId = async () => {
-  const tag = await logseq.Editor.getTag(TASK_TAG_KEY)
-  if (!tag) return
-  return tag.uuid
-}
+import { findTaskTagUuid } from './find-tasktag-uuid'
 
 export const addTodoistIdPropToTaskTag = async () => {
   const todoistIdProp = await logseq.Editor.getProperty('todoist-id')
@@ -14,7 +8,7 @@ export const addTodoistIdPropToTaskTag = async () => {
       cardinality: 'one',
       hide: true,
     })
-    const taskTagId = await findTaskTagId()
+    const taskTagId = await findTaskTagUuid()
     if (!taskTagId) return
 
     await logseq.Editor.addTagProperty(taskTagId, todoistIdProperty.uuid)
