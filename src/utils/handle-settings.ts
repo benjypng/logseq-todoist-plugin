@@ -1,6 +1,6 @@
 import { SettingSchemaDesc } from '@logseq/libs/dist/LSPlugin.user'
 
-export const callSettings = async (projects: string[], labels: string[]) => {
+export const handleSettings = async (projects: string[], labels: string[]) => {
   const settings: SettingSchemaDesc[] = [
     {
       key: 'apiToken',
@@ -9,6 +9,20 @@ export const callSettings = async (projects: string[], labels: string[]) => {
       title: 'API Token',
       description:
         'Please enter your API token and restart Logseq. You can retrieve your API token from your Todoist developer dashboard.',
+    },
+    {
+      key: '',
+      type: 'heading',
+      default: '',
+      title: 'Automated Sync',
+      description: '',
+    },
+    {
+      key: 'syncPage',
+      type: 'string',
+      default: 'Todoist Sync',
+      title: 'Sync Tasks Page',
+      description: 'Only tasks on this page will be synced with Todoist.',
     },
     {
       key: '',

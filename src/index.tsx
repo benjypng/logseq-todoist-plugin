@@ -7,26 +7,30 @@ import { retrieveTasks } from './features/retrieve'
 import { insertTasksIntoGraph } from './features/retrieve/insert-tasks-into-graph'
 import { sendTask } from './features/send'
 import { SendTask } from './features/send/components/SendTask'
-import handleListeners from './handleListeners'
-import { callSettings } from './settings'
+import { handleSync } from './features/sync'
+import { todoistCache } from './features/sync/cache'
+import { addTodoistIdPropToTaskTag } from './utils/add-property-to-task'
+import { handlePopups } from './utils/handle-popups'
+import { handleSettings } from './utils/handle-settings'
 
 const main = async () => {
-  console.log('logseq-todoist-plugin loaded')
-  handleListeners()
+  await logseq.UI.showMsg(
+    'logseq-todoist-plugin loaded. Proceed to plugin settings for further setup',
+    'warning',
+  )
 
-  if (logseq.settings!.apiToken === '') {
-    // Check if it's a new install
-    await logseq.UI.showMsg(
-      'Please key in your API key before using the plugin',
-      'error',
-    )
-  }
+  /*
+  Scaffolding
+  */
+  handlePopups()
   const projects = await getAllProjects()
   const labels = await getAllLabels()
-  callSettings(projects, labels)
+  await handleSettings(projects, labels)
+  await addTodoistIdPropToTaskTag()
 
-  // const templates = await logseq.App.getCurrentGraphTemplates()
-  // console.log('Templates', templates)
+  // SYNC TASKS
+  todoistCache.load()
+  handleSync()
 
   // RETRIEVE TASKS
   logseq.Editor.registerSlashCommand('Todoist: Retrieve Tasks', async (e) => {
