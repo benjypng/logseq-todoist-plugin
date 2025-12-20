@@ -23,7 +23,13 @@ export const handleSync = () => {
     // Only check for changed blocks on sync page
     const syncPageId = await getSyncPageId()
     if (!syncPageId) return
-    if (!taskBlk || !taskBlk.title || taskBlk.page.id !== syncPageId) return
+    if (
+      !taskBlk ||
+      !taskBlk.title ||
+      !taskBlk.page ||
+      taskBlk.page.id !== syncPageId
+    )
+      return
 
     // Check for #Task tag
     const taskTagId = await getTaskTagId()

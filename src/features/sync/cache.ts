@@ -25,7 +25,7 @@ export const todoistCache = {
   },
   set: (todoistId: string, logseqUuid: string) => {
     todoistIdLogseqUuidMap.set(String(todoistId), logseqUuid)
-    logseq.UI.showMsg('Updated Todoist cache')
+    console.info('Updated Todoist cache')
   },
   has: (id: string) => {
     return todoistIdLogseqUuidMap.has(id)
