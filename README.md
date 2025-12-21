@@ -50,15 +50,12 @@ You can send tasks in 2 ways:
 If you enjoy this plugin, please consider supporting the development!
 
 <div align="center">
-
-<a href="https://github.com/sponsors/benjypng">
-  <img src="https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?style=for-the-badge&logo=github" alt="Sponsor on Github" />
-</a>
-
-<a href="https://www.buymeacoffee.com/hkgnp.dev">
-  <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" />
-</a>
-
+  <a href="https://github.com/sponsors/benjypng">
+    <img src="https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?style=for-the-badge&logo=github" alt="Sponsor on Github" />
+  </a>
+  <a href="https://www.buymeacoffee.com/hkgnp.dev">
+    <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" />
+  </a>
 </div>
 
 ## 🤝 Contributing
