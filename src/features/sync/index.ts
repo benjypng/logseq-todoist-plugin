@@ -15,6 +15,11 @@ const syncLock = { isInternalSync: false }
 let triggerSyncCronJob: NodeJS.Timeout
 
 export const handleSync = () => {
+  logseq.App.registerUIItem('toolbar', {
+    key: 'logseq-todoist-plugin-sync-status',
+    template: `<a class="button">${logseq.settings?.sync ? '<i class="ti ti-circle-check"></i>' : '<i class="ti ti-circle"></i>'}</a>`,
+  })
+
   logseq.DB.onChanged(async ({ blocks }) => {
     if (syncLock.isInternalSync) return
     if (!blocks || !blocks[0] || !blocks[0].tags) return
@@ -59,7 +64,6 @@ export const handleSync = () => {
         const taskStatusId = taskBlk.status.id as number
         const taskStatus = await getTaskStatusFromId(taskStatusId)
 
-        // Use the todoistId we just fetched from the property
         if (taskStatus === 'Done') {
           api.setComplete(todoistId.title)
         } else {
@@ -108,6 +112,10 @@ export const handleSync = () => {
           async () => await triggerSync(syncLock),
           1000 * 10, // 10 seconds
         )
+        logseq.App.registerUIItem('toolbar', {
+          key: 'logseq-todoist-plugin-sync-status',
+          template: `<a class="button"><i class="ti ti-circle-check"></i></a>`,
+        })
       } catch {
         logseq.UI.showMsg('Unable to start Todoist Sync Crobjob', 'error')
       } finally {
@@ -127,6 +135,10 @@ export const handleSync = () => {
     async () => {
       try {
         clearInterval(triggerSyncCronJob)
+        logseq.App.registerUIItem('toolbar', {
+          key: 'logseq-todoist-plugin-sync-status',
+          template: `<a class="button"><i class="ti ti-circle"></i></a>`,
+        })
       } catch {
         logseq.UI.showMsg('Unable to stop Todoist Sync Cronjob', 'error')
       } finally {
