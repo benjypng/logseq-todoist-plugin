@@ -3,18 +3,6 @@
 
 > Sync, send and receive tasks to/from Todoist.
 
-<div align="center">
-
-<a href="https://github.com/sponsors/hkgnp">
-  <img src="https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?style=for-the-badge&logo=github" alt="Sponsor on Github" />
-</a>
-
-<a href="https://www.buymeacoffee.com/hkgnp.dev">
-  <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" />
-</a>
-
-</div>
-
 ---
 
 ## ✨ Features
@@ -59,17 +47,17 @@ You can send tasks in 2 ways:
 1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 3.
 2. In the plugin settings, enter your API token that you obtained in Step 1 as well.
 
-## 🤝 Support
+## ☕️ Support
 If you enjoy this plugin, please consider supporting the development!
 
 <div align="center">
 
-<a href="https://github.com/sponsors/hkgnp"> 
-    <img src="https://www.google.com/search?q=https://img.shields.io/badge/Sponsor-GitHub-ea4aaa%3Fstyle%3Dflat-square%26logo%3Dgithub" alt="Sponsor on Github" /> 
-</a> 
+<a href="https://github.com/sponsors/hkgnp">
+  <img src="https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?style=for-the-badge&logo=github" alt="Sponsor on Github" />
+</a>
 
-<a href="https://www.buymeacoffee.com/hkgnp.dev"> 
-    <img src="https://www.google.com/search?q=https://img.shields.io/badge/Buy%2520Me%2520a%2520Coffee-ffdd00%3Fstyle%3Dflat-square%26logo%3Dbuy-me-a-coffee%26logoColor%3Dblack" alt="Buy Me a Coffee" /> 
+<a href="https://www.buymeacoffee.com/hkgnp.dev">
+  <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" />
 </a>
 
 </div>
