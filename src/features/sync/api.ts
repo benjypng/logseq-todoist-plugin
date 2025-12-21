@@ -1,7 +1,7 @@
 import { v4 as genUUID } from 'uuid'
 import wretch from 'wretch'
 
-import { TodoistSendResponse,TodoistSyncResponse } from '../../interfaces'
+import { TodoistSendResponse, TodoistSyncResponse } from '../../interfaces'
 
 const client = () =>
   wretch('https://api.todoist.com/api/v1/sync')
@@ -84,6 +84,30 @@ export const api = {
             uuid: uuid,
             args: {
               id: todoistId,
+            },
+          },
+        ],
+      })
+      .json<TodoistSendResponse>()
+
+    logseq.updateSettings({
+      ...logseq.settings,
+      syncToken: response.sync_token,
+    })
+
+    return response
+  },
+  updateContent: async (todoistId: string, newContent: string) => {
+    const uuid = genUUID()
+    const response = await client()
+      .post({
+        commands: [
+          {
+            type: 'item_update',
+            uuid: uuid,
+            args: {
+              id: todoistId,
+              content: newContent,
             },
           },
         ],

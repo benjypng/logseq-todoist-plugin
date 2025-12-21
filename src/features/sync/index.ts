@@ -2,6 +2,7 @@ import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 
 import { PLUGIN_PROPERTY_KEY } from '../../constants'
 import { getSyncPageId, getTaskStatusFromId, getTaskTagId } from '../../utils'
+import { getPageTagId } from '../../utils/get-pagetag-id'
 import { api } from './api'
 import { todoistCache } from './cache'
 import { triggerSync } from './trigger-sync'
@@ -18,25 +19,25 @@ export const handleSync = () => {
     if (syncLock.isInternalSync) return
     if (!blocks || !blocks[0] || !blocks[0].tags) return
 
-    const taskBlk = blocks[0]
+    // Ignore if block being changed is a Page
+    const pageTagId = await getPageTagId()
+    // @ts-expect-error BlockEntity has not been updated
+    if (blocks[0].tags.id === pageTagId) return
 
-    // Only check for changed blocks on sync page
+    // Ignore if block being changed is not on the sync page
     const syncPageId = await getSyncPageId()
-    if (!syncPageId) return
-    if (
-      !taskBlk ||
-      !taskBlk.title ||
-      !taskBlk.page ||
-      taskBlk.page.id !== syncPageId
-    )
-      return
+    if (blocks[0].page?.id !== syncPageId) return
 
-    // Check for #Task tag
+    // Now can identify task block with task tag id
     const taskTagId = await getTaskTagId()
-    if (!taskTagId) return
+    // @ts-expect-error BlockEntity has not been updated
+    if (!blocks[0].tags.some((tag) => tag.id === taskTagId)) {
+      return
+    }
 
-    // @ts-expect-error cater for BlockEntity missing tags
-    if (blocks[0].tags[0].id !== taskTagId) return
+    const taskBlk = blocks[0]
+    // Ignore if empty title
+    if (taskBlk.title === '') return
 
     const todoistId = (await logseq.Editor.getBlockProperty(
       taskBlk.uuid,
@@ -44,15 +45,26 @@ export const handleSync = () => {
     )) as BlockEntity
 
     if (todoistId) {
-      // @ts-expect-error BlockEntity has not been updated yet
-      const taskStatusId = taskBlk.status.id as number
-      const taskStatus = await getTaskStatusFromId(taskStatusId)
+      /*
+      Handle changes in task content
+      */
+      const content = await logseq.Editor.getEditingBlockContent()
+      api.updateContent(todoistId.title, content)
 
-      // Use the todoistId we just fetched from the property
-      if (taskStatus === 'Done') {
-        api.setComplete(todoistId.title)
-      } else {
-        api.setInComplete(todoistId.title)
+      /*
+      Handle changes in task status
+      */
+      if (taskBlk.status) {
+        // @ts-expect-error BlockEntity has status property only if the status has been changed
+        const taskStatusId = taskBlk.status.id as number
+        const taskStatus = await getTaskStatusFromId(taskStatusId)
+
+        // Use the todoistId we just fetched from the property
+        if (taskStatus === 'Done') {
+          api.setComplete(todoistId.title)
+        } else {
+          api.setInComplete(todoistId.title)
+        }
       }
     } else {
       const response = await api.send(taskBlk.uuid, taskBlk.title)

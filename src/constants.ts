@@ -24,4 +24,6 @@ export const PLUGIN_PROPERTY_KEY =
 
 export const TASK_TAG_KEY = ':logseq.class/Task'
 
+export const PAGE_TAG_KEY = ':logseq.class/Page'
+
 export const TASK_STATUS_KEY = ':logseq.property/status'
