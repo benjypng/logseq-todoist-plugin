@@ -21,6 +21,10 @@
 
 ## 🛠 Usage & Settings
 
+#### API Token
+1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 3.
+2. In the plugin settings, enter your API token that you obtained in Step 1 as well.
+
 #### Retrieving Tasks
 You can retrieve tasks in 3 ways:
 
@@ -42,10 +46,6 @@ You can send tasks in 2 ways:
 4. To stop the automated sync, use `Stop Todoist Sync Crobjob`.
 5. Navigate to the page defined in (1), and start adding in tasks there.
 6. For now, only task status (Todo, Done) is supported. Other task properties are not supported.
-
-## Preferences
-1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 3.
-2. In the plugin settings, enter your API token that you obtained in Step 1 as well.
 
 ## ☕️ Support
 If you enjoy this plugin, please consider supporting the development!
