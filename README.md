@@ -1,5 +1,5 @@
 # 🧠 logseq-todoist-plugin
-![Version](https://img.shields.io/github/package-json/v/hkgnp/logseq-repo-name?style=flat-square&color=0969da) ![Downloads](https://img.shields.io/github/downloads/hkgnp/logseq-repo-name/total?style=flat-square&color=orange) ![License](https://img.shields.io/github/license/hkgnp/logseq-repo-name?style=flat-square)
+![Version](https://img.shields.io/github/package-json/v/benjypng/logseq-todoist-plugin?style=flat-square&color=0969da) ![Downloads](https://img.shields.io/github/downloads/benjypng/logseq-todoist-plugin/total?style=flat-square&color=orange) ![License](https://img.shields.io/github/license/benjypng/logseq-todoist-plugin?style=flat-square)
 
 > Sync, send and receive tasks to/from Todoist.
 
@@ -33,44 +33,27 @@
 
 ## 🛠 Usage & Settings
 
-### Retrieving Tasks
+#### Retrieving Tasks
 You can retrieve tasks in 3 ways:
 
 - Retrieving tasks from a default project (indicated in plugin settings);
 - Retrieving today's tasks, regardless of the project; and
 - Retrieving tasks based on a custom filter. Key in the desired filter in any block, and type `/Todoist: Retrieve Custom Filter`
 
-### Sending Tasks
+#### Sending Tasks
 You can send tasks in 2 ways:
 
 - If you set a default project to send tasks to, just trigger `/Todoist: Send Task` on the block containing the task.
 - If no default project is indicated, there will be a popup to specify the necessary parameters.
 - You can also choose `/Todoist: Send Task (manual)` to trigger the popup.
 
-### Syncing Tasks
+#### Syncing Tasks
 1. Indicate a sync page. Only tasks added here will be kept in sync with Todoist. New tasks from Todoist are added here as well.
 2. Trigger the command palette (`Mod+Shift+p`) and use the command `Start Todoist Sync Crobjob`.
 3. You can also trigger a manual sync if you don't want it to be automated by using `Trigger Todoist Sync`.
 4. To stop the automated sync, use `Stop Todoist Sync Crobjob`.
 5. Navigate to the page defined in (1), and start adding in tasks there.
 6. For now, only task status (Todo, Done) is supported. Other task properties are not supported.
-
-### Preferences
-You can customise the plugin via `Settings > Plugin Settings`. This is where you 
-
-## Retrieving tasks from Todoist.
-You can retrieve tasks in 3 ways:
-
-- Retrieving tasks from a default project (indicated in plugin settings);
-- Retrieving today's tasks, regardless of the project; and
-- Retrieving tasks based on a custom filter. Key in the desired filter in any block, and type `/Todoist: Retrieve Custom Filter`
-
-## Sending tasks to Todoist
-You can send tasks in 2 ways:
-
-- If you set a default project to send tasks to, just trigger `/Todoist: Send Task` on the block containing the task.
-- If no default project is indicated, there will be a popup to specify the necessary parameters.
-- You can also choose `/Todoist: Send Task (manual)` to trigger the popup.
 
 ## Preferences
 1. Go to https://developer.todoist.com/appconsole.html and create an App. You will need to create an App (give it any name you like), and you will be able to obtain a **test token**. Note down the test token as this is the API Token that you will need in Step 3.
