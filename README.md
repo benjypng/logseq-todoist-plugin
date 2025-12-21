@@ -39,7 +39,7 @@ You can send tasks in 2 ways:
 - If no default project is indicated, there will be a popup to specify the necessary parameters.
 - You can also choose `/Todoist: Send Task (manual)` to trigger the popup.
 
-#### Syncing Tasks
+#### Syncing Tasks (only for DB graphs)
 1. Indicate a sync page in the plugin settings. Only tasks added here will be kept in sync with Todoist. New tasks from Todoist are added here as well.
 2. Trigger the command palette (`Mod+Shift+p`) and use the command `Start Todoist Sync Crobjob`. You can also trigger a manual sync if you don't want it to be automated by using `Trigger Todoist Sync`.
 3. To stop the automated sync, use `Stop Todoist Sync Crobjob`.
