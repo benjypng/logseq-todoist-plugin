@@ -1,8 +1,13 @@
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 
 import { PLUGIN_PROPERTY_KEY } from '../../constants'
-import { getTaskStatusFromId, getTaskTagId } from '../../utils'
-import { getPageTagId } from '../../utils/get-pagetag-id'
+import {
+  addTodoistIdPropToTaskTag,
+  getPageTagId,
+  getTaskStatusFromId,
+  getTaskTagId,
+  saveInboxIdToSettings,
+} from '../../utils'
 import { api } from './api'
 import { todoistCache } from './cache'
 import { triggerSync } from './trigger-sync'
@@ -14,11 +19,16 @@ or from when it's synced from Todoist
 const syncLock = { isInternalSync: false }
 let triggerSyncCronJob: NodeJS.Timeout
 
-export const handleSync = () => {
+export const handleSync = async () => {
   // Need to add sync to settings at startup first it seems
   logseq.updateSettings({
+    ...logseq.settings,
     sync: false,
   })
+  await addTodoistIdPropToTaskTag()
+  await saveInboxIdToSettings()
+  todoistCache.load()
+
   logseq.App.registerUIItem('toolbar', {
     key: 'logseq-todoist-plugin-sync-status',
     template: `<a class="button">${logseq.settings?.sync ? '<i class="ti ti-circle-check"></i>' : '<i class="ti ti-circle"></i>'}</a>`,

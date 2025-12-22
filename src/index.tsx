@@ -8,8 +8,6 @@ import { insertTasksIntoGraph } from './features/retrieve/insert-tasks-into-grap
 import { sendTask } from './features/send'
 import { SendTask } from './features/send/components/SendTask'
 import { handleSync } from './features/sync'
-import { todoistCache } from './features/sync/cache'
-import { addTodoistIdPropToTaskTag } from './utils/add-property-to-task'
 import { handlePopups } from './utils/handle-popups'
 import { handleSettings } from './utils/handle-settings'
 
@@ -26,11 +24,7 @@ const main = async () => {
   const projects = await getAllProjects()
   const labels = await getAllLabels()
   await handleSettings(projects, labels)
-  await addTodoistIdPropToTaskTag()
-
-  // SYNC TASKS
-  todoistCache.load()
-  handleSync()
+  await handleSync()
 
   // RETRIEVE TASKS
   logseq.Editor.registerSlashCommand('Todoist: Retrieve Tasks', async (e) => {

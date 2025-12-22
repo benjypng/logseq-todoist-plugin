@@ -57,3 +57,9 @@ export interface TodoistSendResponse {
   sync_token: string
   temp_id_mapping: Record<string, string>
 }
+
+export interface TodoistUserSyncItem {
+  user: {
+    inbox_project_id: string
+  }
+}

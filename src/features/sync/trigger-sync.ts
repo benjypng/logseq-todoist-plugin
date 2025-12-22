@@ -14,6 +14,7 @@ export const triggerSync = async (syncLock: { isInternalSync: boolean }) => {
 
     for (const item of data.items) {
       if (item.content === '') continue
+      if (item.project_id !== logseq.settings?.userInboxId) continue
 
       const existingUuid = todoistCache.get(item.id)
 

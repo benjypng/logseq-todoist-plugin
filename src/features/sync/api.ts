@@ -1,7 +1,11 @@
 import { v4 as genUUID } from 'uuid'
 import wretch from 'wretch'
 
-import { TodoistSendResponse, TodoistSyncResponse } from '../../interfaces'
+import {
+  TodoistSendResponse,
+  TodoistSyncResponse,
+  TodoistUserSyncItem,
+} from '../../interfaces'
 
 const client = () =>
   wretch('https://api.todoist.com/api/v1/sync')
@@ -9,6 +13,16 @@ const client = () =>
     .content('application/json')
 
 export const api = {
+  getInboxId: async () => {
+    const response = await client()
+      .post({
+        sync_token: '*',
+        resource_types: ['user'],
+      })
+      .json<TodoistUserSyncItem>()
+
+    return response.user.inbox_project_id
+  },
   sync: async () => {
     const currentToken = logseq.settings?.syncToken ?? '*'
 
