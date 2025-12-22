@@ -15,6 +15,10 @@ const syncLock = { isInternalSync: false }
 let triggerSyncCronJob: NodeJS.Timeout
 
 export const handleSync = () => {
+  // Need to add sync to settings at startup first it seems
+  logseq.updateSettings({
+    sync: false,
+  })
   logseq.App.registerUIItem('toolbar', {
     key: 'logseq-todoist-plugin-sync-status',
     template: `<a class="button">${logseq.settings?.sync ? '<i class="ti ti-circle-check"></i>' : '<i class="ti ti-circle"></i>'}</a>`,
