@@ -40,11 +40,12 @@ You can send tasks in 2 ways:
 - You can also choose `/Todoist: Send Task (manual)` to trigger the popup.
 
 #### Syncing Tasks (only for DB graphs)
-1. Indicate a sync page in the plugin settings. Only tasks added here will be kept in sync with Todoist. New tasks from Todoist are added here as well.
-2. Trigger the command palette (`Mod+Shift+p`) and use the command `Start Todoist Sync Crobjob`. You can also trigger a manual sync if you don't want it to be automated by using `Trigger Todoist Sync`.
-3. To stop the automated sync, use `Stop Todoist Sync Crobjob`.
-4. Navigate to the page defined in (1), and start adding in tasks there.
-5. For now, only task status (Todo, Done) is supported. Other task properties are not supported.
+> Note: Only task status (Todo, Done) is supported. Other task properties are not supported. 
+> Only tasks in the `Inbox` section of Todoist are synced; project-level tasks are not synced. Logseq tasks are synced to the `Inbox` only as well.
+> Synced tasks from Todoist are added to today's journal page. You can move them to other blocks, but the same block UUID must be used, by using the `Cut` command from the block context menu.
+
+1. Trigger the command palette (`Mod+Shift+p`) and use the command `Start Todoist Sync Crobjob`. You can also trigger a manual sync if you don't want it to be automated by using `Trigger Todoist Sync`.
+2. To stop the automated sync, use `Stop Todoist Sync Crobjob`.
 
 ## ☕️ Support
 If you enjoy this plugin, please consider supporting the development!
