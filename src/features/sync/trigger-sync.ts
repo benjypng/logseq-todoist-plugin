@@ -13,6 +13,8 @@ export const triggerSync = async (syncLock: { isInternalSync: boolean }) => {
     }
 
     for (const item of data.items) {
+      if (item.content === '') continue
+
       const existingUuid = todoistCache.get(item.id)
 
       if (existingUuid) {
