@@ -7,10 +7,8 @@ export const triggerSync = async (syncLock: { isInternalSync: boolean }) => {
 
   syncLock.isInternalSync = true
   try {
-    console.info('Starting Todoist Sync')
     const data = await api.sync()
     if (data.items.length === 0) {
-      console.info('No new changes from Todoist')
       return
     }
 
@@ -34,9 +32,9 @@ export const triggerSync = async (syncLock: { isInternalSync: boolean }) => {
       }
     }
   } catch (e) {
-    console.error('Sync failed', e)
+    console.error(new Date().toISOString(), 'Todoist Sync: Failed', e)
   } finally {
     syncLock.isInternalSync = false
-    console.info('Completed Todoist Sync')
+    console.info(new Date().toISOString(), 'Todoist Sync: Completed')
   }
 }

@@ -1,7 +1,6 @@
 export * from './add-property-to-task'
 export * from './append-block-with-tag'
 export * from './find-tasktag-uuid'
-export * from './get-syncpage-id'
 export * from './get-task-status-from-id'
 export * from './get-tasktag-id'
 export * from './handle-popups'

@@ -1,7 +1,7 @@
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 
 import { PLUGIN_PROPERTY_KEY } from '../../constants'
-import { getSyncPageId, getTaskStatusFromId, getTaskTagId } from '../../utils'
+import { getTaskStatusFromId, getTaskTagId } from '../../utils'
 import { getPageTagId } from '../../utils/get-pagetag-id'
 import { api } from './api'
 import { todoistCache } from './cache'
@@ -33,9 +33,7 @@ export const handleSync = () => {
     // @ts-expect-error BlockEntity has not been updated
     if (blocks[0].tags.id === pageTagId) return
 
-    // Ignore if block being changed is not on the sync page
-    const syncPageId = await getSyncPageId()
-    if (blocks[0].page?.id !== syncPageId) return
+    // Deprecated: Ignore if block being changed is not on the sync page
 
     // Now can identify task block with task tag id
     const taskTagId = await getTaskTagId()
