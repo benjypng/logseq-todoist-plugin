@@ -11,7 +11,8 @@
 * **Sync tasks with Todoist (beta):** Keep tasks in Logseq and Todoist in sync.
 
 ## 📸 Screenshots / Demo
-*To be added.*
+#### Sync
+https://github.com/user-attachments/assets/1b179eb9-a684-494e-beca-69386b50ae23
 
 ## ⚙️ Installation
 1.  Open Logseq.
