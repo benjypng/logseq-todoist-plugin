@@ -5,7 +5,7 @@ import {
   addTodoistIdPropToTaskTag,
   getPageTagId,
   getTaskStatusFromId,
-  getTaskTagId,
+  getTodoistTaskTagId,
   saveInboxIdToSettings,
 } from '../../utils'
 import { api } from './api'
@@ -46,7 +46,7 @@ export const handleSync = async () => {
     // Deprecated: Ignore if block being changed is not on the sync page
 
     // Now can identify task block with task tag id
-    const taskTagId = await getTaskTagId()
+    const taskTagId = await getTodoistTaskTagId()
     // @ts-expect-error BlockEntity has not been updated
     if (!blocks[0].tags.some((tag) => tag.id === taskTagId)) {
       return

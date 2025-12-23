@@ -1,6 +1,5 @@
-import { PLUGIN_PROPERTY_KEY } from '../constants'
-import { findTaskTagUuid } from './find-tasktag-uuid'
 import { getTodayJournalPage } from './get-today-journal-page'
+import { getTodoistTaskTagUuid } from './get-todoist-tasktag-uuid'
 
 export const appendBlockWithTagAndProp = async (
   todoistId: string,
@@ -12,15 +11,11 @@ export const appendBlockWithTagAndProp = async (
   const blk = await logseq.Editor.appendBlockInPage(todayJournalPage, task)
   if (!blk) return
 
-  const taskTagId = await findTaskTagUuid()
-  if (!taskTagId) return
+  const taskTagUuid = await getTodoistTaskTagUuid()
+  if (!taskTagUuid) return
 
-  await logseq.Editor.addBlockTag(blk.uuid, taskTagId)
-  await logseq.Editor.upsertBlockProperty(
-    blk.uuid,
-    PLUGIN_PROPERTY_KEY,
-    todoistId,
-  )
+  await logseq.Editor.addBlockTag(blk.uuid, taskTagUuid)
+  await logseq.Editor.upsertBlockProperty(blk.uuid, 'todoist-id', todoistId)
 
   return blk
 }

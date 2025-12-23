@@ -1,18 +1,25 @@
-import { findTaskTagUuid } from './find-tasktag-uuid'
+import { getTaskTagUuid } from './get-tasktag-uuid'
 
 export const addTodoistIdPropToTaskTag = async () => {
-  const todoistIdProp = await logseq.Editor.getProperty('todoist-id')
+  const todoistIdProp = await logseq.Editor.getPage('todoist-id')
   if (!todoistIdProp) {
+    const todoistTaskTag = await logseq.Editor.createTag('TodoistTask')
+    if (!todoistTaskTag) return
+    console.info('Created TodoistTask tag')
+
+    const taskTagUuid = await getTaskTagUuid()
+    if (!taskTagUuid) return
+
+    await logseq.Editor.addTagExtends(todoistTaskTag.uuid, taskTagUuid)
+
     const todoistIdProperty = await logseq.Editor.upsertProperty('todoist-id', {
       type: 'default',
       cardinality: 'one',
-      hide: true,
-      public: false,
     })
-    const taskTagId = await findTaskTagUuid()
-    if (!taskTagId) return
-
-    await logseq.Editor.addTagProperty(taskTagId, todoistIdProperty.uuid)
+    await logseq.Editor.addTagProperty(
+      todoistTaskTag.uuid,
+      todoistIdProperty.uuid,
+    )
     console.info(`todoist-id property added to Task tag`)
   }
 }
