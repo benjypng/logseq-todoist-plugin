@@ -47,6 +47,7 @@ You can send tasks in 2 ways:
 
 1. Trigger the command palette (`Mod+Shift+p`) and use the command `Start Todoist Sync Crobjob`. You can also trigger a manual sync if you don't want it to be automated by using `Trigger Todoist Sync`.
 2. To stop the automated sync, use `Stop Todoist Sync Crobjob`.
+3. To sync a task, use the tag `#TodoistTask` instead of `#Task`.
 
 ## ☕️ Support
 If you enjoy this plugin, please consider supporting the development!
