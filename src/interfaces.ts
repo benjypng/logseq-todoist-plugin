@@ -63,3 +63,7 @@ export interface TodoistUserSyncItem {
     inbox_project_id: string
   }
 }
+
+export interface SyncLock {
+  isInternalSync: boolean
+}

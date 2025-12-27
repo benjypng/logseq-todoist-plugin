@@ -1,17 +1,20 @@
+import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
+
+import { PLUGIN_PROPERTY_KEY } from '../../constants'
+import { SyncLock } from '../../interfaces'
 import { appendBlockWithTagAndProp, setTaskStatus } from '../../utils'
+import { sendTaskToTodoist } from '../../utils/send-task-to-todoist'
 import { api } from './api'
 import { todoistCache } from './cache'
 
-export const triggerSync = async (syncLock: { isInternalSync: boolean }) => {
+export const triggerSync = async (syncLock: SyncLock) => {
   if (syncLock.isInternalSync) return // Handle race condition
-
   syncLock.isInternalSync = true
-  try {
-    const data = await api.sync()
-    if (data.items.length === 0) {
-      return
-    }
 
+  try {
+    // Handle tasks from Todoist
+    const data = await api.sync()
+    //if (data.items.length === 0) return
     for (const item of data.items) {
       if (item.content === '') continue
       if (item.project_id !== logseq.settings?.userInboxId) continue
@@ -33,6 +36,27 @@ export const triggerSync = async (syncLock: { isInternalSync: boolean }) => {
           todoistCache.set(item.id, createdBlk.uuid)
         }
       }
+    }
+
+    // Handle tasks created on mobile
+    const tasksTaggedWithTodoistTask: BlockEntity[][] = await logseq.DB
+      .datascriptQuery(`
+      [:find (pull ?b [*])
+      :where
+      [?p :block/name "todoisttask"]
+      [?b :block/refs ?p]]`)
+    if (tasksTaggedWithTodoistTask.length === 0) return
+    const todoistTasksWithoutTodoistId = tasksTaggedWithTodoistTask
+      .map((blockArr) => blockArr[0])
+      .filter(
+        (block) =>
+          !block![PLUGIN_PROPERTY_KEY] &&
+          !block![':logseq.property.view/feature-type'],
+      )
+    if (todoistTasksWithoutTodoistId.length === 0) return
+    for (const taskBlk of todoistTasksWithoutTodoistId) {
+      if (!taskBlk) continue
+      sendTaskToTodoist(taskBlk, syncLock)
     }
   } catch (e) {
     console.error(new Date().toISOString(), 'Todoist Sync: Failed', e)

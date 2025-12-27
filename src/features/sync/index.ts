@@ -8,6 +8,7 @@ import {
   getTodoistTaskTagId,
   saveInboxIdToSettings,
 } from '../../utils'
+import { sendTaskToTodoist } from '../../utils/send-task-to-todoist'
 import { api } from './api'
 import { todoistCache } from './cache'
 import { triggerSync } from './trigger-sync'
@@ -83,23 +84,7 @@ export const handleSync = async () => {
         }
       }
     } else {
-      const response = await api.send(taskBlk.uuid, taskBlk.title)
-      if (!response || !response.temp_id_mapping[taskBlk.uuid]) return
-
-      const newTodoistId = response.temp_id_mapping[taskBlk.uuid] as string
-
-      try {
-        syncLock.isInternalSync = true
-        await logseq.Editor.upsertBlockProperty(
-          taskBlk.uuid,
-          PLUGIN_PROPERTY_KEY,
-          newTodoistId,
-        )
-      } finally {
-        syncLock.isInternalSync = false
-      }
-
-      todoistCache.set(newTodoistId, taskBlk.uuid)
+      sendTaskToTodoist(taskBlk, syncLock)
     }
   })
 
