@@ -1,4 +1,4 @@
-# 🧠 logseq-todoist-plugin
+# logseq-todoist-plugin
 ![Version](https://img.shields.io/github/v/release/benjypng/logseq-todoist-plugin?style=flat-square&color=0969da) ![Downloads](https://img.shields.io/github/downloads/benjypng/logseq-todoist-plugin/total?style=flat-square&color=orange) ![License](https://img.shields.io/github/license/benjypng/logseq-todoist-plugin?style=flat-square)
 
 > Sync, send and receive tasks to/from Todoist.
@@ -58,3 +58,6 @@ If you enjoy this plugin, please consider supporting the development!
 
 ## 🤝 Contributing
 Issues are welcome. If you find a bug, please open an issue. Pull requests are not accepted at the moment as I am not able to commit to reviewing them in a timely fashion.
+
+## ❤️ Credits
+- Todoist
