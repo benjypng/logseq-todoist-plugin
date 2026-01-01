@@ -107,7 +107,7 @@ export const handleSync = async () => {
       try {
         triggerSyncCronJob = setInterval(
           async () => await triggerSync(syncLock),
-          1000 * 10, // 10 seconds
+          1000 * 60, // 60 seconds
         )
         logseq.App.registerUIItem('toolbar', {
           key: 'logseq-todoist-plugin-sync-status',
