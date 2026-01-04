@@ -1,9 +1,9 @@
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 
-import { PLUGIN_PROPERTY_KEY } from '../constants'
 import { api } from '../features/sync/api'
 import { todoistCache } from '../features/sync/cache'
 import { SyncLock } from '../interfaces'
+import { getTodoistIdPropIdent } from './get-todoistid-prop-ident'
 
 export const sendTaskToTodoist = async (
   taskBlk: BlockEntity,
@@ -16,9 +16,12 @@ export const sendTaskToTodoist = async (
 
   try {
     syncLock.isInternalSync = true
+    const todoistIdPropIdent = await getTodoistIdPropIdent()
+    if (!todoistIdPropIdent) return
+
     await logseq.Editor.upsertBlockProperty(
       taskBlk.uuid,
-      PLUGIN_PROPERTY_KEY,
+      todoistIdPropIdent,
       newTodoistId,
     )
   } finally {

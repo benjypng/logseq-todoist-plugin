@@ -5,7 +5,7 @@ export const todoistCache = {
     try {
       const results = await logseq.DB.datascriptQuery(`[:find ?todoistId ?uuid
          :where
-         [?b :plugin.property.logseq-todoist-plugin/todoist-id ?todoistId]
+         [?b :plugin.property.logseq-todoist-plugin/todoistid ?todoistId]
          [?b :block/uuid ?uuid]]`)
       if (!results || results.length === 0) return
       todoistIdLogseqUuidMap.clear()

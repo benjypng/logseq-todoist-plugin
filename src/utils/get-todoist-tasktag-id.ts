@@ -1,7 +1,5 @@
-import { TODOIST_TASK_TAG_KEY } from '../constants'
-
 export const getTodoistTaskTagId = async () => {
-  const taskTag = await logseq.Editor.getTag(TODOIST_TASK_TAG_KEY)
+  const taskTag = await logseq.Editor.getPage('todoisttask')
   if (!taskTag) return
   return taskTag.id
 }

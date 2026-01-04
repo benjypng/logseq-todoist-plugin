@@ -1,13 +1,12 @@
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 
-import { PLUGIN_PROPERTY_KEY } from '../../constants'
 import {
-  addTodoistIdPropToTaskTag,
   getPageTagId,
   getTaskStatusFromId,
   getTodoistTaskTagId,
   saveInboxIdToSettings,
 } from '../../utils'
+import { getTodoistIdPropIdent } from '../../utils/get-todoistid-prop-ident'
 import { sendTaskToTodoist } from '../../utils/send-task-to-todoist'
 import { api } from './api'
 import { todoistCache } from './cache'
@@ -26,7 +25,8 @@ export const handleSync = async () => {
     ...logseq.settings,
     sync: false,
   })
-  await addTodoistIdPropToTaskTag()
+  //NOTE: Am removing the below because plugin created tag and props don't play nicely with sync
+  //await addTodoistIdPropToTaskTag()
   await saveInboxIdToSettings()
   todoistCache.load()
 
@@ -57,9 +57,12 @@ export const handleSync = async () => {
     // Ignore if empty title
     if (taskBlk.title === '') return
 
+    const todoistIdPropIdent = await getTodoistIdPropIdent()
+    if (!todoistIdPropIdent) return
+
     const todoistId = (await logseq.Editor.getBlockProperty(
       taskBlk.uuid,
-      PLUGIN_PROPERTY_KEY,
+      todoistIdPropIdent,
     )) as BlockEntity
 
     if (todoistId) {
