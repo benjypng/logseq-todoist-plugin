@@ -30,11 +30,12 @@ export const sendTask = async ({
 
   const currGraph = await logseq.App.getCurrentGraph()
   const currGraphName = currGraph?.name
+  if (!currGraphName) return
 
   const sendObj = {
     content: removeTaskFlags(task),
     description: logseq.settings!.sendAppendUri
-      ? `[Link to Logseq](logseq://graph/${currGraphName}?block-id=${uuid})`
+      ? `[Link to Logseq](logseq://graph/${encodeURI(currGraphName)}?block-id=${uuid})`
       : '',
     ...(project !== '--- ---' && { projectId: getIdFromString(project) }),
     ...(label[0] !== '--- ---' && {
