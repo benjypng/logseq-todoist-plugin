@@ -39,8 +39,8 @@ export const triggerSync = async (syncLock: SyncLock) => {
     }
 
     // Handle tasks created on mobile
-    const tasksTaggedWithTodoistTask: BlockEntity[][] = await logseq.DB
-      .datascriptQuery(`
+    const tasksTaggedWithTodoistTask: BlockEntity[][] =
+      await logseq.DB.datascriptQuery(`
       [:find (pull ?b [*])
       :where
       [?p :block/name "todoisttask"]

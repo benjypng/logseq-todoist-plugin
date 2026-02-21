@@ -18,16 +18,16 @@ export const handleComments = async (id: string) => {
   const api = new TodoistApi(logseq.settings!.apiToken as string)
   const comments = await api.getComments({ taskId: id })
 
-  if (comments.length === 0) return {}
+  if (comments.results.length === 0) return {}
 
-  const textComments = comments
-    .filter((comment) => !comment.attachment)
+  const textComments = comments.results
+    .filter((comment) => !comment.fileAttachment)
     .map((comment) => comment.content)
     .join(', ')
-  const attachments = comments
-    .filter((comment) => comment.attachment)
+  const attachments = comments.results
+    .filter((comment) => comment.fileAttachment)
     .map((comment) => {
-      const { fileUrl, fileName } = comment.attachment!
+      const { fileUrl, fileName } = comment.fileAttachment!
       // Todoist implements a redirect behind cloudflare, hence no point supporting image markdown
       return `[${fileName}](${fileUrl})`
     })
@@ -71,7 +71,7 @@ ${getDeadlineDateDay(new Date(task.due.date))}`
         const preferredDateFormat = (await logseq.App.getUserConfigs())
           .preferredDateFormat
         const createdDate = getDateForPage(
-          new Date(task.createdAt),
+          new Date(task.addedAt!),
           preferredDateFormat,
         )
 
@@ -148,19 +148,19 @@ export const retrieveTasks = async (
             logseq.settings!.retrieveDefaultProject as string,
           ),
         })
-        allTasks = [...allTasks, ...tasks]
+        allTasks = [...allTasks, ...tasks.results]
         break
       }
 
       case 'today': {
-        const tasks = await api.getTasks({ filter: 'today' })
-        allTasks = [...allTasks, ...tasks]
+        const tasks = await api.getTasksByFilter({ query: 'today' })
+        allTasks = [...allTasks, ...tasks.results]
         break
       }
 
       case 'custom': {
-        const tasks = await api.getTasks({ filter: customFilter })
-        allTasks = [...allTasks, ...tasks]
+        const tasks = await api.getTasksByFilter({ query: customFilter! })
+        allTasks = [...allTasks, ...tasks.results]
         break
       }
 
