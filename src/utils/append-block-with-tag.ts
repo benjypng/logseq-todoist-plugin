@@ -12,7 +12,10 @@ export const appendBlockWithTagAndProp = async (
   const taskTagUuid = await getTodoistTaskTagUuid()
   if (!taskTagUuid) return
 
-  const blk = await logseq.Editor.appendBlockInPage(todayJournalPage, task)
+  const blk = await logseq.Editor.appendBlockInPage(
+    todayJournalPage,
+    `TODO ${task}`,
+  )
   if (!blk) return
 
   await logseq.Editor.addBlockTag(blk.uuid, taskTagUuid)
