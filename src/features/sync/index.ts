@@ -8,6 +8,7 @@ import {
 } from '../../utils'
 import { getTodoistIdPropIdent } from '../../utils/get-todoistid-prop-ident'
 import { sendTaskToTodoist } from '../../utils/send-task-to-todoist'
+import { sendTask } from '../send'
 import { api } from './api'
 import { todoistCache } from './cache'
 import { triggerSync } from './trigger-sync'
@@ -37,7 +38,35 @@ export const handleSync = async () => {
 
   logseq.DB.onChanged(async ({ blocks }) => {
     if (syncLock.isInternalSync) return
-    if (!blocks || !blocks[0] || !blocks[0].tags) return
+    if (!blocks || !blocks[0]) return
+
+    // Handle plain blocks marked as TODO/NOW/LATER (e.g. via cmd+enter)
+    // These blocks don't have [[todoisttask]] tag yet
+    if (!blocks[0].tags) {
+      const blk = blocks[0]
+      const marker = blk.marker as string | undefined
+      if (!marker || !['TODO', 'NOW', 'LATER'].includes(marker)) return
+      if (!blk.content || blk.content.trim() === '') return
+
+      const todoistIdPropIdent = await getTodoistIdPropIdent()
+      if (!todoistIdPropIdent) return
+
+      const existingId = await logseq.Editor.getBlockProperty(
+        blk.uuid,
+        todoistIdPropIdent,
+      )
+      if (existingId) return // already sent
+
+      await sendTask({
+        task: blk.content,
+        project: (logseq.settings?.sendDefaultProject as string) ?? '--- ---',
+        label: [(logseq.settings?.sendDefaultLabel as string) ?? '--- ---'],
+        due: logseq.settings?.sendDefaultDeadline ? 'today' : '',
+        priority: '1',
+        uuid: blk.uuid,
+      })
+      return
+    }
 
     // Ignore if block being changed is a Page
     const pageTagId = await getPageTagId()
