@@ -31,30 +31,30 @@
     ]
   },
   "dependencies": {
-    "@doist/todoist-api-typescript": "^6.5.1",
+    "@doist/todoist-api-typescript": "^7.10.0",
     "@logseq/libs": "^0.2.9",
-    "@mantine/core": "^8.3.15",
-    "@mantine/hooks": "^8.3.15",
+    "@mantine/core": "^9.0.1",
+    "@mantine/hooks": "^9.0.1",
     "date-fns": "^4.1.0",
     "logseq-dateutils": "^2.1.2",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-hook-form": "^7.71.2",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-hook-form": "^7.72.1",
     "uuid": "^13.0.0",
-    "wretch": "^3.0.6"
+    "wretch": "^3.0.7"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.11",
-    "@types/node": "^25.3.0",
+    "@biomejs/biome": "2.4.11",
+    "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "husky": "^9.1.7",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.9",
     "postcss-preset-mantine": "^1.18.0",
     "postcss-simple-vars": "^7.0.1",
-    "prettier": "^3.8.1",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1",
+    "prettier": "^3.8.2",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8",
     "vite-plugin-logseq": "^1.1.2",
     "vite-tsconfig-paths": "^6.1.1"
   }
