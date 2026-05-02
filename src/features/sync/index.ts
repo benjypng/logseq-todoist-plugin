@@ -10,13 +10,27 @@ import { getTodoistIdPropIdent } from '../../utils/get-todoistid-prop-ident'
 import { sendTaskToTodoist } from '../../utils/send-task-to-todoist'
 import { api } from './api'
 import { todoistCache } from './cache'
+import { provideToolbarStyles, updateToolbarIcon } from './toolbar-icon'
 import { triggerSync } from './trigger-sync'
 
 /*
-Below is needed to track whether a new task is initiated from Logseq 
+Below is needed to track whether a new task is initiated from Logseq
 or from when it's synced from Todoist
 */
-const syncLock = { isInternalSync: false }
+const _syncLock = { isInternalSync: false }
+const syncLock = new Proxy(_syncLock, {
+  set(target, prop, value) {
+    const result = Reflect.set(target, prop, value)
+    if (prop === 'isInternalSync') {
+      if (value) {
+        updateToolbarIcon('syncing')
+      } else {
+        updateToolbarIcon(logseq.settings?.sync ? 'on' : 'off')
+      }
+    }
+    return result
+  },
+})
 let triggerSyncCronJob: NodeJS.Timeout
 
 export const handleSync = async () => {
@@ -30,10 +44,8 @@ export const handleSync = async () => {
   await saveInboxIdToSettings()
   todoistCache.load()
 
-  logseq.App.registerUIItem('toolbar', {
-    key: 'logseq-todoist-plugin-sync-status',
-    template: `<a class="button">${logseq.settings?.sync ? '<i class="ti ti-circle-check"></i>' : '<i class="ti ti-circle"></i>'}</a>`,
-  })
+  provideToolbarStyles()
+  updateToolbarIcon(logseq.settings?.sync ? 'on' : 'off')
 
   logseq.DB.onChanged(async ({ blocks }) => {
     if (syncLock.isInternalSync) return
@@ -112,16 +124,13 @@ export const handleSync = async () => {
           async () => await triggerSync(syncLock),
           1000 * 60, // 60 seconds
         )
-        logseq.App.registerUIItem('toolbar', {
-          key: 'logseq-todoist-plugin-sync-status',
-          template: `<a class="button"><i class="ti ti-circle-check"></i></a>`,
-        })
       } catch {
         logseq.UI.showMsg('Unable to start Todoist Sync Crobjob', 'error')
       } finally {
         logseq.updateSettings({
           sync: true,
         })
+        updateToolbarIcon('on')
         logseq.UI.showMsg('Started: Todoist Sync Cronjob', 'success')
       }
     },
@@ -135,16 +144,13 @@ export const handleSync = async () => {
     async () => {
       try {
         clearInterval(triggerSyncCronJob)
-        logseq.App.registerUIItem('toolbar', {
-          key: 'logseq-todoist-plugin-sync-status',
-          template: `<a class="button"><i class="ti ti-circle"></i></a>`,
-        })
       } catch {
         logseq.UI.showMsg('Unable to stop Todoist Sync Cronjob', 'error')
       } finally {
         logseq.updateSettings({
           sync: false,
         })
+        updateToolbarIcon('off')
         logseq.UI.showMsg('Stopped: Todoist Sync Cronjob', 'success')
       }
     },

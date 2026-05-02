@@ -6,6 +6,7 @@ import { getTodoistIdPropIdent } from '../../utils/get-todoistid-prop-ident'
 import { sendTaskToTodoist } from '../../utils/send-task-to-todoist'
 import { api } from './api'
 import { todoistCache } from './cache'
+import { updateToolbarIcon } from './toolbar-icon'
 
 export const triggerSync = async (syncLock: SyncLock) => {
   if (syncLock.isInternalSync) return // Handle race condition
@@ -62,6 +63,7 @@ export const triggerSync = async (syncLock: SyncLock) => {
     }
   } catch (e) {
     console.error(new Date().toISOString(), 'Todoist Sync: Failed', e)
+    updateToolbarIcon('error')
   } finally {
     syncLock.isInternalSync = false
     console.info(new Date().toISOString(), 'Todoist Sync: Completed')
