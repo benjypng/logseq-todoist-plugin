@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url'
+
 import { defineConfig } from 'vite'
 import logseqDevPlugin from 'vite-plugin-logseq'
 
