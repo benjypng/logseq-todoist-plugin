@@ -46,7 +46,6 @@ export const SendTask = ({
   const submitTask = useCallback(
     (data: FormInput) => {
       sendTask(data)
-      logseq.UI.showMsg('Task sent to Todoist', 'success', { timeout: 3000 })
       reset()
       logseq.hideMainUI()
     },
