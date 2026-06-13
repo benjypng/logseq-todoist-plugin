@@ -16,27 +16,52 @@ export const triggerSync = async (syncLock: SyncLock) => {
     // Handle tasks from Todoist
     const data = await api.sync()
     if (!data) return
+    // A failed item must not abort the rest of the batch, and must hold back
+    // the sync token commit so Todoist re-delivers it next sync. Replaying an
+    // already-applied item is safe: resolve() finds the existing block and
+    // the status upsert is idempotent
+    let allItemsApplied = true
     for (const item of data.items) {
-      if (item.content === '') continue
-      if (item.project_id !== logseq.settings?.userInboxId) continue
+      try {
+        if (item.content === '') continue
+        if (item.project_id !== logseq.settings?.userInboxId) continue
 
-      const existingUuid = todoistCache.get(item.id)
+        const existingUuid = await todoistCache.resolve(item.id)
 
-      if (existingUuid) {
-        if (item.checked) {
-          await setTaskStatus(existingUuid, 'Done')
+        if (existingUuid) {
+          if (item.checked) {
+            await setTaskStatus(existingUuid, 'Done')
+          } else {
+            await setTaskStatus(existingUuid, 'Todo')
+          }
         } else {
-          await setTaskStatus(existingUuid, 'Todo')
+          const createdBlk = await appendBlockWithTagAndProp(
+            item.id,
+            item.content,
+          )
+          if (createdBlk) {
+            todoistCache.set(item.id, createdBlk.uuid)
+          } else {
+            allItemsApplied = false
+            console.error(
+              new Date().toISOString(),
+              `Todoist Sync: Unable to create block for item ${item.id}`,
+            )
+          }
         }
-      } else {
-        const createdBlk = await appendBlockWithTagAndProp(
-          item.id,
-          item.content,
+      } catch (e) {
+        allItemsApplied = false
+        console.error(
+          new Date().toISOString(),
+          `Todoist Sync: Failed to apply item ${item.id}`,
+          e,
         )
-        if (createdBlk) {
-          todoistCache.set(item.id, createdBlk.uuid)
-        }
       }
+    }
+    if (allItemsApplied) {
+      logseq.updateSettings({
+        syncToken: data.sync_token,
+      })
     }
 
     // Handle tasks created on mobile

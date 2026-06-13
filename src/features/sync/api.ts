@@ -88,11 +88,10 @@ export const api = {
         })
         .json<TodoistSyncResponse>()
 
-      logseq.updateSettings({
-        ...logseq.settings,
-        syncToken: response.sync_token,
-      })
-
+      // The sync token is deliberately NOT persisted here. Committing it
+      // before the items are applied to the graph means a failure mid-apply
+      // loses those items forever (Todoist never re-delivers them). The
+      // caller commits the token once every item has been applied
       return response
     }, 'Sync')
   },

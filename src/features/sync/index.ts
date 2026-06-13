@@ -42,7 +42,7 @@ export const handleSync = async () => {
   //NOTE: Am removing the below because plugin created tag and props don't play nicely with sync
   //await addTodoistIdPropToTaskTag()
   await saveInboxIdToSettings()
-  todoistCache.load()
+  await todoistCache.load()
 
   provideToolbarStyles()
   updateToolbarIcon(logseq.settings?.sync ? 'on' : 'off')
