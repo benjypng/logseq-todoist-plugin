@@ -14,6 +14,21 @@ export const handleSettings = async (projects: string[], labels: string[]) => {
       key: '',
       type: 'heading',
       default: '',
+      title: 'Syncing Tasks (for Logseq DB only)',
+      description: '',
+    },
+    {
+      key: 'enableSync',
+      type: 'boolean',
+      default: false,
+      title: 'Enable Sync',
+      description:
+        'Set to true to enable syncing between Todoist and Logseq. Refer to plugin README for sync parameters.',
+    },
+    {
+      key: '',
+      type: 'heading',
+      default: '',
       title: 'Sending Tasks',
       description: '',
     },
@@ -55,7 +70,7 @@ export const handleSettings = async (projects: string[], labels: string[]) => {
       key: '',
       type: 'heading',
       default: '',
-      title: 'Retrieving Tasks',
+      title: 'Retrieving Tasks (for Logseq MD only)',
       description: '',
     },
     {

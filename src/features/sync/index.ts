@@ -23,26 +23,42 @@ const syncLock = new Proxy(_syncLock, {
       if (value) {
         updateToolbarIcon('syncing')
       } else {
-        updateToolbarIcon(logseq.settings?.sync ? 'on' : 'off')
+        updateToolbarIcon(logseq.settings?.enableSync ? 'on' : 'off')
       }
     }
     return result
   },
 })
-let triggerSyncCronJob: NodeJS.Timeout
+
+let triggerSyncCronJob: NodeJS.Timeout | undefined
+
+const startSyncCron = () => {
+  if (triggerSyncCronJob) clearInterval(triggerSyncCronJob)
+  triggerSyncCronJob = setInterval(
+    async () => await triggerSync(syncLock),
+    1000 * 60,
+  )
+  updateToolbarIcon('on')
+}
+
+const stopSyncCron = () => {
+  if (triggerSyncCronJob) clearInterval(triggerSyncCronJob)
+  triggerSyncCronJob = undefined
+  updateToolbarIcon('off')
+}
 
 export const handleSync = async () => {
-  logseq.updateSettings({
-    ...logseq.settings,
-    sync: false,
-  })
+  if (typeof logseq.settings?.sync === 'boolean') {
+    logseq.updateSettings({ sync: null })
+  }
+
   await saveInboxIdToSettings()
   await todoistCache.load()
 
   provideToolbarStyles()
-  updateToolbarIcon(logseq.settings?.sync ? 'on' : 'off')
 
   logseq.DB.onChanged(async ({ blocks, txData }) => {
+    if (!logseq.settings?.enableSync) return
     if (syncLock.isInternalSync) return
     if (!blocks || blocks.length === 0) return
 
@@ -109,47 +125,20 @@ export const handleSync = async () => {
     },
   )
 
-  logseq.App.registerCommandPalette(
-    {
-      key: 'todoist-plugin-start-todoist-sync',
-      label: 'logseq-todoist-plugin: Start Todoist Sync Cronjob',
-    },
-    async () => {
-      try {
-        if (triggerSyncCronJob) clearInterval(triggerSyncCronJob)
-        triggerSyncCronJob = setInterval(
-          async () => await triggerSync(syncLock),
-          1000 * 60, // 60 seconds
-        )
-      } catch {
-        logseq.UI.showMsg('Unable to start Todoist Sync Crobjob', 'error')
-      } finally {
-        logseq.updateSettings({
-          sync: true,
-        })
-        updateToolbarIcon('on')
-        logseq.UI.showMsg('Started: Todoist Sync Cronjob', 'success')
-      }
-    },
-  )
+  logseq.onSettingsChanged((newSettings, oldSettings) => {
+    if (!!newSettings?.enableSync === !!oldSettings?.enableSync) return
+    if (newSettings?.enableSync) {
+      startSyncCron()
+      logseq.UI.showMsg('Todoist sync enabled', 'success')
+    } else {
+      stopSyncCron()
+      logseq.UI.showMsg('Todoist sync disabled', 'success')
+    }
+  })
 
-  logseq.App.registerCommandPalette(
-    {
-      key: 'todoist-plugin-stop-todoist-sync',
-      label: 'logseq-todoist-plugin: Stop Todoist Sync Cronjob',
-    },
-    async () => {
-      try {
-        clearInterval(triggerSyncCronJob)
-      } catch {
-        logseq.UI.showMsg('Unable to stop Todoist Sync Cronjob', 'error')
-      } finally {
-        logseq.updateSettings({
-          sync: false,
-        })
-        updateToolbarIcon('off')
-        logseq.UI.showMsg('Stopped: Todoist Sync Cronjob', 'success')
-      }
-    },
-  )
+  if (logseq.settings?.enableSync) {
+    startSyncCron()
+  } else {
+    stopSyncCron()
+  }
 }
