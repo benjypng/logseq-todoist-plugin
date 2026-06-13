@@ -1,196 +1,104 @@
+import type { SyncCommand, SyncResponse } from '@doist/todoist-sdk'
 import { v4 as genUUID } from 'uuid'
-import wretch from 'wretch'
 
-import {
-  TodoistSendResponse,
-  TodoistSyncResponse,
-  TodoistUserSyncItem,
-} from '../../interfaces'
+import { getTodoistApi } from './todoist-client'
 
-const client = () =>
-  wretch('https://api.todoist.com/api/v1/sync')
-    .auth(`Bearer ${logseq.settings?.apiToken}`)
-    .content('application/json')
+const handleError = (context: string, e: unknown): null => {
+  const message = e instanceof Error ? e.message : 'Unknown error'
+  console.error(new Date().toISOString(), `Todoist (${context}):`, e)
+  logseq.UI.showMsg(`Todoist Error (${context}): ${message}`, 'error')
+  return null
+}
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
-const requestWithRetry = async <T>(
-  apiCall: () => Promise<T>,
-  context: string,
-  attempt = 1,
-  maxRetries = 3,
-  backoffDelay = 1000,
-): Promise<T | null> => {
-  try {
-    return await apiCall()
-  } catch (e: any) {
-    if (
-      (e.status === 429 || e?.response?.status === 429) &&
-      attempt <= maxRetries
-    ) {
-      const retryHeader = e.response?.headers?.get('Retry-After')
-
-      let waitTimeMs = backoffDelay
-      if (retryHeader) {
-        const seconds = parseInt(retryHeader, 10)
-        if (!isNaN(seconds)) {
-          waitTimeMs = seconds * 1000
-        }
-      }
-
-      logseq.UI.showMsg(
-        `Todoist Rate Limit: Retrying ${context} in ${Math.ceil(waitTimeMs / 1000)}s...`,
-        'warning',
-      )
-
-      await sleep(waitTimeMs)
-
-      return requestWithRetry(
-        apiCall,
-        context,
-        attempt + 1,
-        maxRetries,
-        backoffDelay * 2,
-      )
-    }
-
-    const errorMessage = e?.message || 'Unknown error'
-    logseq.UI.showMsg(
-      `Todoist Sync Error (${context}): ${errorMessage}`,
-      'error',
-    )
-
-    return null
-  }
+const persistToken = (token: string | undefined) => {
+  if (token) logseq.updateSettings({ syncToken: token })
 }
 
 export const api = {
-  getInboxId: async () => {
-    return requestWithRetry(async () => {
-      const response = await client()
-        .post({
-          sync_token: '*',
-          resource_types: ['user'],
-        })
-        .json<TodoistUserSyncItem>()
-
-      return response.user.inbox_project_id
-    }, 'Get Inbox ID')
-  },
-  sync: async () => {
-    return requestWithRetry(async () => {
-      const currentToken = logseq.settings?.syncToken ?? '*'
-
-      const response = await client()
-        .post({
-          sync_token: currentToken,
-          resource_types: ['items'],
-        })
-        .json<TodoistSyncResponse>()
-
-      return response
-    }, 'Sync')
-  },
-  send: async (blkUuid: string, task: string) => {
-    return requestWithRetry(async () => {
-      const response = await client()
-        .post({
-          commands: [
-            {
-              type: 'item_add',
-              uuid: blkUuid,
-              temp_id: blkUuid,
-              args: {
-                content: task,
-              },
-            },
-          ],
-        })
-        .json<TodoistSendResponse>()
-
-      logseq.updateSettings({
-        ...logseq.settings,
-        syncToken: response.sync_token,
+  getInboxId: async (): Promise<string | null> => {
+    try {
+      const res = await getTodoistApi().sync({
+        syncToken: '*',
+        resourceTypes: ['user'],
       })
-
-      return response
-    }, 'Add Task')
+      return res.user?.inboxProjectId ?? null
+    } catch (e) {
+      return handleError('Get Inbox ID', e)
+    }
   },
-  setComplete: async (todoistId: string) => {
-    const uuid = genUUID()
-    return requestWithRetry(async () => {
-      const response = await client()
-        .post({
-          commands: [
-            {
-              type: 'item_close',
-              uuid: uuid,
-              args: {
-                id: todoistId,
-                date_completed: new Date().toISOString(),
-              },
-            },
-          ],
-        })
-        .json<TodoistSendResponse>()
-
-      logseq.updateSettings({
-        ...logseq.settings,
-        syncToken: response.sync_token,
+  sync: async (): Promise<SyncResponse | null> => {
+    try {
+      const currentToken = (logseq.settings?.syncToken as string) ?? '*'
+      return await getTodoistApi().sync({
+        syncToken: currentToken,
+        resourceTypes: ['items'],
       })
-
-      return response
-    }, 'Complete Task')
+    } catch (e) {
+      return handleError('Sync', e)
+    }
   },
-  setInComplete: async (todoistId: string) => {
-    const uuid = genUUID()
-    return requestWithRetry(async () => {
-      const response = await client()
-        .post({
-          commands: [
-            {
-              type: 'item_uncomplete',
-              uuid: uuid,
-              args: {
-                id: todoistId,
-              },
-            },
-          ],
-        })
-        .json<TodoistSendResponse>()
-
-      logseq.updateSettings({
-        ...logseq.settings,
-        syncToken: response.sync_token,
-      })
-
-      return response
-    }, 'Uncomplete Task')
+  send: async (blkUuid: string, task: string): Promise<SyncResponse | null> => {
+    try {
+      const commands: SyncCommand[] = [
+        {
+          type: 'item_add',
+          uuid: blkUuid,
+          tempId: blkUuid,
+          args: { content: task },
+        },
+      ]
+      const res = await getTodoistApi().sync({ commands })
+      persistToken(res.syncToken)
+      return res
+    } catch (e) {
+      return handleError('Add Task', e)
+    }
   },
-  updateContent: async (todoistId: string, newContent: string) => {
-    const uuid = genUUID()
-    return requestWithRetry(async () => {
-      const response = await client()
-        .post({
-          commands: [
-            {
-              type: 'item_update',
-              uuid: uuid,
-              args: {
-                id: todoistId,
-                content: newContent,
-              },
-            },
-          ],
-        })
-        .json<TodoistSendResponse>()
-
-      logseq.updateSettings({
-        ...logseq.settings,
-        syncToken: response.sync_token,
-      })
-
-      return response
-    }, 'Update Content')
+  setComplete: async (todoistId: string): Promise<SyncResponse | null> => {
+    try {
+      const commands: SyncCommand[] = [
+        {
+          type: 'item_complete',
+          uuid: genUUID(),
+          args: { id: todoistId, completedAt: new Date().toISOString() },
+        },
+      ]
+      const res = await getTodoistApi().sync({ commands })
+      persistToken(res.syncToken)
+      return res
+    } catch (e) {
+      return handleError('Complete Task', e)
+    }
+  },
+  setInComplete: async (todoistId: string): Promise<SyncResponse | null> => {
+    try {
+      const commands: SyncCommand[] = [
+        { type: 'item_uncomplete', uuid: genUUID(), args: { id: todoistId } },
+      ]
+      const res = await getTodoistApi().sync({ commands })
+      persistToken(res.syncToken)
+      return res
+    } catch (e) {
+      return handleError('Uncomplete Task', e)
+    }
+  },
+  updateContent: async (
+    todoistId: string,
+    newContent: string,
+  ): Promise<SyncResponse | null> => {
+    try {
+      const commands: SyncCommand[] = [
+        {
+          type: 'item_update',
+          uuid: genUUID(),
+          args: { id: todoistId, content: newContent },
+        },
+      ]
+      const res = await getTodoistApi().sync({ commands })
+      persistToken(res.syncToken)
+      return res
+    } catch (e) {
+      return handleError('Update Content', e)
+    }
   },
 }

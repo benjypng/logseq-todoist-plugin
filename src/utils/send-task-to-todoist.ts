@@ -2,6 +2,7 @@ import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 
 import { api } from '../features/sync/api'
 import { todoistCache } from '../features/sync/cache'
+import { resolveCreatedTaskId } from '../features/sync/temp-id'
 import { SyncLock } from '../interfaces'
 import { getTodoistIdPropIdent } from './get-todoistid-prop-ident'
 
@@ -10,9 +11,8 @@ export const sendTaskToTodoist = async (
   syncLock: SyncLock,
 ) => {
   const response = await api.send(taskBlk.uuid, taskBlk.title)
-  if (!response || !response.temp_id_mapping[taskBlk.uuid]) return
-
-  const newTodoistId = response.temp_id_mapping[taskBlk.uuid] as string
+  const newTodoistId = resolveCreatedTaskId(response)
+  if (!newTodoistId) return
 
   try {
     syncLock.isInternalSync = true

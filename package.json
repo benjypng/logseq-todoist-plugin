@@ -31,7 +31,8 @@
     ]
   },
   "dependencies": {
-    "@doist/todoist-api-typescript": "^7.10.0",
+    "@benjypng/logseq-request": "^1.0.0",
+    "@doist/todoist-sdk": "^10.4.0",
     "@logseq/libs": "^0.2.9",
     "@mantine/core": "^9.0.1",
     "@mantine/hooks": "^9.0.1",
@@ -40,8 +41,7 @@
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-hook-form": "^7.72.1",
-    "uuid": "^13.0.0",
-    "wretch": "^3.0.7"
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.11",

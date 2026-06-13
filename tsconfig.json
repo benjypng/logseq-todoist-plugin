@@ -27,6 +27,8 @@
     "node_modules",
     "./dist/**/*",
     "./screenshots",
-    "tailwind.config.js"
+    "tailwind.config.js",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }
