@@ -88,22 +88,17 @@ export const api = {
         })
         .json<TodoistSyncResponse>()
 
-      // The sync token is deliberately NOT persisted here. Committing it
-      // before the items are applied to the graph means a failure mid-apply
-      // loses those items forever (Todoist never re-delivers them). The
-      // caller commits the token once every item has been applied
       return response
     }, 'Sync')
   },
   send: async (blkUuid: string, task: string) => {
     return requestWithRetry(async () => {
-      const uuid = genUUID()
       const response = await client()
         .post({
           commands: [
             {
               type: 'item_add',
-              uuid: uuid,
+              uuid: blkUuid,
               temp_id: blkUuid,
               args: {
                 content: task,
@@ -122,8 +117,8 @@ export const api = {
     }, 'Add Task')
   },
   setComplete: async (todoistId: string) => {
+    const uuid = genUUID()
     return requestWithRetry(async () => {
-      const uuid = genUUID()
       const response = await client()
         .post({
           commands: [
@@ -148,8 +143,8 @@ export const api = {
     }, 'Complete Task')
   },
   setInComplete: async (todoistId: string) => {
+    const uuid = genUUID()
     return requestWithRetry(async () => {
-      const uuid = genUUID()
       const response = await client()
         .post({
           commands: [
@@ -173,8 +168,8 @@ export const api = {
     }, 'Uncomplete Task')
   },
   updateContent: async (todoistId: string, newContent: string) => {
+    const uuid = genUUID()
     return requestWithRetry(async () => {
-      const uuid = genUUID()
       const response = await client()
         .post({
           commands: [

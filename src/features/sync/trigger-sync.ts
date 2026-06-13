@@ -16,24 +16,28 @@ export const triggerSync = async (syncLock: SyncLock) => {
     // Handle tasks from Todoist
     const data = await api.sync()
     if (!data) return
-    // A failed item must not abort the rest of the batch, and must hold back
-    // the sync token commit so Todoist re-delivers it next sync. Replaying an
-    // already-applied item is safe: resolve() finds the existing block and
-    // the status upsert is idempotent
     let allItemsApplied = true
     for (const item of data.items) {
       try {
         if (item.content === '') continue
         if (item.project_id !== logseq.settings?.userInboxId) continue
 
-        const existingUuid = await todoistCache.resolve(item.id)
+        if (item.is_deleted) continue
+
+        const desiredStatus = item.checked ? 'Done' : 'Todo'
+
+        let existingUuid = await todoistCache.resolve(item.id)
 
         if (existingUuid) {
-          if (item.checked) {
-            await setTaskStatus(existingUuid, 'Done')
-          } else {
-            await setTaskStatus(existingUuid, 'Todo')
+          const existingBlk = await logseq.Editor.getBlock(existingUuid)
+          if (!existingBlk) {
+            todoistCache.delete(item.id)
+            existingUuid = undefined
           }
+        }
+
+        if (existingUuid) {
+          await setTaskStatus(existingUuid, desiredStatus)
         } else {
           const createdBlk = await appendBlockWithTagAndProp(
             item.id,
@@ -41,6 +45,9 @@ export const triggerSync = async (syncLock: SyncLock) => {
           )
           if (createdBlk) {
             todoistCache.set(item.id, createdBlk.uuid)
+            if (item.checked) {
+              await setTaskStatus(createdBlk.uuid, 'Done')
+            }
           } else {
             allItemsApplied = false
             console.error(

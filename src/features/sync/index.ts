@@ -1,5 +1,6 @@
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 
+import { TASK_STATUS_KEY } from '../../constants'
 import {
   getPageTagId,
   getTaskStatusFromId,
@@ -47,7 +48,7 @@ export const handleSync = async () => {
   provideToolbarStyles()
   updateToolbarIcon(logseq.settings?.sync ? 'on' : 'off')
 
-  logseq.DB.onChanged(async ({ blocks }) => {
+  logseq.DB.onChanged(async ({ blocks, txData }) => {
     if (syncLock.isInternalSync) return
     if (!blocks || !blocks[0] || !blocks[0].tags) return
 
@@ -78,16 +79,16 @@ export const handleSync = async () => {
     )) as BlockEntity
 
     if (todoistId) {
-      /*
-      Handle changes in task content
-      */
-      const content = await logseq.Editor.getEditingBlockContent()
-      api.updateContent(todoistId.title, content)
+      const titleChanged = txData.some(
+        (datom) => datom[1] === ':block/title' && datom[4],
+      )
+      const statusChanged = txData.some((datom) => datom[1] === TASK_STATUS_KEY)
 
-      /*
-      Handle changes in task status
-      */
-      if (taskBlk.status) {
+      if (titleChanged) {
+        api.updateContent(todoistId.title, taskBlk.title)
+      }
+
+      if (statusChanged && taskBlk.status) {
         // @ts-expect-error BlockEntity has status property only if the status has been changed
         const taskStatusId = taskBlk.status.id as number
         const taskStatus = await getTaskStatusFromId(taskStatusId)
@@ -120,6 +121,7 @@ export const handleSync = async () => {
     },
     async () => {
       try {
+        if (triggerSyncCronJob) clearInterval(triggerSyncCronJob)
         triggerSyncCronJob = setInterval(
           async () => await triggerSync(syncLock),
           1000 * 60, // 60 seconds
