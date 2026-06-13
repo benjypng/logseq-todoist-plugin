@@ -1,4 +1,4 @@
-import { Task } from '@doist/todoist-api-typescript'
+import type { Task } from '@doist/todoist-sdk'
 
 import { getNameFromString } from '../helpers'
 import { buildRootTasks } from '.'

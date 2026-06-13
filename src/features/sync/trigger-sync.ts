@@ -17,12 +17,12 @@ export const triggerSync = async (syncLock: SyncLock) => {
     const data = await api.sync()
     if (!data) return
     let allItemsApplied = true
-    for (const item of data.items) {
+    for (const item of data.items ?? []) {
       try {
         if (item.content === '') continue
-        if (item.project_id !== logseq.settings?.userInboxId) continue
+        if (item.projectId !== logseq.settings?.userInboxId) continue
 
-        if (item.is_deleted) continue
+        if (item.isDeleted) continue
 
         const desiredStatus = item.checked ? 'Done' : 'Todo'
 
@@ -65,9 +65,9 @@ export const triggerSync = async (syncLock: SyncLock) => {
         )
       }
     }
-    if (allItemsApplied) {
+    if (allItemsApplied && data.syncToken) {
       logseq.updateSettings({
-        syncToken: data.sync_token,
+        syncToken: data.syncToken,
       })
     }
 

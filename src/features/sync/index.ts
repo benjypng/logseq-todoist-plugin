@@ -79,10 +79,14 @@ export const handleSync = async () => {
     )) as BlockEntity
 
     if (todoistId) {
+      const attrName = (datom: (typeof txData)[number]): string =>
+        String(datom[1]).replace(/^:/, '')
       const titleChanged = txData.some(
-        (datom) => datom[1] === ':block/title' && datom[4],
+        (datom) => attrName(datom) === 'block/title' && datom[4],
       )
-      const statusChanged = txData.some((datom) => datom[1] === TASK_STATUS_KEY)
+      const statusChanged = txData.some(
+        (datom) => attrName(datom) === TASK_STATUS_KEY.replace(/^:/, ''),
+      )
 
       if (titleChanged) {
         api.updateContent(todoistId.title, taskBlk.title)

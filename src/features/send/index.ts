@@ -1,6 +1,5 @@
-import { TodoistApi } from '@doist/todoist-api-typescript'
-
 import { getIdFromString, getNameFromString } from '../helpers'
+import { getTodoistApi } from '../sync/todoist-client'
 import { FormInput } from './components/SendTask'
 
 export const removeTaskFlags = (content: string): string => {
@@ -26,7 +25,7 @@ export const sendTask = async ({
     return
   }
 
-  const api = new TodoistApi(logseq.settings!.apiToken as string)
+  const api = getTodoistApi()
 
   const currGraph = await logseq.App.getCurrentGraph()
   const currGraphName = currGraph?.name

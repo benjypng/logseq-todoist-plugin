@@ -1,7 +1,9 @@
-import { Task, TodoistApi } from '@doist/todoist-api-typescript'
+import type { Task } from '@doist/todoist-sdk'
 import { getDateForPage, getDeadlineDateDay } from 'logseq-dateutils'
 
 import { getIdFromString } from '../helpers'
+import { paginate } from '../sync/paginate'
+import { getTodoistApi } from '../sync/todoist-client'
 
 interface TaskBlock {
   content: string
@@ -15,20 +17,20 @@ interface TaskBlock {
 }
 
 export const handleComments = async (id: string) => {
-  const api = new TodoistApi(logseq.settings!.apiToken as string)
-  const comments = await api.getComments({ taskId: id })
+  const api = getTodoistApi()
+  const comments = await paginate((cursor) =>
+    api.getComments({ taskId: id, cursor }),
+  )
+  if (comments.length === 0) return {}
 
-  if (comments.results.length === 0) return {}
-
-  const textComments = comments.results
+  const textComments = comments
     .filter((comment) => !comment.fileAttachment)
     .map((comment) => comment.content)
     .join(', ')
-  const attachments = comments.results
+  const attachments = comments
     .filter((comment) => comment.fileAttachment)
     .map((comment) => {
       const { fileUrl, fileName } = comment.fileAttachment!
-      // Todoist implements a redirect behind cloudflare, hence no point supporting image markdown
       return `[${fileName}](${fileUrl})`
     })
     .join(', ')
@@ -114,7 +116,7 @@ ${getDeadlineDateDay(new Date(task.due.date))}`
 }
 
 export const deleteAllTasks = async (tasksArr: Task[]) => {
-  const api = new TodoistApi(logseq.settings!.apiToken as string)
+  const api = getTodoistApi()
   try {
     for (const task of tasksArr) {
       await api.deleteTask(task.id)
@@ -131,7 +133,7 @@ export const retrieveTasks = async (
 ) => {
   const msgKey = await logseq.UI.showMsg('Getting tasks...')
 
-  const api = new TodoistApi(logseq.settings!.apiToken as string)
+  const api = getTodoistApi()
 
   // Insert blocks
   let allTasks: Task[] = []
@@ -143,24 +145,31 @@ export const retrieveTasks = async (
           await logseq.UI.showMsg('Please select a default project', 'error')
           return []
         }
-        const tasks = await api.getTasks({
-          projectId: getIdFromString(
-            logseq.settings!.retrieveDefaultProject as string,
-          ),
-        })
-        allTasks = [...allTasks, ...tasks.results]
+        const tasks = await paginate((cursor) =>
+          api.getTasks({
+            projectId: getIdFromString(
+              logseq.settings!.retrieveDefaultProject as string,
+            ),
+            cursor,
+          }),
+        )
+        allTasks = [...allTasks, ...tasks]
         break
       }
 
       case 'today': {
-        const tasks = await api.getTasksByFilter({ query: 'today' })
-        allTasks = [...allTasks, ...tasks.results]
+        const tasks = await paginate((cursor) =>
+          api.getTasksByFilter({ query: 'today', cursor }),
+        )
+        allTasks = [...allTasks, ...tasks]
         break
       }
 
       case 'custom': {
-        const tasks = await api.getTasksByFilter({ query: customFilter! })
-        allTasks = [...allTasks, ...tasks.results]
+        const tasks = await paginate((cursor) =>
+          api.getTasksByFilter({ query: customFilter!, cursor }),
+        )
+        allTasks = [...allTasks, ...tasks]
         break
       }
 
