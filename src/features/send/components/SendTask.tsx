@@ -1,22 +1,8 @@
 import './style.css'
-import '@mantine/core/styles.css'
 
-import {
-  Button,
-  Flex,
-  MantineProvider,
-  MultiSelect,
-  Pill,
-  Select,
-  Space,
-  Stack,
-  TextInput,
-  Title,
-} from '@mantine/core'
 import { useCallback } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
-import { THEME } from '../../../constants'
 import { sendTask } from '..'
 
 interface SendTaskProps {
@@ -50,6 +36,7 @@ export const SendTask = ({
     defaultValues: {
       task: content.trim(),
       project: '--- ---',
+      label: [],
       priority: '',
       uuid: uuid,
       due: '',
@@ -63,84 +50,117 @@ export const SendTask = ({
       reset()
       logseq.hideMainUI()
     },
-    [uuid],
+    [reset],
   )
 
+  const labelOptions = labels.filter((label) => label !== '--- ---')
+
   return (
-    <MantineProvider theme={THEME}>
-      <Flex bg="none" justify="right" p="md">
-        <Flex
-          p="md"
-          mt="xl"
-          bg="white"
-          w="20rem"
-          direction="column"
-          id="send-task-container"
-        >
-          <Title fz="md">Todoist: Send Task</Title>
-          <Pill size="xl" color="darkteal" my="0.5rem">
-            {content}
-          </Pill>
-          <Space h="1rem" />
-          <form onSubmit={handleSubmit(submitTask)}>
-            <Stack gap="1rem">
-              <Controller
-                control={control}
-                name="project"
-                rules={{ required: 'Please select a project' }}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    label="Project"
-                    placeholder="Select Project"
-                    data={projects}
-                    error={errors?.project?.message}
-                  />
+    <div className="td-overlay">
+      <div className="td-card" id="send-task-container">
+        <h2 className="td-title">Todoist: Send Task</h2>
+        <span className="td-pill">{content}</span>
+
+        <form onSubmit={handleSubmit(submitTask)} className="td-form">
+          <Controller
+            control={control}
+            name="project"
+            rules={{ required: 'Please select a project' }}
+            render={({ field }) => (
+              <label className="td-field">
+                <span className="td-field-label">Project</span>
+                <select {...field} className="td-select">
+                  {projects.map((project) => (
+                    <option key={project} value={project}>
+                      {project}
+                    </option>
+                  ))}
+                </select>
+                {errors?.project?.message && (
+                  <span className="td-error">{errors.project.message}</span>
                 )}
-              />
-              <Controller
-                control={control}
-                name="label"
-                render={({ field }) => (
-                  <MultiSelect
-                    {...field}
-                    label="Label"
-                    placeholder="Select Label"
-                    data={labels}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
-                name="priority"
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    label="Priority (1: normal, 4: urgent)"
-                    placeholder="Select Priority"
-                    data={['1', '2', '3', '4']}
-                  />
-                )}
-              />
-              <Controller
-                control={control}
-                name="due"
-                render={({ field }) => (
-                  <TextInput
-                    {...field}
-                    label="Deadline"
-                    placeholder="Enter deadline (e.g. Next Monday)"
-                  />
-                )}
-              />
-            </Stack>
-            <Space h="1rem" />
-            <Button type="submit" size="xs">
-              Send Task
-            </Button>
-          </form>
-        </Flex>
-      </Flex>
-    </MantineProvider>
+              </label>
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="label"
+            render={({ field }) => {
+              const selected = field.value ?? []
+              return (
+                <div className="td-field">
+                  <span className="td-field-label">Label</span>
+                  <div className="td-checkbox-list">
+                    {labelOptions.length === 0 ? (
+                      <span className="td-muted">No labels</span>
+                    ) : (
+                      labelOptions.map((label) => (
+                        <label key={label} className="td-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={selected.includes(label)}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.checked
+                                  ? [...selected, label]
+                                  : selected.filter((l) => l !== label),
+                              )
+                            }
+                          />
+                          <span>{label}</span>
+                        </label>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )
+            }}
+          />
+
+          <Controller
+            control={control}
+            name="priority"
+            render={({ field }) => (
+              <label className="td-field">
+                <span className="td-field-label">
+                  Priority (1: normal, 4: urgent)
+                </span>
+                <select {...field} className="td-select">
+                  <option value="" disabled>
+                    Select Priority
+                  </option>
+                  {['1', '2', '3', '4'].map((priority) => (
+                    <option key={priority} value={priority}>
+                      {priority}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="due"
+            render={({ field }) => (
+              <label className="td-field">
+                <span className="td-field-label">Deadline</span>
+                <input
+                  {...field}
+                  type="text"
+                  className="td-input"
+                  placeholder="Enter deadline (e.g. Next Monday)"
+                />
+              </label>
+            )}
+          />
+
+          <button type="submit" className="td-button">
+            Send Task
+          </button>
+        </form>
+      </div>
+    </div>
   )
 }
