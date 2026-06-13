@@ -1,8 +1,5 @@
-import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
-
 import { TASK_STATUS_KEY } from '../../constants'
 import {
-  getPageTagId,
   getTaskStatusFromId,
   getTodoistTaskTagId,
   saveInboxIdToSettings,
@@ -35,13 +32,10 @@ const syncLock = new Proxy(_syncLock, {
 let triggerSyncCronJob: NodeJS.Timeout
 
 export const handleSync = async () => {
-  // Need to add sync to settings at startup first it seems
   logseq.updateSettings({
     ...logseq.settings,
     sync: false,
   })
-  //NOTE: Am removing the below because plugin created tag and props don't play nicely with sync
-  //await addTodoistIdPropToTaskTag()
   await saveInboxIdToSettings()
   await todoistCache.load()
 
@@ -50,46 +44,43 @@ export const handleSync = async () => {
 
   logseq.DB.onChanged(async ({ blocks, txData }) => {
     if (syncLock.isInternalSync) return
-    if (!blocks || !blocks[0] || !blocks[0].tags) return
+    if (!blocks || blocks.length === 0) return
 
-    // Ignore if block being changed is a Page
-    const pageTagId = await getPageTagId()
-    // @ts-expect-error BlockEntity has not been updated
-    if (blocks[0].tags.id === pageTagId) return
-
-    // Deprecated: Ignore if block being changed is not on the sync page
-
-    // Now can identify task block with task tag id
     const taskTagId = await getTodoistTaskTagId()
-    // @ts-expect-error BlockEntity has not been updated
-    if (!blocks[0].tags.some((tag) => tag.id === taskTagId)) {
-      return
-    }
-
-    const taskBlk = blocks[0]
-    // Ignore if empty title
-    if (taskBlk.title === '') return
+    const taskBlk = blocks.find(
+      (b) =>
+        Array.isArray(b?.tags) && b.tags.some((tag) => tag.id === taskTagId),
+    )
+    if (!taskBlk) return
+    if (!taskBlk.title || taskBlk.title === '') return
 
     const todoistIdPropIdent = await getTodoistIdPropIdent()
     if (!todoistIdPropIdent) return
 
-    const todoistId = (await logseq.Editor.getBlockProperty(
+    const rawProp = await logseq.Editor.getBlockProperty(
       taskBlk.uuid,
       todoistIdPropIdent,
-    )) as BlockEntity
+    )
+    const propValue =
+      typeof rawProp === 'string'
+        ? rawProp
+        : ((rawProp as Record<string, unknown> | null)?.value as
+            | string
+            | undefined)
+    const todoistId = (propValue ?? '').trim()
 
     if (todoistId) {
       const attrName = (datom: (typeof txData)[number]): string =>
         String(datom[1]).replace(/^:/, '')
       const titleChanged = txData.some(
-        (datom) => attrName(datom) === 'block/title' && datom[4],
+        (datom) => attrName(datom) === 'block/title',
       )
       const statusChanged = txData.some(
         (datom) => attrName(datom) === TASK_STATUS_KEY.replace(/^:/, ''),
       )
 
       if (titleChanged) {
-        api.updateContent(todoistId.title, taskBlk.title)
+        api.updateContent(todoistId, taskBlk.title)
       }
 
       if (statusChanged && taskBlk.status) {
@@ -98,9 +89,9 @@ export const handleSync = async () => {
         const taskStatus = await getTaskStatusFromId(taskStatusId)
 
         if (taskStatus === 'Done') {
-          api.setComplete(todoistId.title)
+          api.setComplete(todoistId)
         } else {
-          api.setInComplete(todoistId.title)
+          api.setInComplete(todoistId)
         }
       }
     } else {

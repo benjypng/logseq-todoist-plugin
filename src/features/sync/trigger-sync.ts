@@ -27,16 +27,19 @@ export const triggerSync = async (syncLock: SyncLock) => {
         const desiredStatus = item.checked ? 'Done' : 'Todo'
 
         let existingUuid = await todoistCache.resolve(item.id)
+        const existingBlk = existingUuid
+          ? await logseq.Editor.getBlock(existingUuid)
+          : null
 
-        if (existingUuid) {
-          const existingBlk = await logseq.Editor.getBlock(existingUuid)
-          if (!existingBlk) {
-            todoistCache.delete(item.id)
-            existingUuid = undefined
-          }
+        if (existingUuid && !existingBlk) {
+          todoistCache.delete(item.id)
+          existingUuid = undefined
         }
 
-        if (existingUuid) {
+        if (existingUuid && existingBlk) {
+          if (existingBlk.title !== item.content) {
+            await logseq.Editor.updateBlock(existingUuid, item.content)
+          }
           await setTaskStatus(existingUuid, desiredStatus)
         } else {
           const createdBlk = await appendBlockWithTagAndProp(
