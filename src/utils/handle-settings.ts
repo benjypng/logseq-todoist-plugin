@@ -116,11 +116,12 @@ export const handleSettings = async (projects: string[], labels: string[]) => {
     },
     {
       key: 'retrieveClearTasks',
-      type: 'boolean',
-      default: false,
+      type: 'enum',
+      enumPicker: 'select',
+      enumChoices: ['Delete Task', 'Mark as Done', 'Do Nothing'],
+      default: 'Do Nothing',
       title: 'Clear Tasks from Todoist',
-      description:
-        'If set to true, retrieved tasks will be deleted in Todoist.',
+      description: `This sets how tasks are handled in Todoist after they are imported to Logseq. If set to 'Delete Task', tasks will be deleted in Todoist. If set to 'Mark as Done', tasks will be marked as done in Todoist.`,
     },
     {
       key: 'retrieveAppendCreationDateTime',

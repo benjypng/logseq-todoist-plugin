@@ -132,6 +132,21 @@ export const deleteAllTasks = async (tasksArr: Task[]) => {
   }
 }
 
+export const markCompleteAllTasks = async (tasksArr: Task[]) => {
+  const api = getTodoistApi()
+  try {
+    for (const task of tasksArr) {
+      await api.closeTask(task.id)
+    }
+  } catch (e) {
+    logseq.UI.showMsg(
+      `Error completing tasks: ${(e as Error).message}`,
+      'error',
+    )
+    return
+  }
+}
+
 export const retrieveTasks = async (
   taskParams: 'default' | 'today' | 'custom',
   customFilter?: string,
@@ -182,8 +197,10 @@ export const retrieveTasks = async (
         break
     }
 
-    if (logseq.settings!.retrieveClearTasks) {
+    if (logseq.settings!.retrieveClearTasks === 'Delete Task') {
       await deleteAllTasks(allTasks)
+    } else if (logseq.settings!.retrieveClearTasks === 'Mark as Done') {
+      await markCompleteAllTasks(allTasks)
     }
 
     logseq.UI.closeMsg(msgKey)
