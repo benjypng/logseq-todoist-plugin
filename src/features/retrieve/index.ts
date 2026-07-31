@@ -69,6 +69,11 @@ ${getDeadlineDateDay(new Date(task.due.date))}`
               .join(' ')}`
           : content
 
+        // Handle appendURL
+        content = logseq.settings!.retrieveAppendUrl
+          ? `[${content}](${task.url})`
+          : content
+
         // Handle created at
         const preferredDateFormat = (await logseq.App.getUserConfigs())
           .preferredDateFormat
